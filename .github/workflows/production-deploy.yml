@@ -1,0 +1,67 @@
+name: Production Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+permissions: write-all
+
+jobs:
+  # action instruction https://dev.to/kenessajr/deploy-a-react-app-to-digitalocean-using-github-actions-and-docker-4pln
+  app:
+    runs-on: ubuntu-latest
+    steps:
+      - name: ⬇️ Checkout repo
+        uses: actions/checkout@v2
+
+      - name: ⎔ Setup node
+        uses: actions/setup-node@v2
+        with:
+          node-version: 18
+
+      - name: 📥 Install dependencies
+        run: |
+          npm install --legacy-peer-deps
+
+      - name: Create env file
+        run: |
+          echo '${{ secrets.ENV_PROD }}' >> .env
+
+      - name: Create secrets for nginx
+        run: |
+          echo '${{ secrets.NGINX_PROD_CERT }}' >> certificate.crt
+
+          echo '${{ secrets.NGINX_PROD_PRIVATE }}' >> private.key
+
+      - name: 🚀 Build project
+        run: npm run build:prod
+
+      - name: 🚀 Publish Web with Nginx to Github Packages Registry
+        uses: elgohr/Publish-Docker-Github-Action@master
+        with:
+          name: fedorrychkov/personal-wish-mini-tg-app/mini-app-prod
+          registry: docker.pkg.github.com
+          username: ${{ secrets.GH_USERNAME }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          dockerfile: Dockerfile
+          tags: latest
+
+      - name: 🚀 Pull packages in DigitalOcean server
+        uses: appleboy/ssh-action@master
+        env:
+            GH_USERNAME: ${{ secrets.GH_USERNAME }}
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          host: ${{ secrets.PROD_API_HOST }}
+          username: ${{ secrets.PROD_API_USERNAME }}
+          password: ${{ secrets.PROD_API_PASSWORD }}
+          port: 22
+          envs: GH_USERNAME, GITHUB_TOKEN
+          script: |
+            docker stop vite-container
+            docker system prune -a -f
+            docker network create mynetwork
+            docker login docker.pkg.github.com -u $GH_USERNAME -p $GITHUB_TOKEN
+            docker pull docker.pkg.github.com/fedorrychkov/personal-wish-mini-tg-app/mini-app-prod:latest
+            docker run --restart=always -dit --name vite-container -p 80:80 -p 443:443 --network mynetwork docker.pkg.github.com/fedorrychkov/personal-wish-mini-tg-app/mini-app-prod:latest
