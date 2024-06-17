@@ -35,7 +35,7 @@ jobs:
           echo '${{ secrets.NGINX_PROD_PRIVATE }}' >> private.key
 
       - name: 🚀 Build project
-        run: npm run build:prod
+        run: npm run build
 
       - name: 🚀 Publish Web with Nginx to Github Packages Registry
         uses: elgohr/Publish-Docker-Github-Action@master
