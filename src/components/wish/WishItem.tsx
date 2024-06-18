@@ -11,11 +11,12 @@ import { ImageLoader } from '../image'
 type Props = {
   wish: Wish
   listKey?: string
+  className?: string
 }
 
 export const WishItem = (props: Props) => {
   const popup = initPopup()
-  const { wish, listKey } = props || {}
+  const { wish, listKey, className } = props || {}
 
   const imageUrl =
     wish.imageUrl?.includes('/v1/file') && !wish.imageUrl?.includes('http')
@@ -51,7 +52,7 @@ export const WishItem = (props: Props) => {
   }
 
   return (
-    <div className="bg-slate-200 dark:bg-slate-600 p-2 rounded-lg">
+    <div className={cn('bg-slate-200 dark:bg-slate-600 p-2 rounded-lg', className)}>
       <div className="flex gap-4 items-center justify-start" key={wish.id}>
         <ImageLoader
           defaultPlaceholder={null}
@@ -65,7 +66,7 @@ export const WishItem = (props: Props) => {
         </div>
       </div>
       <div className="gap-4 mt-2 flex justify-between">
-        <Button color="primary" size="small" variant="text" disabled={isLoading}>
+        <Button color="primary" size="small" variant="text" disabled>
           Забронировать
         </Button>
         <Button color="primary" size="small" variant="text" disabled>

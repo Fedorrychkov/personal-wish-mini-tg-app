@@ -19,6 +19,11 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  background-color: var(--tg-theme-bg-color);
+}
+
+html {
+  background-color: var(--tg-theme-bg-color);
 }
 
 #root {

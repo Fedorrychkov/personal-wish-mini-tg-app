@@ -11,8 +11,10 @@ export const Unavailable = () => {
 
   return (
     <DefaultLayout>
-      <h1 className="text-3xl font-bold underline">Oops!</h1>
-      <p className="read-the-docs">Произошла непредвиденная ошибка, пожалуйста, попробуйте позже</p>
+      <h1 className="text-3xl font-bold underline text-slate-900 dark:text-white">Oops!</h1>
+      <p className="read-the-docs text-slate-900 dark:text-white">
+        Произошла непредвиденная ошибка, пожалуйста, попробуйте позже
+      </p>
     </DefaultLayout>
   )
 }

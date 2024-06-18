@@ -22,7 +22,9 @@ export const Home = () => {
         </div>
         <div className="w-full h-[1px] bg-gray-400" />
 
-        <div className="mt-2 gap-4">{data?.map((wish) => <WishItem key={wish.id} listKey={key} wish={wish} />)}</div>
+        <div className="mt-2 gap-4">
+          {data?.map((wish) => <WishItem className="mb-4" key={wish.id} listKey={key} wish={wish} />)}
+        </div>
       </div>
     </DefaultLayout>
   )

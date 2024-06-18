@@ -1,8 +1,6 @@
 /* https://webdeasy.de/en/css-loading-animations/ */
 
 .loader {
-  background: #000;
-  background: radial-gradient(#222, #000);
   bottom: 0;
   left: 0;
   overflow: hidden;
@@ -10,6 +8,7 @@
   right: 0;
   top: 0;
   z-index: 99999;
+  background: var(--tg-theme-bg-color);
 }
 
 .loader-inner {
