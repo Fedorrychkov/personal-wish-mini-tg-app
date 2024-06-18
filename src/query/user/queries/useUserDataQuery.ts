@@ -22,8 +22,6 @@ export const useUserDataQuery = (
     },
     options: {
       retry: 0,
-      // 10 minutes
-      // staleTime: 10 * 60 * 1000,
       ...options,
     },
   })
