@@ -1,5 +1,5 @@
 # Telegram Wishlist Mini App
-Веб приложение работающее с Nestjs API: [personal-wish-list-bot](https://github.com/Fedorrychkov/personal-wish-list-bot)
+Веб приложение [personal-wish-list-bot](https://github.com/Fedorrychkov/personal-wish-list-bot)
 
 Дублирует функционал бота + дает удобное управление и просмотр желаний
 

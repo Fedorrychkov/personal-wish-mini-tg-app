@@ -61,7 +61,7 @@ jobs:
           script: |
             docker stop vite-container
             docker system prune -a -f
-            docker network create mynetwork
+            docker network create vitenetwork
             docker login docker.pkg.github.com -u $GH_USERNAME -p $GITHUB_TOKEN
             docker pull docker.pkg.github.com/fedorrychkov/personal-wish-mini-tg-app/mini-app-prod:latest
-            docker run --restart=always -dit --name vite-container -p 80:80 -p 443:443 --network mynetwork docker.pkg.github.com/fedorrychkov/personal-wish-mini-tg-app/mini-app-prod:latest
+            docker run --restart=always -dit --name vite-container -p 80:80 -p 443:443 --network vitenetwork docker.pkg.github.com/fedorrychkov/personal-wish-mini-tg-app/mini-app-prod:latest
