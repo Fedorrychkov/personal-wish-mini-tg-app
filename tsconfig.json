@@ -22,9 +22,6 @@
 
     "baseUrl": ".",
     "paths": {
-      "@config/*": ["config/*"],
-      "@styles/*": ["styles/*"],
-      "@lib/*": ["lib/*"],
       "~/*": ["src/*"]
     }
   },
