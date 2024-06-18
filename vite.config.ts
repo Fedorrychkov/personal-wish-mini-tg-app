@@ -17,22 +17,27 @@ const aliases = [
   'config',
 ]
 
+const isProduction = process.env.NODE_ENV === 'production'
+
+const server = isProduction
+  ? {}
+  : {
+      // port: 3000,
+      port: 443,
+      host: '0.0.0.0',
+      hmr: {
+        host: 'tg-mini-app.local',
+        port: 443,
+      },
+      https: {
+        key: fs.readFileSync('./.cert/localhost-key.pem'),
+        cert: fs.readFileSync('./.cert/localhost.pem'),
+      },
+    }
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
-  server: {
-    // port: 3000,
-    port: 443,
-    host: '0.0.0.0',
-    hmr: {
-      host: 'tg-mini-app.local',
-      port: 443,
-    },
-    https: {
-      key: fs.readFileSync('./.cert/localhost-key.pem'),
-      cert: fs.readFileSync('./.cert/localhost.pem'),
-    },
-  },
+  server,
   resolve: {
     alias: aliases.map((alias) => ({
       find: `~/${alias}`,
