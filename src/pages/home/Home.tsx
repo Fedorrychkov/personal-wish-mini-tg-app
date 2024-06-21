@@ -1,3 +1,4 @@
+import { Skeleton } from '@mui/material'
 import { initBackButton } from '@tma.js/sdk'
 
 import { UserHeader } from '~/components/user'
@@ -9,7 +10,7 @@ import { useUserWishQuery } from '~/query'
 export const Home = () => {
   const [backButton] = initBackButton()
   const { user } = useAuth()
-  const { data, key } = useUserWishQuery(`${user?.id}`)
+  const { data, isLoading, key } = useUserWishQuery(`${user?.id}`)
 
   backButton.hide()
 
@@ -23,7 +24,15 @@ export const Home = () => {
         <div className="w-full h-[1px] bg-gray-400" />
 
         <div className="mt-2 gap-4">
-          {data?.map((wish) => <WishItem className="mb-4" key={wish.id} listKey={key} wish={wish} />)}
+          {isLoading ? (
+            <>
+              <Skeleton className="mb-4 rounded-lg" variant="rectangular" width="100%" height={118} />
+              <Skeleton className="mb-4 rounded-lg" variant="rectangular" width="100%" height={118} />
+              <Skeleton className="mb-4 rounded-lg" variant="rectangular" width="100%" height={118} />
+            </>
+          ) : (
+            <>{data?.map((wish) => <WishItem className="mb-4" key={wish.id} listKey={key} wish={wish} />)}</>
+          )}
         </div>
       </div>
     </DefaultLayout>
