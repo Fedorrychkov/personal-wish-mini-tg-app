@@ -1,12 +1,14 @@
 import Button from '@mui/material/Button'
-import { initPopup } from '@tma.js/sdk'
+import { useNavigate } from 'react-router-dom'
 
 import { API_URL } from '~/config'
 import { Wish } from '~/entities/wish'
-import { useUserWishDeleteMutation } from '~/query/wish/mutations'
+import { ROUTE } from '~/router'
 import { cn } from '~/utils'
 
 import { ImageLoader } from '../image'
+import { Avatar } from '../placeholder'
+import { useWishDelete } from './hooks'
 
 type Props = {
   wish: Wish
@@ -15,7 +17,7 @@ type Props = {
 }
 
 export const WishItem = (props: Props) => {
-  const popup = initPopup()
+  const navigate = useNavigate()
   const { wish, listKey, className } = props || {}
 
   const imageUrl =
@@ -23,56 +25,49 @@ export const WishItem = (props: Props) => {
       ? `${API_URL}${wish.imageUrl}`
       : wish.imageUrl
 
-  const deleteMutation = useUserWishDeleteMutation(wish.id, listKey)
+  const { handleDeletePopup, isLoading } = useWishDelete(wish, listKey || '')
 
-  const isLoading = deleteMutation?.isLoading
+  const handleWishOpen = (e: any) => {
+    e?.stopPropagation?.()
+    e?.preventDefault?.()
 
-  const handleDeleteWish = async () => {
-    deleteMutation.mutateAsync()
-  }
-
-  const handleDeletePopup = () => {
-    popup
-      .open({
-        title: 'Вы уверены, что хотите удалить желание?',
-        message:
-          'Удаление желания приведет к потере данных о нем, ваши друзья больше не смогу увидеть это желание в вашем списке',
-        buttons: [
-          { id: 'ok', type: 'default', text: 'Удалить' },
-          { id: 'cancel', type: 'destructive', text: 'Назад' },
-        ],
-      })
-      .then((buttonId) => {
-        if (!buttonId || buttonId === 'cancel') {
-          return
-        }
-
-        handleDeleteWish()
-      })
+    navigate(ROUTE.wish.replace(':id', wish.id))
   }
 
   return (
     <div className={cn('bg-slate-200 dark:bg-slate-600 p-2 rounded-lg', className)}>
       <div className="flex gap-4 items-center justify-start" key={wish.id}>
         <ImageLoader
-          defaultPlaceholder={null}
+          onClick={handleWishOpen}
+          defaultPlaceholder={<Avatar text={'Пусто'} className="min-w-[64px] w-[64px] h-[64px] rounded-lg" />}
           src={imageUrl || ''}
           className="min-w-[64px] w-[64px] h-[64px] object-cover rounded-lg"
-          alt={`Wish Img ${wish.name}`}
+          alt={`Wish Img ${wish.name || 'Название не установлено'}`}
         />
         <div className="overflow-hidden w-full">
-          <p className={cn('text-lg text-slate-900 dark:text-white truncate')}>{wish.name}</p>
-          <p className={cn('mt-1 text-xs text-slate-900 dark:text-white truncate-2-line')}>{wish.description}</p>
+          <p className={cn('text-lg text-slate-900 dark:text-white truncate')}>
+            {wish.name || 'Название не установлено'}
+          </p>
+          <p className={cn('mt-1 text-xs text-slate-900 dark:text-white truncate-2-line')}>
+            {wish.description || 'Описание не установлено'}
+          </p>
         </div>
       </div>
       <div className="gap-4 mt-2 flex justify-between">
-        <Button color="primary" size="small" variant="text" disabled>
+        <Button color="primary" type="button" size="small" variant="text" disabled>
           Забронировать
         </Button>
-        <Button color="primary" size="small" variant="text" disabled>
+        <Button color="primary" type="button" onClick={handleWishOpen} size="small" variant="text">
           Редактировать
         </Button>
-        <Button color="error" size="small" variant="text" onClick={handleDeletePopup} disabled={isLoading}>
+        <Button
+          color="error"
+          size="small"
+          type="button"
+          variant="text"
+          onClick={handleDeletePopup}
+          disabled={isLoading}
+        >
           Удалить
         </Button>
       </div>

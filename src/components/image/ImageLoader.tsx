@@ -8,13 +8,14 @@ type Props = React.ImgHTMLAttributes<HTMLImageElement> & {
   defaultPlaceholder?: ReactNode
   className?: string
   src?: string | null
+  isLoading?: boolean
 }
 
 export const ImageLoader = (props: Props) => {
-  const { className, defaultPlaceholder, src, ...rest } = props || {}
+  const { className, defaultPlaceholder, src, isLoading, onClick, ...rest } = props || {}
 
   const [isMediaLoading, setIsMediaLoading] = useState(true)
-  const [isMediaError, setMediaError] = useState(!src || false)
+  const [isMediaError, setMediaError] = useState(isLoading ? false : !src || false)
 
   const setMediaIsLoaded = () => setIsMediaLoading(false)
 
@@ -34,7 +35,7 @@ export const ImageLoader = (props: Props) => {
     /**
      * If the image is not empty and not loaded, try to get it by interval
      */
-    if (img && !img.complete && !isMediaLoading) {
+    if (img && !img.complete && !isMediaLoading && !isLoading) {
       timerId = setInterval(() => {
         const img = imgRef.current
 
@@ -46,13 +47,13 @@ export const ImageLoader = (props: Props) => {
     }
 
     return () => timerId && clearInterval(timerId)
-  }, [src, imgRef, isMediaLoading])
+  }, [src, imgRef, isMediaLoading, isLoading])
 
   const loadingMediaClassName = useMemo(() => {
-    if (isMediaLoading) return 'hidden'
+    if (isMediaLoading || isLoading) return 'hidden'
 
     return ''
-  }, [isMediaLoading])
+  }, [isMediaLoading, isLoading])
 
   if (isMediaError && defaultPlaceholder) {
     return <div className={cn('flex items-center justify-center', className)}>{defaultPlaceholder}</div>
@@ -60,20 +61,23 @@ export const ImageLoader = (props: Props) => {
 
   return (
     <>
-      {isMediaLoading && (
+      {(isMediaLoading || isLoading) && (
         <div className={cn('flex items-center justify-center', className)}>
           <Spinner />
         </div>
       )}
-      <img
-        src={src}
-        alt="Image"
-        {...rest}
-        className={cn(loadingMediaClassName, className)}
-        ref={imgRef}
-        onLoad={setMediaIsLoaded}
-        onError={() => setMediaError(true)}
-      />
+      {!isLoading && (
+        <img
+          src={src}
+          alt="Image"
+          {...rest}
+          className={cn(loadingMediaClassName, className, { 'cursor-pointer': !!onClick })}
+          ref={imgRef}
+          onLoad={setMediaIsLoaded}
+          onError={() => setMediaError(true)}
+          onClick={onClick}
+        />
+      )}
     </>
   )
 }
