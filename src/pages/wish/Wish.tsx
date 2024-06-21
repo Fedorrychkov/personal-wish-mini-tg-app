@@ -60,9 +60,14 @@ export const Wish = () => {
       ) : (
         <div className="px-4">
           <div className="py-4">
-            <h1 className="text-sm bold text-slate-700 dark:text-slate-400 mt-1">
-              {isOwner ? 'Мое желание' : 'Желание другого человека'}
-            </h1>
+            <div className="gap-4 mt-1 flex items-start">
+              <div className="text-sm bold text-slate-700 dark:text-slate-400">
+                {isOwner ? 'Мое желание' : 'Желание другого человека'}
+              </div>
+              {wish?.isBooked ? (
+                <div className="text-xs p-1 bg-gray-200 text-slate-700 dark:text-slate-400">забронировано</div>
+              ) : null}
+            </div>
             <h3 className="text-xl bold text-slate-900 dark:text-white mt-2">{wish?.name || 'Без названия'}</h3>
           </div>
           <div className="w-full h-[1px] bg-gray-400" />
