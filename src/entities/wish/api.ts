@@ -2,7 +2,7 @@ import { AxiosInstance } from 'axios'
 
 import { Request } from '~/services'
 
-import { Wish } from './wish.type'
+import { Wish, WishDto } from './wish.type'
 
 export class ClientWishApi {
   private readonly client: AxiosInstance
@@ -31,6 +31,12 @@ export class ClientWishApi {
 
   async bookToggle(id: string): Promise<Wish> {
     const response = await this.client.patch(`/v1/wish/book/${id}`)
+
+    return response.data
+  }
+
+  async update(id: string, body: WishDto): Promise<Wish> {
+    const response = await this.client.patch(`/v1/wish/${id}`, body)
 
     return response.data
   }

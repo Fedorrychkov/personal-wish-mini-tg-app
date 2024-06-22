@@ -18,3 +18,10 @@ export type Wish = {
   createdAt?: Timestamp | null
   updatedAt?: Timestamp | null
 }
+
+export type WishDto = {
+  name?: Wish['name']
+  description?: Wish['description']
+  link?: Wish['link']
+  imageUrl?: Wish['imageUrl']
+}
