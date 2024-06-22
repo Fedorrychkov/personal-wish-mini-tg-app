@@ -4,9 +4,11 @@ import { useNavigate, useParams } from 'react-router-dom'
 
 import { ImageLoader } from '~/components/image'
 import { useWishDelete } from '~/components/wish'
+import { getBookButtonState } from '~/components/wish/helpers'
+import { useWishBook } from '~/components/wish/hooks/useWishBook'
 import { DefaultLayout } from '~/layouts/default'
 import { useAuth } from '~/providers/auth'
-import { useUserWishItemQuery } from '~/query'
+import { useUserDataQuery, useUserWishItemQuery } from '~/query'
 import { ROUTE } from '~/router'
 
 export const Wish = () => {
@@ -14,7 +16,7 @@ export const Wish = () => {
   const navigate = useNavigate()
   const [backButton] = initBackButton()
   const { user } = useAuth()
-  const { data: wish, isLoading, isFetched } = useUserWishItemQuery(id || '', `${user?.id}`)
+  const { data: wish, isLoading, isFetched, key } = useUserWishItemQuery(id || '', `${user?.id}`)
 
   backButton.show()
 
@@ -26,7 +28,12 @@ export const Wish = () => {
     navigate(ROUTE.home, { replace: true })
   })
 
+  const { handleBookPopup, isLoading: isBookingLoading } = useWishBook(wish, key || '')
+
   const isOwner = user?.id === wish?.userId
+  const { data: wishUserOwner } = useUserDataQuery(wish?.userId || '', wish?.userId, !isOwner)
+
+  const { disabled: bookBtnDisabled, text: bookBtnText } = getBookButtonState(wish, user)
 
   return (
     <DefaultLayout className="!px-0">
@@ -60,12 +67,14 @@ export const Wish = () => {
       ) : (
         <div className="px-4">
           <div className="py-4">
-            <div className="gap-4 mt-1 flex items-start">
+            <div className="gap-4 mt-1 flex items-baseline">
               <div className="text-sm bold text-slate-700 dark:text-slate-400">
-                {isOwner ? 'Мое желание' : 'Желание другого человека'}
+                {isOwner ? 'Мое желание' : `Желание пользователя @${wishUserOwner?.username}`}
               </div>
               {wish?.isBooked ? (
-                <div className="text-xs p-1 bg-gray-200 text-slate-700 dark:text-slate-400">забронировано</div>
+                <div className="text-xs p-1 bg-gray-200 text-slate-700 dark:text-slate-400">
+                  {wish?.bookedUserId === user?.id ? 'забронировано вами' : 'забронировано'}
+                </div>
               ) : null}
             </div>
             <h3 className="text-xl bold text-slate-900 dark:text-white mt-2">{wish?.name || 'Без названия'}</h3>
@@ -89,6 +98,17 @@ export const Wish = () => {
                 Удалить
               </Button>
             ) : null}
+
+            <Button
+              color="primary"
+              type="button"
+              size="small"
+              variant="text"
+              onClick={handleBookPopup}
+              disabled={bookBtnDisabled || isBookingLoading}
+            >
+              {bookBtnText}
+            </Button>
           </div>
         </div>
       )}

@@ -6,6 +6,7 @@ import { useQueryBuilder } from '~/hooks'
 
 export const useUserDataQuery = (
   definedKey: string,
+  userId?: string,
   enabled = true,
   options?: Omit<UseQueryOptions<User, unknown, User, string>, 'queryKey' | 'queryFn'> | undefined,
 ) => {
@@ -16,7 +17,7 @@ export const useUserDataQuery = (
     enabled,
     method: async () => {
       const api = new ClientUserApi()
-      const response = await api.getUser()
+      const response = userId ? await api.getUser(userId) : await api.getCurrentUser()
 
       return response
     },

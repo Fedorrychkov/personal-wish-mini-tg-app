@@ -11,8 +11,14 @@ export class ClientUserApi {
     this.client = new Request().apiClient
   }
 
-  async getUser(): Promise<User> {
+  async getCurrentUser(): Promise<User> {
     const response = await this.client.get('/v1/user')
+
+    return response.data
+  }
+
+  async getUser(id: string): Promise<User> {
+    const response = await this.client.get(`/v1/user/${id}`)
 
     return response.data
   }

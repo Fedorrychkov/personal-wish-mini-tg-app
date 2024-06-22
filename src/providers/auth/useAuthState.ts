@@ -14,7 +14,7 @@ export const useAuthState = () => {
     data: userData,
     isLoading: isUserDataLoading,
     isFetched,
-  } = useUserDataQuery(launchParams?.initData?.user?.id?.toString() || '')
+  } = useUserDataQuery(launchParams?.initData?.user?.id?.toString() || '', undefined)
 
   const user: User | undefined = {
     id: '',

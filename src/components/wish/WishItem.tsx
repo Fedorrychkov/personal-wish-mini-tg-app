@@ -3,12 +3,15 @@ import { useNavigate } from 'react-router-dom'
 
 import { API_URL } from '~/config'
 import { Wish } from '~/entities/wish'
+import { useAuth } from '~/providers/auth'
 import { ROUTE } from '~/router'
 import { cn } from '~/utils'
 
 import { ImageLoader } from '../image'
 import { Avatar } from '../placeholder'
+import { getBookButtonState } from './helpers'
 import { useWishDelete } from './hooks'
+import { useWishBook } from './hooks/useWishBook'
 
 type Props = {
   wish: Wish
@@ -19,13 +22,15 @@ type Props = {
 export const WishItem = (props: Props) => {
   const navigate = useNavigate()
   const { wish, listKey, className } = props || {}
+  const { user } = useAuth()
 
   const imageUrl =
     wish.imageUrl?.includes('/v1/file') && !wish.imageUrl?.includes('http')
       ? `${API_URL}${wish.imageUrl}`
       : wish.imageUrl
 
-  const { handleDeletePopup, isLoading } = useWishDelete(wish, listKey || '')
+  const { handleDeletePopup, isLoading: isDeletionLoading } = useWishDelete(wish, listKey || '')
+  const { handleBookPopup, isLoading: isBookingLoading } = useWishBook(wish, listKey || '')
 
   const handleWishOpen = (e: any) => {
     e?.stopPropagation?.()
@@ -33,6 +38,8 @@ export const WishItem = (props: Props) => {
 
     navigate(ROUTE.wish.replace(':id', wish.id))
   }
+
+  const { disabled: bookBtnDisabled, text: bookBtnText } = getBookButtonState(wish, user)
 
   return (
     <div className={cn('bg-slate-200 dark:bg-slate-600 p-2 rounded-lg', className)}>
@@ -54,8 +61,15 @@ export const WishItem = (props: Props) => {
         </div>
       </div>
       <div className="gap-4 mt-2 flex justify-between">
-        <Button color="primary" type="button" size="small" variant="text" disabled>
-          Забронировать
+        <Button
+          color="primary"
+          type="button"
+          size="small"
+          variant="text"
+          onClick={handleBookPopup}
+          disabled={bookBtnDisabled || isBookingLoading}
+        >
+          {bookBtnText}
         </Button>
         <Button color="primary" type="button" onClick={handleWishOpen} size="small" variant="text">
           Редактировать
@@ -66,7 +80,7 @@ export const WishItem = (props: Props) => {
           type="button"
           variant="text"
           onClick={handleDeletePopup}
-          disabled={isLoading}
+          disabled={isDeletionLoading}
         >
           Удалить
         </Button>

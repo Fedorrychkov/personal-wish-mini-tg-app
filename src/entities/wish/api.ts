@@ -28,4 +28,10 @@ export class ClientWishApi {
 
     return response.data
   }
+
+  async bookToggle(id: string): Promise<Wish> {
+    const response = await this.client.patch(`/v1/wish/book/${id}`)
+
+    return response.data
+  }
 }

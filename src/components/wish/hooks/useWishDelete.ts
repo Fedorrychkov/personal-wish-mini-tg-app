@@ -1,7 +1,7 @@
 import { initPopup } from '@tma.js/sdk'
 
 import { Wish } from '~/entities/wish'
-import { useUserWishDeleteMutation } from '~/query/wish/mutations'
+import { useUserWishDeleteMutation } from '~/query/wish'
 
 export const useWishDelete = (wish?: Wish, listKey?: string, onSuccess?: () => void) => {
   const popup = initPopup()
