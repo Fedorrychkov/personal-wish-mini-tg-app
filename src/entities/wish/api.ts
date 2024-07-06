@@ -40,4 +40,10 @@ export class ClientWishApi {
 
     return response.data
   }
+
+  async create(body: WishDto): Promise<Wish> {
+    const response = await this.client.post('/v1/wish', body)
+
+    return response.data
+  }
 }

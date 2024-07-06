@@ -10,6 +10,7 @@ import { URL_REGEXP } from '~/utils'
 
 import { TextFieldContainer } from '../fields'
 import { useWishUpdate } from './hooks'
+import { useWishCreate } from './hooks/useWishCreate'
 
 type Props = {
   wish?: Wish
@@ -36,15 +37,25 @@ export const WishForm = ({ wish, definedKey, onCancel }: Props) => {
   const { handleSubmit, register, formState } = form
   const { errors } = formState
 
-  const { handleUpdatePopup, isLoading } = useWishUpdate(wish, definedKey, () => {
+  const { handleUpdatePopup, isLoading: isLoadingUpdare } = useWishUpdate(wish, definedKey, () => {
     onCancel?.()
   })
 
+  const { handleCreatePopup, isLoading: isLoadingCreate } = useWishCreate(definedKey, () => {
+    onCancel?.()
+  })
+
+  const isLoading = isLoadingUpdare || isLoadingCreate
+
   const onSubmit = useCallback(
     async (payload: WishDto) => {
-      handleUpdatePopup(payload)
+      if (wish) {
+        handleUpdatePopup(payload)
+      } else {
+        handleCreatePopup(payload)
+      }
     },
-    [handleUpdatePopup],
+    [handleUpdatePopup, handleCreatePopup, wish],
   )
 
   const nameField = useRegister({
@@ -69,10 +80,6 @@ export const WishForm = ({ wish, definedKey, onCancel }: Props) => {
 
   const linkField = useRegister({
     ...register('link', {
-      required: {
-        value: true,
-        message: 'Ссылка на желание обязательно',
-      },
       pattern: {
         value: URL_REGEXP,
         message: 'Неправильный url, пример: https://domain.com',
@@ -87,9 +94,11 @@ export const WishForm = ({ wish, definedKey, onCancel }: Props) => {
       <form className="p-4 pt-0" onSubmit={handleSubmit(onSubmit)}>
         <div className="py-4">
           <div className="gap-4 mt-1 flex items-baseline">
-            <div className="text-sm bold text-slate-700 dark:text-slate-400">
-              {isOwner ? 'Мое желание' : `Желание пользователя @${wishUserOwner?.username}`}
-            </div>
+            {wish && (
+              <div className="text-sm bold text-slate-700 dark:text-slate-400">
+                {isOwner ? 'Мое желание' : `Желание пользователя @${wishUserOwner?.username}`}
+              </div>
+            )}
             {wish?.isBooked ? (
               <div className="text-xs p-1 bg-gray-200 text-slate-700 dark:text-slate-400">
                 {wish?.bookedUserId === user?.id ? 'забронировано вами' : 'забронировано'}
@@ -138,7 +147,7 @@ export const WishForm = ({ wish, definedKey, onCancel }: Props) => {
         <div className="w-full h-[1px] bg-gray-400 my-2" />
         <div className="gap-4 mt-2 flex justify-between">
           <Button color="primary" size="small" type="submit" variant="text" disabled={isLoading}>
-            Сохранить
+            {wish ? 'Сохранить' : 'Создать'}
           </Button>
 
           <Button color="primary" type="button" size="small" variant="text" onClick={onCancel} disabled={isLoading}>
