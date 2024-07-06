@@ -11,8 +11,8 @@ export class ClientWishApi {
     this.client = new Request().apiClient
   }
 
-  async list(): Promise<Wish[]> {
-    const response = await this.client.get('/v1/wish')
+  async list(id?: string): Promise<Wish[]> {
+    const response = await this.client.get(`/v1/wish/list${id ? `/${id}` : ''}`)
 
     return response.data
   }

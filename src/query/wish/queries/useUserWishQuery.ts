@@ -4,18 +4,18 @@ import { ClientWishApi, Wish } from '~/entities/wish'
 import { useQueryBuilder } from '~/hooks'
 
 export const useUserWishQuery = (
-  definedKey: string,
+  id: string,
   enabled = true,
   options?: Omit<UseQueryOptions<Wish[], unknown, Wish[], string>, 'queryKey' | 'queryFn'> | undefined,
 ) => {
-  const key = `user-wish-list-${definedKey}`
+  const key = `user-wish-list-${id}`
 
   const props = useQueryBuilder({
     key,
     enabled,
     method: async () => {
       const api = new ClientWishApi()
-      const response = await api.list()
+      const response = await api.list(id)
 
       return response
     },

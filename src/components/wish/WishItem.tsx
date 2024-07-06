@@ -1,4 +1,5 @@
 import Button from '@mui/material/Button'
+import { initHapticFeedback } from '@tma.js/sdk'
 import { useNavigate } from 'react-router-dom'
 
 import { API_URL } from '~/config'
@@ -23,6 +24,9 @@ export const WishItem = (props: Props) => {
   const navigate = useNavigate()
   const { wish, listKey, className } = props || {}
   const { user } = useAuth()
+  const hapticFeedback = initHapticFeedback()
+
+  const isOwner = wish?.userId == user?.id
 
   const imageUrl =
     wish.imageUrl?.includes('/v1/file') && !wish.imageUrl?.includes('http')
@@ -35,6 +39,8 @@ export const WishItem = (props: Props) => {
   const handleWishOpen = (e: any) => {
     e?.stopPropagation?.()
     e?.preventDefault?.()
+
+    hapticFeedback.impactOccurred('medium')
 
     navigate(ROUTE.wish.replace(':id', wish.id))
   }
@@ -72,18 +78,20 @@ export const WishItem = (props: Props) => {
           {bookBtnText}
         </Button>
         <Button color="primary" type="button" onClick={handleWishOpen} size="small" variant="text">
-          Редактировать
+          {isOwner ? 'Редактировать' : 'Посмотреть'}
         </Button>
-        <Button
-          color="error"
-          size="small"
-          type="button"
-          variant="text"
-          onClick={handleDeletePopup}
-          disabled={isDeletionLoading}
-        >
-          Удалить
-        </Button>
+        {isOwner && (
+          <Button
+            color="error"
+            size="small"
+            type="button"
+            variant="text"
+            onClick={handleDeletePopup}
+            disabled={isDeletionLoading}
+          >
+            Удалить
+          </Button>
+        )}
       </div>
     </div>
   )

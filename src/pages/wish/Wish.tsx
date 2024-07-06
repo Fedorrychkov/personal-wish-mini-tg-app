@@ -1,6 +1,6 @@
 import { Button, Skeleton } from '@mui/material'
-import { initBackButton } from '@tma.js/sdk'
-import { useState } from 'react'
+import { initBackButton, initHapticFeedback } from '@tma.js/sdk'
+import { useCallback, useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
 import { ImageLoader } from '~/components/image'
@@ -16,17 +16,35 @@ export const Wish = () => {
   const { id } = useParams()
   const navigate = useNavigate()
   const [backButton] = initBackButton()
+  const hapticFeedback = initHapticFeedback()
   const { user } = useAuth()
   const [isEditable, setEditable] = useState(false)
   const { data: wish, isLoading, isFetched, key } = useUserWishItemQuery(id || '', `${user?.id}`)
 
   backButton.show()
 
-  backButton.on('click', () => {
+  const handleBack = useCallback(() => {
+    if (wish?.userId !== user?.id) {
+      navigate(ROUTE.userWishList?.replace(':id', wish?.userId || ''), { replace: true })
+
+      return
+    }
+
     navigate(ROUTE.home, { replace: true })
-  })
+
+    return
+  }, [navigate, wish, user])
+
+  useEffect(() => {
+    backButton.on('click', handleBack)
+
+    return () => {
+      backButton.off('click', handleBack)
+    }
+  }, [handleBack, backButton])
 
   const { handleDeletePopup, isLoading: isDeletionLoading } = useWishDelete(wish, '', () => {
+    hapticFeedback.impactOccurred('heavy')
     navigate(ROUTE.home, { replace: true })
   })
 
@@ -101,7 +119,10 @@ export const Wish = () => {
                       size="small"
                       type="button"
                       variant="text"
-                      onClick={() => setEditable(true)}
+                      onClick={() => {
+                        setEditable(true)
+                        hapticFeedback.impactOccurred('medium')
+                      }}
                       disabled={isLoading || isDeletionLoading || isBookingLoading}
                     >
                       Редактировать
