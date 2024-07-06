@@ -19,7 +19,10 @@ export const useAuthState = () => {
   const user: User | undefined = {
     id: '',
     ...userData,
-    avatarUrl: userData?.avatarUrl ? `${API_URL}${userData?.avatarUrl}` : undefined,
+    avatarUrl:
+      userData?.avatarUrl?.includes('/v1/file') && !userData?.avatarUrl?.includes('http')
+        ? `${API_URL}${userData?.avatarUrl}`
+        : userData?.avatarUrl,
   }
 
   const [isLoading, setLoading] = useState(initialState.isLoading)
