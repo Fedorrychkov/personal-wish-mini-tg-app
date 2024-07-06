@@ -16,7 +16,7 @@ export const Wish = () => {
   const { id } = useParams()
   const navigate = useNavigate()
   const [backButton] = initBackButton()
-  const hapticFeedback = initHapticFeedback()
+  const haptic = initHapticFeedback()
   const { user } = useAuth()
   const [isEditable, setEditable] = useState(false)
   const { data: wish, isLoading, isFetched, key } = useUserWishItemQuery(id || '', `${user?.id}`)
@@ -44,7 +44,6 @@ export const Wish = () => {
   }, [handleBack, backButton])
 
   const { handleDeletePopup, isLoading: isDeletionLoading } = useWishDelete(wish, '', () => {
-    hapticFeedback.impactOccurred('heavy')
     navigate(ROUTE.home, { replace: true })
   })
 
@@ -87,7 +86,14 @@ export const Wish = () => {
       ) : (
         <div className="px-4">
           {isEditable ? (
-            <WishForm wish={wish} definedKey={key} onCancel={() => setEditable(false)} />
+            <WishForm
+              wish={wish}
+              definedKey={key}
+              onCancel={() => {
+                setEditable(false)
+                haptic.impactOccurred('soft')
+              }}
+            />
           ) : (
             <div className="pb-4 pt-0">
               <div className="py-4">
@@ -121,7 +127,7 @@ export const Wish = () => {
                       variant="text"
                       onClick={() => {
                         setEditable(true)
-                        hapticFeedback.impactOccurred('medium')
+                        haptic.impactOccurred('medium')
                       }}
                       disabled={isLoading || isDeletionLoading || isBookingLoading}
                     >

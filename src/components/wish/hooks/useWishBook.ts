@@ -1,4 +1,4 @@
-import { initPopup } from '@tma.js/sdk'
+import { initHapticFeedback, initPopup } from '@tma.js/sdk'
 
 import { Wish } from '~/entities/wish'
 import { useAuth } from '~/providers/auth'
@@ -7,6 +7,7 @@ import { useUserWishBookMutation } from '~/query/wish'
 
 export const useWishBook = (wish?: Wish, listKey?: string, onSuccess?: () => void) => {
   const popup = initPopup()
+  const haptic = initHapticFeedback()
   const { user } = useAuth()
   const isOwner = user?.id === wish?.userId
 
@@ -17,8 +18,13 @@ export const useWishBook = (wish?: Wish, listKey?: string, onSuccess?: () => voi
   const isLoading = bookMutation?.isLoading
 
   const handleBookWish = async () => {
-    await bookMutation.mutateAsync()
-    onSuccess?.()
+    try {
+      await bookMutation.mutateAsync()
+      haptic.notificationOccurred('success')
+      onSuccess?.()
+    } catch (error) {
+      haptic.notificationOccurred('error')
+    }
   }
 
   const getPopupMessages = () => {

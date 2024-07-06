@@ -3,11 +3,11 @@ import { initBackButton, initHapticFeedback } from '@tma.js/sdk'
 import { DefaultLayout } from '~/layouts/default'
 
 export const Unavailable = () => {
-  const hapticFeedback = initHapticFeedback()
+  const haptic = initHapticFeedback()
   const [backButton] = initBackButton()
   backButton.hide()
 
-  hapticFeedback.impactOccurred('heavy')
+  haptic.impactOccurred('heavy')
 
   return (
     <DefaultLayout>

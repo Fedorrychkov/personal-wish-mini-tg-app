@@ -1,18 +1,24 @@
-import { initPopup } from '@tma.js/sdk'
+import { initHapticFeedback, initPopup } from '@tma.js/sdk'
 
 import { Wish } from '~/entities/wish'
 import { useUserWishDeleteMutation } from '~/query/wish'
 
 export const useWishDelete = (wish?: Wish, listKey?: string, onSuccess?: () => void) => {
   const popup = initPopup()
+  const haptic = initHapticFeedback()
 
   const deleteMutation = useUserWishDeleteMutation(wish?.id || '', listKey)
 
   const isLoading = deleteMutation?.isLoading
 
   const handleDeleteWish = async () => {
-    await deleteMutation.mutateAsync()
-    onSuccess?.()
+    try {
+      await deleteMutation.mutateAsync()
+      haptic.impactOccurred('medium')
+      onSuccess?.()
+    } catch (error) {
+      haptic.impactOccurred('heavy')
+    }
   }
 
   const handleDeletePopup = () => {

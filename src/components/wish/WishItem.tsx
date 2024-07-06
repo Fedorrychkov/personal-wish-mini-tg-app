@@ -24,7 +24,7 @@ export const WishItem = (props: Props) => {
   const navigate = useNavigate()
   const { wish, listKey, className } = props || {}
   const { user } = useAuth()
-  const hapticFeedback = initHapticFeedback()
+  const haptic = initHapticFeedback()
 
   const isOwner = wish?.userId == user?.id
 
@@ -40,7 +40,7 @@ export const WishItem = (props: Props) => {
     e?.stopPropagation?.()
     e?.preventDefault?.()
 
-    hapticFeedback.impactOccurred('medium')
+    haptic.impactOccurred('medium')
 
     navigate(ROUTE.wish.replace(':id', wish.id))
   }

@@ -1,4 +1,4 @@
-import { initPopup } from '@tma.js/sdk'
+import { initHapticFeedback, initPopup } from '@tma.js/sdk'
 
 import { Wish, WishDto } from '~/entities/wish'
 import { useUserWishUpdateMutation } from '~/query/wish'
@@ -6,12 +6,18 @@ import { useUserWishUpdateMutation } from '~/query/wish'
 export const useWishUpdate = (wish?: Wish, listKey?: string, onSuccess?: () => void) => {
   const popup = initPopup()
   const updateMutation = useUserWishUpdateMutation(wish?.id || '', listKey)
+  const haptic = initHapticFeedback()
 
   const isLoading = updateMutation?.isLoading
 
   const handleUpdateWish = async (body: WishDto) => {
-    await updateMutation.mutateAsync(body)
-    onSuccess?.()
+    try {
+      await updateMutation.mutateAsync(body)
+      haptic.impactOccurred('medium')
+      onSuccess?.()
+    } catch (error) {
+      haptic.impactOccurred('heavy')
+    }
   }
 
   const handleUpdatePopup = (body: WishDto) => {
