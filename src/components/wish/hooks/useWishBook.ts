@@ -20,10 +20,10 @@ export const useWishBook = (wish?: Wish, listKey?: string, onSuccess?: () => voi
   const handleBookWish = async () => {
     try {
       await bookMutation.mutateAsync()
-      haptic.notificationOccurred('success')
+      haptic.impactOccurred('medium')
       onSuccess?.()
     } catch (error) {
-      haptic.notificationOccurred('error')
+      haptic.impactOccurred('heavy')
     }
   }
 
