@@ -4,4 +4,5 @@ export type AuthType = {
   user?: User
   isLoading: boolean
   isAuthenticated: boolean
+  currentUserKey?: string
 }

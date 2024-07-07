@@ -22,6 +22,12 @@ export const ImageLoader = (props: Props) => {
   const imgRef = useRef<HTMLImageElement>(null)
 
   useEffect(() => {
+    if (src) {
+      setMediaError(false)
+    }
+  }, [src])
+
+  useEffect(() => {
     const img = imgRef.current
 
     /*
@@ -66,7 +72,7 @@ export const ImageLoader = (props: Props) => {
           <Spinner />
         </div>
       )}
-      {!isLoading && (
+      {!isLoading && src && (
         <img
           src={src}
           alt="Image"

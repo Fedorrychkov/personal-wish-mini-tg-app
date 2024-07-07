@@ -1,4 +1,4 @@
-import { Button, Skeleton } from '@mui/material'
+import { Alert, Button, Skeleton } from '@mui/material'
 import { initBackButton, initHapticFeedback } from '@tma.js/sdk'
 import { useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -45,7 +45,24 @@ export const Home = () => {
               <Skeleton className="mb-4 rounded-lg" variant="rectangular" width="100%" height={118} />
             </>
           ) : (
-            <>{data?.map((wish) => <WishItem className="mb-4" key={wish.id} listKey={key} wish={wish} />)}</>
+            <>
+              {data?.length ? (
+                data?.map((wish) => <WishItem className="mb-4" key={wish.id} listKey={key} wish={wish} />)
+              ) : (
+                <div>
+                  <Alert
+                    severity="info"
+                    action={
+                      <Button color="primary" type="button" onClick={handleAddWish} size="small" variant="text">
+                        Добавить
+                      </Button>
+                    }
+                  >
+                    Вы еще не добавили ни одного желания, давайте создадим?
+                  </Alert>
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>

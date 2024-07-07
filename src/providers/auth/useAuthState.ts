@@ -14,6 +14,7 @@ export const useAuthState = () => {
     data: userData,
     isLoading: isUserDataLoading,
     isFetched,
+    key: currentUserKey,
   } = useUserDataQuery(launchParams?.initData?.user?.id?.toString() || '', undefined)
 
   const user: User | undefined = {
@@ -39,5 +40,6 @@ export const useAuthState = () => {
     isLoading: isFinalLoading,
     isAuthenticated,
     user,
+    currentUserKey,
   }
 }
