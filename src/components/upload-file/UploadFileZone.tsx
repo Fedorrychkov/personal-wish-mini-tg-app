@@ -74,7 +74,7 @@ export const UploadFileZone = (props: UploadFileProps) => {
     <section
       data-testid={dataTestid}
       className={cn(
-        'bg-overlaySecondary border-foregroundQuaternary flex rounded-lg',
+        'flex rounded-lg',
         {
           'cursor-no-drop': !isUploadEnabled,
           'cursor-pointer': isUploadEnabled,
@@ -84,10 +84,10 @@ export const UploadFileZone = (props: UploadFileProps) => {
       {...getRootProps()}
     >
       <input {...getInputProps()} />
-      <div className={cn('flex justify-center flex-col')}>
-        <div className={cn('flex')}>
+      <div className={cn('flex justify-center flex-col w-full')}>
+        <div className={cn('flex w-full')}>
           <div
-            className={cn('text-foregroundTertiary font-golos', {
+            className={cn('w-full', {
               '!text-red': hasError || isError,
             })}
           >

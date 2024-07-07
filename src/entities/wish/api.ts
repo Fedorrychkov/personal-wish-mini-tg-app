@@ -46,4 +46,16 @@ export class ClientWishApi {
 
     return response.data
   }
+
+  async uploadImage(id: string, payload: FormData): Promise<Wish> {
+    const response = await this.client.post(`/v1/wish/${id}/image`, payload)
+
+    return response.data
+  }
+
+  async removeImage(id: string): Promise<void> {
+    const response = await this.client.delete(`/v1/wish/${id}/image`)
+
+    return response.data
+  }
 }

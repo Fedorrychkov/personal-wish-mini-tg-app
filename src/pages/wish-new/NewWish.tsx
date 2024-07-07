@@ -1,15 +1,15 @@
 import { initBackButton } from '@tma.js/sdk'
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import { ImageLoader } from '~/components/image'
-import { WishForm } from '~/components/wish'
+import { WishForm, WishImageContainer } from '~/components/wish'
 import { DefaultLayout } from '~/layouts/default'
 import { ROUTE } from '~/router'
 
 export const NewWish = () => {
   const navigate = useNavigate()
   const [backButton] = initBackButton()
+  const [wishImage, setWishImage] = useState<File | undefined>()
 
   backButton.show()
 
@@ -35,18 +35,9 @@ export const NewWish = () => {
 
   return (
     <DefaultLayout className="!px-0">
-      <ImageLoader
-        defaultPlaceholder={
-          <div className="bg-gray-200 dark:bg-slate-400 w-full w-full h-[200px] flex items-center justify-center">
-            <p>Изображение не установлено</p>
-          </div>
-        }
-        src={''}
-        className="bg-gray-200 dark:bg-slate-400 object-contain w-full w-full h-[200px]"
-        alt={`Wish Image of ${'Без названия'}`}
-      />
+      <WishImageContainer isEditable onSaveImage={setWishImage} />
 
-      <WishForm onCancel={handleOpenHome} />
+      <WishForm wishImage={wishImage} onCancel={handleOpenHome} />
     </DefaultLayout>
   )
 }

@@ -5,7 +5,7 @@ import { FormProvider, useForm } from 'react-hook-form'
 import { Wish, WishDto } from '~/entities/wish'
 import { useRegister } from '~/hooks'
 import { useAuth } from '~/providers/auth'
-import { useUserDataQuery } from '~/query'
+import { useUserDataQuery, useUserWishImageMutation } from '~/query'
 import { URL_REGEXP } from '~/utils'
 
 import { TextFieldContainer } from '../fields'
@@ -15,13 +15,17 @@ import { useWishCreate } from './hooks/useWishCreate'
 type Props = {
   wish?: Wish
   definedKey?: string
+  wishImage?: File
   onCancel?: () => void
 }
 
-export const WishForm = ({ wish, definedKey, onCancel }: Props) => {
+export const WishForm = ({ wish, definedKey, wishImage, onCancel }: Props) => {
   const { user } = useAuth()
   const isOwner = user?.id === wish?.userId
   const { data: wishUserOwner } = useUserDataQuery(wish?.userId || '', wish?.userId, !isOwner)
+  const { upload, remove } = useUserWishImageMutation(definedKey)
+
+  const isLoadingImage = upload.isLoading || remove.isLoading
 
   const form = useForm<WishDto>({
     mode: 'onChange',
@@ -37,15 +41,35 @@ export const WishForm = ({ wish, definedKey, onCancel }: Props) => {
   const { handleSubmit, register, formState } = form
   const { errors } = formState
 
-  const { handleUpdatePopup, isLoading: isLoadingUpdare } = useWishUpdate(wish, definedKey, () => {
-    onCancel?.()
+  const { handleUpdatePopup, isLoading: isLoadingUpdare } = useWishUpdate(wish, definedKey, async (wish) => {
+    try {
+      if (wish?.imageUrl && !wishImage) {
+        await remove?.mutateAsync(wish?.id || '')
+      }
+
+      if (wishImage) {
+        await upload?.mutateAsync({ id: wish.id, file: wishImage })
+      }
+
+      onCancel?.()
+    } catch (error) {
+      console.error(error)
+    }
   })
 
-  const { handleCreatePopup, isLoading: isLoadingCreate } = useWishCreate(definedKey, () => {
-    onCancel?.()
+  const { handleCreatePopup, isLoading: isLoadingCreate } = useWishCreate(definedKey, async (wish) => {
+    try {
+      if (wishImage) {
+        await upload?.mutateAsync({ id: wish.id, file: wishImage })
+      }
+
+      onCancel?.()
+    } catch (error) {
+      console.error(error)
+    }
   })
 
-  const isLoading = isLoadingUpdare || isLoadingCreate
+  const isLoading = isLoadingUpdare || isLoadingCreate || isLoadingImage
 
   const onSubmit = useCallback(
     async (payload: WishDto) => {
@@ -91,6 +115,12 @@ export const WishForm = ({ wish, definedKey, onCancel }: Props) => {
 
   return (
     <FormProvider {...form}>
+      <div className="py-4">
+        <Alert severity="warning">
+          Для установки/редактирования изображения нажмите на иконку карандаша. <br /> Чтобы сохранить изменения по
+          изображению нажмите на зеленую галочку
+        </Alert>
+      </div>
       <form className="p-4 pt-0" onSubmit={handleSubmit(onSubmit)}>
         <div className="py-4">
           <div className="gap-4 mt-1 flex items-baseline">
@@ -136,11 +166,6 @@ export const WishForm = ({ wish, definedKey, onCancel }: Props) => {
               type="textarea"
               label="Описание желания"
             />
-          </div>
-          <div>
-            <Alert severity="warning">
-              К сожалению, сылку на изображение пока можно отредактировать только в самом боте
-            </Alert>
           </div>
         </div>
 

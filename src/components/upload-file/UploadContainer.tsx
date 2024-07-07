@@ -96,6 +96,13 @@ export const UploadContainer = (props: Props) => {
     }
   }, [onSave, draftImage])
 
+  useEffect(() => {
+    if (!enabled) {
+      handleReject()
+      setEditable(false)
+    }
+  }, [enabled, handleReject])
+
   return (
     <div className="relative">
       {isEditable ? (
@@ -108,16 +115,13 @@ export const UploadContainer = (props: Props) => {
             hasError={isError}
             showNotify
           />
-          <div className="absolute right-0 top-0 ">
+          <div className={cn('flex absolute right-0 top-0 gap-2', editProps?.className)}>
             {isEditedSrc && (
               <>
                 <button
                   type="button"
                   disabled={isLoading}
-                  className={cn(
-                    'border-none bg-slate-200 dark:bg-slate-600 rounded-xl w-[24px] h-[24px] hover:opacity-[0.8]',
-                    editProps?.className,
-                  )}
+                  className="border-none bg-slate-200 dark:bg-slate-600 rounded-xl w-[24px] h-[24px] hover:opacity-[0.8]"
                   title="Отменить новое изображение"
                   onClick={handleReject}
                 >
@@ -126,10 +130,7 @@ export const UploadContainer = (props: Props) => {
                 <button
                   type="button"
                   disabled={isLoading}
-                  className={cn(
-                    'border-none bg-slate-200 dark:bg-slate-600 rounded-xl w-[24px] h-[24px] hover:opacity-[0.8]',
-                    editProps?.className,
-                  )}
+                  className="'border-none bg-slate-200 dark:bg-slate-600 rounded-xl w-[24px] h-[24px] hover:opacity-[0.8]"
                   title="Сохранить новое иозображение"
                   onClick={handleSaveEdited}
                 >
@@ -141,10 +142,7 @@ export const UploadContainer = (props: Props) => {
               <button
                 type="button"
                 disabled={isLoading}
-                className={cn(
-                  'border-none bg-slate-200 dark:bg-slate-600 rounded-xl w-[24px] h-[24px] hover:opacity-[0.8]',
-                  editProps?.className,
-                )}
+                className="border-none bg-slate-200 dark:bg-slate-600 rounded-xl w-[24px] h-[24px] hover:opacity-[0.8]"
                 title="Удалить текущее изображение"
                 onClick={handleRemove}
               >
@@ -154,10 +152,7 @@ export const UploadContainer = (props: Props) => {
             <button
               type="button"
               disabled={isLoading}
-              className={cn(
-                'border-none bg-slate-200 dark:bg-slate-600 rounded-xl w-[24px] h-[24px] hover:opacity-[0.8]',
-                editProps?.className,
-              )}
+              className="border-none bg-slate-200 dark:bg-slate-600 rounded-xl w-[24px] h-[24px] hover:opacity-[0.8]"
               title="Отменить редактирование"
               onClick={handleSwitchEditableMode}
             >

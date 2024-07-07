@@ -24,6 +24,8 @@ export const ImageLoader = (props: Props) => {
   useEffect(() => {
     if (src) {
       setMediaError(false)
+    } else {
+      setMediaError(true)
     }
   }, [src])
 

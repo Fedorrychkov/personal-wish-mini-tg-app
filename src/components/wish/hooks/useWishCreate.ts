@@ -1,9 +1,9 @@
 import { initHapticFeedback, initPopup } from '@tma.js/sdk'
 
-import { WishDto } from '~/entities/wish'
+import { Wish, WishDto } from '~/entities/wish'
 import { useUserWishCreateMutation } from '~/query/wish'
 
-export const useWishCreate = (listKey?: string, onSuccess?: () => void) => {
+export const useWishCreate = (listKey?: string, onSuccess?: (wish: Wish) => void) => {
   const popup = initPopup()
   const createMutation = useUserWishCreateMutation(listKey)
   const haptic = initHapticFeedback()
@@ -12,9 +12,9 @@ export const useWishCreate = (listKey?: string, onSuccess?: () => void) => {
 
   const handleCreateWish = async (body: WishDto) => {
     try {
-      await createMutation.mutateAsync(body)
+      const wish = await createMutation.mutateAsync(body)
       haptic.impactOccurred('medium')
-      onSuccess?.()
+      onSuccess?.(wish)
     } catch (error) {
       haptic.impactOccurred('heavy')
     }

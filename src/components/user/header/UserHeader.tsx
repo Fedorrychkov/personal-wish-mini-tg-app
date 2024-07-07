@@ -78,7 +78,9 @@ export const UserHeader = ({ className, user: definedUser, isLoading }: Props) =
               />
               <UploadEmoji className="text-3xl absolute" />
             </div>
-            <p className="max-w-[320px]">Загрузите одно изображение в формате (jpeg/png/webp) не больше 1mb</p>
+            <p className="max-w-[320px] text-slate-900 dark:text-white">
+              Загрузите одно изображение в формате (jpeg/png/webp) не больше 1mb
+            </p>
           </div>
         }
       >
