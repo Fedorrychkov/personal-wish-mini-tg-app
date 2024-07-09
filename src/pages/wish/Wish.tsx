@@ -147,6 +147,7 @@ export const Wish = () => {
                         variant="text"
                         onClick={() => {
                           setEditable(true)
+                          window?.scrollTo?.(0, 0)
                           haptic.impactOccurred('medium')
                         }}
                         disabled={isLoading || isDeletionLoading || isBookingLoading}

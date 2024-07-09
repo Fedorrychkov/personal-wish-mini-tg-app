@@ -1,4 +1,4 @@
-import { createBrowserRouter } from 'react-router-dom'
+import { createBrowserRouter, createRoutesFromElements, Outlet, Route, ScrollRestoration } from 'react-router-dom'
 
 import { PrivateRoute } from '~/components/guard'
 import { Home } from '~/pages/home'
@@ -9,41 +9,50 @@ import { NewWish } from '~/pages/wish-new'
 
 import { ROUTE } from './constants'
 
-export const router = createBrowserRouter([
-  {
-    path: ROUTE.home,
-    element: (
-      <PrivateRoute>
-        <Home />
-      </PrivateRoute>
-    ),
-  },
-  {
-    path: ROUTE.userWishList,
-    element: (
-      <PrivateRoute>
-        <UserWishList />
-      </PrivateRoute>
-    ),
-  },
-  {
-    path: ROUTE.wishNew,
-    element: (
-      <PrivateRoute>
-        <NewWish />
-      </PrivateRoute>
-    ),
-  },
-  {
-    path: ROUTE.wish,
-    element: (
-      <PrivateRoute>
-        <Wish />
-      </PrivateRoute>
-    ),
-  },
-  {
-    path: ROUTE.unavailable,
-    element: <Unavailable />,
-  },
-])
+export const router = createBrowserRouter(
+  createRoutesFromElements(
+    <Route
+      path="/"
+      element={
+        <>
+          <ScrollRestoration />
+          <Outlet />
+        </>
+      }
+    >
+      <Route
+        path={ROUTE.home}
+        element={
+          <PrivateRoute>
+            <Home />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path={ROUTE.userWishList}
+        element={
+          <PrivateRoute>
+            <UserWishList />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path={ROUTE.wishNew}
+        element={
+          <PrivateRoute>
+            <NewWish />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path={ROUTE.wish}
+        element={
+          <PrivateRoute>
+            <Wish />
+          </PrivateRoute>
+        }
+      />
+      <Route path={ROUTE.unavailable} element={<Unavailable />} />
+    </Route>,
+  ),
+)
