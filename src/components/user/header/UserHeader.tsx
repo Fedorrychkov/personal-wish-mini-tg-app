@@ -6,7 +6,7 @@ import { ImageLoader } from '~/components/image'
 import { Avatar } from '~/components/placeholder'
 import { UploadContainer } from '~/components/upload-file'
 import { User } from '~/entities'
-import { useAuth } from '~/providers'
+import { useAuth, useNotifyContext } from '~/providers'
 import { useUserAvatarMutation } from '~/query'
 import { cn } from '~/utils'
 
@@ -19,6 +19,7 @@ type Props = {
 export const UserHeader = ({ className, user: definedUser, isLoading }: Props) => {
   const { user, currentUserKey } = useAuth()
   const { upload, remove } = useUserAvatarMutation(currentUserKey)
+  const { setNotify } = useNotifyContext()
 
   const finalUser = definedUser || user
 
@@ -50,11 +51,21 @@ export const UserHeader = ({ className, user: definedUser, isLoading }: Props) =
         return
       }
 
-      await upload?.mutateAsync(file)
+      try {
+        await upload?.mutateAsync(file)
+        setNotify('Изображение успешно установлено', { severity: 'success' })
+      } catch (error) {
+        setNotify('Произошла ошибка сохранения изображения, попробуйте еще раз или выберите другое изображение', {
+          severity: 'error',
+        })
+        console.error(error)
+
+        throw error
+      }
 
       return
     },
-    [upload, remove],
+    [upload, remove, setNotify],
   )
 
   return (

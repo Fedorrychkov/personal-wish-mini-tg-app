@@ -5,6 +5,7 @@ import { FormProvider, useForm } from 'react-hook-form'
 import { Category } from '~/entities'
 import { Wish, WishDto } from '~/entities/wish'
 import { useRegister } from '~/hooks'
+import { useNotifyContext } from '~/providers'
 import { useAuth } from '~/providers/auth'
 import {
   useUserCategoryCreateMutation,
@@ -31,6 +32,7 @@ type Props = {
 export const WishForm = (props: Props) => {
   const { wish, definedKey, wishImage, isImageDeleted, onCancel } = props
   const { user } = useAuth()
+  const { setNotify } = useNotifyContext()
   const isOwner = user?.id === wish?.userId
   const { data: wishUserOwner } = useUserDataQuery(wish?.userId || '', wish?.userId, !isOwner)
   const { upload, remove } = useUserWishImageMutation(definedKey)
@@ -79,7 +81,18 @@ export const WishForm = (props: Props) => {
       }
 
       if (wishImage) {
-        await upload?.mutateAsync({ id: wish.id, file: wishImage })
+        try {
+          await upload?.mutateAsync({ id: wish.id, file: wishImage })
+          onCancel?.()
+          setNotify('Изображение успешно установлено', { severity: 'success' })
+        } catch (error) {
+          setNotify('Произошла ошибка сохранения изображения, попробуйте еще раз или выберите другое изображение', {
+            severity: 'error',
+          })
+          console.error(error)
+        }
+
+        return
       }
 
       onCancel?.()
@@ -91,10 +104,20 @@ export const WishForm = (props: Props) => {
   const { handleCreatePopup, isLoading: isLoadingCreate } = useWishCreate(definedKey, async (wish) => {
     try {
       if (wishImage) {
-        await upload?.mutateAsync({ id: wish.id, file: wishImage })
-      }
+        try {
+          await upload?.mutateAsync({ id: wish.id, file: wishImage })
+          onCancel?.()
 
-      onCancel?.()
+          setNotify('Изображение успешно установлено', { severity: 'success' })
+        } catch (error) {
+          setNotify('Произошла ошибка сохранения изображения, попробуйте еще раз или выберите другое изображение', {
+            severity: 'error',
+          })
+          console.error(error)
+        }
+
+        return
+      }
     } catch (error) {
       console.error(error)
     }
