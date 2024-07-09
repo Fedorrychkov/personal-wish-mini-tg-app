@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom'
 import { UserHeader } from '~/components/user'
 import { WishItem } from '~/components/wish'
 import { DefaultLayout } from '~/layouts/default'
-import { useAuth } from '~/providers/auth'
+import { useAuth } from '~/providers'
 import { useUserWishQuery } from '~/query'
 import { ROUTE } from '~/router'
 

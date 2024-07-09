@@ -2,7 +2,7 @@ import React, { ReactNode } from 'react'
 import { Navigate, useLocation } from 'react-router-dom'
 
 import { FullPageLoading } from '~/components/loaders'
-import { useAuth } from '~/providers/auth'
+import { useAuth } from '~/providers'
 import { ROUTE } from '~/router'
 
 type PrivateRouteProps = {

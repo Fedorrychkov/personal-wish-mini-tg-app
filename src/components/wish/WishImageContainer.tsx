@@ -34,6 +34,7 @@ export const WishImageContainer = (props: Props) => {
       onRevert={() => setImageSrc(wish?.imageUrl)}
       onSave={handleSaveWishImage}
       isDeletable={!!imageSrc}
+      isLoading={isLoading}
       editProps={{
         className: 'm-2',
       }}
@@ -54,7 +55,7 @@ export const WishImageContainer = (props: Props) => {
           </div>
           <div className="flex gap-2 items-center max-w-[360px] absolute bg-gray-200 dark:bg-slate-400 p-2 rounded-lg">
             <UploadEmoji className="text-3xl" />
-            <p>Загрузите одно изображение в формате (jpeg/png/webp) не больше 1mb</p>
+            <p>Загрузите одно изображение в формате (jpeg/png/webp/heic) не больше 1mb</p>
           </div>
         </div>
       }

@@ -6,7 +6,7 @@ import { ImageLoader } from '~/components/image'
 import { Avatar } from '~/components/placeholder'
 import { UploadContainer } from '~/components/upload-file'
 import { User } from '~/entities'
-import { useAuth } from '~/providers/auth'
+import { useAuth } from '~/providers'
 import { useUserAvatarMutation } from '~/query'
 import { cn } from '~/utils'
 
@@ -23,6 +23,7 @@ export const UserHeader = ({ className, user: definedUser, isLoading }: Props) =
   const finalUser = definedUser || user
 
   const isOwner = !definedUser
+  const isLoadingState = upload.isLoading || remove.isLoading || isLoading
 
   const [avatarSrc, setAvatarSrc] = useState<string | undefined | null>(finalUser?.avatarUrl)
 
@@ -64,6 +65,7 @@ export const UserHeader = ({ className, user: definedUser, isLoading }: Props) =
         onRevert={() => setAvatarSrc(finalUser?.avatarUrl)}
         onSave={handleSaveAvatarImage}
         isDeletable={!!avatarSrc}
+        isLoading={isLoadingState}
         uploadLabel={
           <div className="h-[80px] flex justify-center items-center px-4 gap-4 relative">
             <div className="flex items-center justify-center bg-slate-500 w-[80px] min-w-[80px] h-[80px] rounded-[50%] hover:bg-slate-800">
@@ -79,7 +81,7 @@ export const UserHeader = ({ className, user: definedUser, isLoading }: Props) =
               <UploadEmoji className="text-3xl absolute" />
             </div>
             <p className="max-w-[320px] text-slate-900 dark:text-white">
-              Загрузите одно изображение в формате (jpeg/png/webp) не больше 1mb
+              Загрузите одно изображение в формате (jpeg/png/webp/heic) не больше 1mb
             </p>
           </div>
         }

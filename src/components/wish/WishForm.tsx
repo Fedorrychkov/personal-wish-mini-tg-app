@@ -4,7 +4,7 @@ import { FormProvider, useForm } from 'react-hook-form'
 
 import { Wish, WishDto } from '~/entities/wish'
 import { useRegister } from '~/hooks'
-import { useAuth } from '~/providers/auth'
+import { useAuth } from '~/providers'
 import { useUserDataQuery, useUserWishImageMutation } from '~/query'
 import { URL_REGEXP } from '~/utils'
 

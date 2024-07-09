@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 
 import { API_URL } from '~/config'
 import { Wish } from '~/entities/wish'
-import { useAuth } from '~/providers/auth'
+import { useAuth } from '~/providers'
 import { ROUTE } from '~/router'
 import { cn } from '~/utils'
 

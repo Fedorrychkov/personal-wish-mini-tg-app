@@ -7,7 +7,7 @@ import { useWishDelete, WishForm, WishImageContainer } from '~/components/wish'
 import { getBookButtonState } from '~/components/wish/helpers'
 import { useWishBook } from '~/components/wish/hooks/useWishBook'
 import { DefaultLayout } from '~/layouts/default'
-import { useAuth } from '~/providers/auth'
+import { useAuth } from '~/providers'
 import { useUserDataQuery, useUserWishItemQuery } from '~/query'
 import { ROUTE } from '~/router'
 

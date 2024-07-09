@@ -3,7 +3,8 @@ import { ReactNode, useCallback, useEffect, useState } from 'react'
 import { CloseEmoji, DeleteEmoji, EditEmoji, RevertEmoji, SaveEmoji } from '~/assets'
 import { cn } from '~/utils'
 
-import { IMG_MAX_1MB_SIZE_IN_BYTE } from './constants'
+import { Spinner } from '../loaders'
+import { IMG_MAX_20MB_SIZE_IN_BYTE } from './constants'
 import { FileUploadReqeust } from './types'
 import { UploadFileZone } from './UploadFileZone'
 
@@ -38,6 +39,8 @@ export const UploadContainer = (props: Props) => {
   const [draftDataSrc, setDraftDataSrc] = useState<string | undefined>()
   const [isRemoved, setRemoved] = useState(false)
   const [isError, setError] = useState(false)
+  const [isLoadingDropzone, setLoadingDropzone] = useState(false)
+  const isLoadingState = isLoadingDropzone || isLoading
 
   const isEditedSrc = !!draftDataSrc || isRemoved
 
@@ -46,11 +49,10 @@ export const UploadContainer = (props: Props) => {
 
     if (draftImage) {
       reader.onload = function () {
-        setDraftDataSrc((reader?.result as string) || '')
-        onUpdateImageSrc?.((reader?.result as string) || '')
-        // setValue('logoUrl', null)
+        const result = reader.result as string
+        setDraftDataSrc(result || '')
+        onUpdateImageSrc?.(result || '')
       }
-
       reader.readAsDataURL(draftImage)
     }
   }, [draftImage, onUpdateImageSrc])
@@ -108,56 +110,63 @@ export const UploadContainer = (props: Props) => {
       {isEditable ? (
         <div>
           <UploadFileZone
-            maxSize={IMG_MAX_1MB_SIZE_IN_BYTE}
+            maxSize={IMG_MAX_20MB_SIZE_IN_BYTE}
             label={uploadLabel}
             onUpload={handleUpload}
             className="hover:opacity-[0.8]"
             hasError={isError}
             showNotify
+            onLoading={setLoadingDropzone}
           />
           <div className={cn('flex absolute right-0 top-0 gap-2', editProps?.className)}>
-            {isEditedSrc && (
+            {isLoadingState ? (
+              <Spinner className="!w-[24px] !h-[24px]" />
+            ) : (
               <>
+                {isEditedSrc && (
+                  <>
+                    <button
+                      type="button"
+                      disabled={isLoadingState}
+                      className="border-none bg-slate-200 dark:bg-slate-600 rounded-xl w-[24px] h-[24px] hover:opacity-[0.8]"
+                      title="Отменить новое изображение"
+                      onClick={handleReject}
+                    >
+                      <RevertEmoji />
+                    </button>
+                    <button
+                      type="button"
+                      disabled={isLoadingState}
+                      className="'border-none bg-slate-200 dark:bg-slate-600 rounded-xl w-[24px] h-[24px] hover:opacity-[0.8]"
+                      title="Сохранить новое иозображение"
+                      onClick={handleSaveEdited}
+                    >
+                      <SaveEmoji />
+                    </button>
+                  </>
+                )}
+                {!isEditedSrc && isDeletable && (
+                  <button
+                    type="button"
+                    disabled={isLoadingState}
+                    className="border-none bg-slate-200 dark:bg-slate-600 rounded-xl w-[24px] h-[24px] hover:opacity-[0.8]"
+                    title="Удалить текущее изображение"
+                    onClick={handleRemove}
+                  >
+                    <DeleteEmoji />
+                  </button>
+                )}
                 <button
                   type="button"
-                  disabled={isLoading}
+                  disabled={isLoadingState}
                   className="border-none bg-slate-200 dark:bg-slate-600 rounded-xl w-[24px] h-[24px] hover:opacity-[0.8]"
-                  title="Отменить новое изображение"
-                  onClick={handleReject}
+                  title="Отменить редактирование"
+                  onClick={handleSwitchEditableMode}
                 >
-                  <RevertEmoji />
-                </button>
-                <button
-                  type="button"
-                  disabled={isLoading}
-                  className="'border-none bg-slate-200 dark:bg-slate-600 rounded-xl w-[24px] h-[24px] hover:opacity-[0.8]"
-                  title="Сохранить новое иозображение"
-                  onClick={handleSaveEdited}
-                >
-                  <SaveEmoji />
+                  <CloseEmoji />
                 </button>
               </>
             )}
-            {!isEditedSrc && isDeletable && (
-              <button
-                type="button"
-                disabled={isLoading}
-                className="border-none bg-slate-200 dark:bg-slate-600 rounded-xl w-[24px] h-[24px] hover:opacity-[0.8]"
-                title="Удалить текущее изображение"
-                onClick={handleRemove}
-              >
-                <DeleteEmoji />
-              </button>
-            )}
-            <button
-              type="button"
-              disabled={isLoading}
-              className="border-none bg-slate-200 dark:bg-slate-600 rounded-xl w-[24px] h-[24px] hover:opacity-[0.8]"
-              title="Отменить редактирование"
-              onClick={handleSwitchEditableMode}
-            >
-              <CloseEmoji />
-            </button>
           </div>
         </div>
       ) : (
@@ -166,7 +175,7 @@ export const UploadContainer = (props: Props) => {
           {enabled && (
             <button
               type="button"
-              disabled={isLoading}
+              disabled={isLoadingState}
               className={cn(
                 'border-none absolute right-0 top-0 bg-slate-200 dark:bg-slate-600 rounded-xl w-[24px] h-[24px] hover:opacity-[0.8]',
                 editProps?.className,

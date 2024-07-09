@@ -1,7 +1,7 @@
 import { initHapticFeedback, initPopup } from '@tma.js/sdk'
 
 import { Wish } from '~/entities/wish'
-import { useAuth } from '~/providers/auth'
+import { useAuth } from '~/providers'
 import { useUserDataQuery } from '~/query'
 import { useUserWishBookMutation } from '~/query/wish'
 
