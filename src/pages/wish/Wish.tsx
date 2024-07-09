@@ -8,7 +8,7 @@ import { getBookButtonState } from '~/components/wish/helpers'
 import { useWishBook } from '~/components/wish/hooks/useWishBook'
 import { DefaultLayout } from '~/layouts/default'
 import { useAuth } from '~/providers'
-import { useUserDataQuery, useUserWishItemQuery } from '~/query'
+import { useUserDataQuery, useUserWishItemQuery, useWishCategoryQuery } from '~/query'
 import { ROUTE } from '~/router'
 
 export const Wish = () => {
@@ -21,6 +21,7 @@ export const Wish = () => {
   const { data: wish, isLoading, isFetched, key } = useUserWishItemQuery(id || '', `${user?.id}`)
 
   const [wishImage, setWishImage] = useState<File | undefined>()
+  const [isDeleted, setDeleted] = useState(false)
 
   backButton.show()
 
@@ -47,6 +48,11 @@ export const Wish = () => {
   const { handleDeletePopup, isLoading: isDeletionLoading } = useWishDelete(wish, '', () => {
     navigate(ROUTE.home, { replace: true })
   })
+
+  const { data: category, isLoading: isLoadingCategory } = useWishCategoryQuery(
+    wish?.categoryId || '',
+    !!wish?.categoryId,
+  )
 
   const { handleBookPopup, isLoading: isBookingLoading } = useWishBook(wish, key || '')
 
@@ -82,6 +88,7 @@ export const Wish = () => {
             onSaveImage={setWishImage}
             isEditable={isEditable}
             wish={wish}
+            onDeleted={setDeleted}
             isLoading={!wish || isLoading || !isFetched}
           />
           <div className="px-4">
@@ -90,6 +97,7 @@ export const Wish = () => {
                 wish={wish}
                 wishImage={wishImage}
                 definedKey={key}
+                isImageDeleted={isDeleted}
                 onCancel={() => {
                   setEditable(false)
                   haptic.impactOccurred('soft')
@@ -108,6 +116,17 @@ export const Wish = () => {
                       </div>
                     ) : null}
                   </div>
+                  {(category || isLoadingCategory) && (
+                    <div className="flex my-2">
+                      {isLoadingCategory ? (
+                        <Skeleton className="mt-1 rounded-md" variant="rectangular" width={100} height={20} />
+                      ) : (
+                        <div className="text-xs bold p-2 bg-gray-200 text-slate-700 dark:text-slate-400 rounded-md">
+                          {category.name}
+                        </div>
+                      )}
+                    </div>
+                  )}
                   <h3 className="text-xl bold text-slate-900 dark:text-white mt-2">{wish?.name || 'Без названия'}</h3>
                 </div>
                 <div className="w-full h-[1px] bg-gray-400" />

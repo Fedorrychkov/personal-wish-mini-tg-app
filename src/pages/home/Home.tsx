@@ -1,27 +1,40 @@
-import { Alert, Button, Skeleton } from '@mui/material'
+import { Alert, Button, Chip, Skeleton } from '@mui/material'
 import { initBackButton, initHapticFeedback } from '@tma.js/sdk'
-import { useCallback } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { UserHeader } from '~/components/user'
 import { WishItem } from '~/components/wish'
 import { DefaultLayout } from '~/layouts/default'
 import { useAuth } from '~/providers'
-import { useUserWishQuery } from '~/query'
+import { useUserCategoryQuery, useUserWishQuery } from '~/query'
 import { ROUTE } from '~/router'
 
 export const Home = () => {
   const [backButton] = initBackButton()
   const haptic = initHapticFeedback()
   const { user } = useAuth()
-  const { data, isLoading, key } = useUserWishQuery(`${user?.id}`)
+  const { data: wishlsit, isLoading, key } = useUserWishQuery(user?.id || '', !!user?.id)
   const navigate = useNavigate()
+
+  const [selectedCategoryId, setSelectedCategory] = useState<string | undefined>(undefined)
+
+  const handlePickCategory = useCallback((categoryId: string) => {
+    setSelectedCategory((selectedCategoryId) => (selectedCategoryId === categoryId ? undefined : categoryId))
+  }, [])
 
   const handleAddWish = useCallback(() => {
     haptic.impactOccurred('soft')
 
     navigate(ROUTE.wishNew)
   }, [haptic, navigate])
+
+  const { data: categories, isLoading: isCategoryLoading } = useUserCategoryQuery(user?.id || '', !!user?.id)
+
+  const data = useMemo(
+    () => (selectedCategoryId ? wishlsit?.filter((wish) => wish?.categoryId === selectedCategoryId) : wishlsit),
+    [selectedCategoryId, wishlsit],
+  )
 
   backButton.hide()
 
@@ -35,6 +48,28 @@ export const Home = () => {
             Добавить
           </Button>
         </div>
+
+        {isCategoryLoading || categories?.length ? (
+          <div className="mb-4 flex flex-wrap gap-3">
+            {isCategoryLoading && (
+              <>
+                <Skeleton className="rounded-lg" variant="rectangular" width={100} height={32} />
+                <Skeleton className="rounded-lg" variant="rectangular" width={100} height={32} />
+                <Skeleton className="rounded-lg" variant="rectangular" width={100} height={32} />
+              </>
+            )}
+            {!isCategoryLoading &&
+              categories?.map((category) => (
+                <Chip
+                  key={category.id}
+                  label={category.name}
+                  variant={selectedCategoryId === category.id ? undefined : 'outlined'}
+                  onClick={() => handlePickCategory(category.id)}
+                />
+              ))}
+          </div>
+        ) : null}
+
         <div className="w-full h-[1px] bg-gray-400" />
 
         <div className="mt-2 gap-4">
@@ -47,7 +82,9 @@ export const Home = () => {
           ) : (
             <>
               {data?.length ? (
-                data?.map((wish) => <WishItem className="mb-4" key={wish.id} listKey={key} wish={wish} />)
+                data?.map((wish) => (
+                  <WishItem categories={categories} className="mb-4" key={wish.id} listKey={key} wish={wish} />
+                ))
               ) : (
                 <div>
                   <Alert
@@ -58,7 +95,8 @@ export const Home = () => {
                       </Button>
                     }
                   >
-                    Вы еще не добавили ни одного желания, давайте создадим?
+                    Вы еще не добавили ни одного желания {selectedCategoryId ? 'в выбранной категории' : ''}, давайте
+                    создадим?
                   </Alert>
                 </div>
               )}

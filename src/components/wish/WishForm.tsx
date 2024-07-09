@@ -1,33 +1,54 @@
 import { Alert, Button } from '@mui/material'
-import { useCallback } from 'react'
+import { useCallback, useMemo } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 
+import { Category } from '~/entities'
 import { Wish, WishDto } from '~/entities/wish'
 import { useRegister } from '~/hooks'
-import { useAuth } from '~/providers'
-import { useUserDataQuery, useUserWishImageMutation } from '~/query'
+import { useAuth } from '~/providers/auth'
+import {
+  useUserCategoryCreateMutation,
+  useUserCategoryQuery,
+  useUserDataQuery,
+  useUserWishImageMutation,
+} from '~/query'
 import { URL_REGEXP } from '~/utils'
 
-import { TextFieldContainer } from '../fields'
+import { AutocompleteFieldContainer, TextFieldContainer } from '../fields'
 import { useWishUpdate } from './hooks'
 import { useWishCreate } from './hooks/useWishCreate'
+
+type Form = WishDto | (Omit<WishDto, 'categoryId'> & { categoryId: Category | WishDto['categoryId'] })
 
 type Props = {
   wish?: Wish
   definedKey?: string
   wishImage?: File
+  isImageDeleted?: boolean
   onCancel?: () => void
 }
 
-export const WishForm = ({ wish, definedKey, wishImage, onCancel }: Props) => {
+export const WishForm = (props: Props) => {
+  const { wish, definedKey, wishImage, isImageDeleted, onCancel } = props
   const { user } = useAuth()
   const isOwner = user?.id === wish?.userId
   const { data: wishUserOwner } = useUserDataQuery(wish?.userId || '', wish?.userId, !isOwner)
   const { upload, remove } = useUserWishImageMutation(definedKey)
+  const {
+    data: categories,
+    isLoading: isLoadingCategories,
+    key: categoryDefinedKey,
+  } = useUserCategoryQuery(wish?.userId || '')
+  const createCategory = useUserCategoryCreateMutation(categoryDefinedKey)
+
+  const categoryOptions = useMemo(
+    () => categories?.map((category) => ({ ...category, inputValue: category.name, title: category.name })),
+    [categories],
+  )
 
   const isLoadingImage = upload.isLoading || remove.isLoading
 
-  const form = useForm<WishDto>({
+  const form = useForm<Form>({
     mode: 'onChange',
     reValidateMode: 'onChange',
     defaultValues: {
@@ -35,15 +56,25 @@ export const WishForm = ({ wish, definedKey, wishImage, onCancel }: Props) => {
       description: wish?.description || '',
       link: wish?.link || '',
       imageUrl: wish?.imageUrl || '',
+      categoryId: wish?.categoryId || '',
     },
   })
 
-  const { handleSubmit, register, formState } = form
+  const { handleSubmit, register, watch, formState } = form
   const { errors } = formState
+  const categoryId = watch('categoryId')
+
+  const categoryValue = useMemo(() => {
+    const option = categoryOptions?.find((category) =>
+      typeof categoryId === 'string' ? category.id === categoryId : false,
+    )
+
+    return option
+  }, [categoryOptions, categoryId])
 
   const { handleUpdatePopup, isLoading: isLoadingUpdare } = useWishUpdate(wish, definedKey, async (wish) => {
     try {
-      if (wish?.imageUrl && !wishImage) {
+      if (isImageDeleted && wish?.imageUrl && !wishImage) {
         await remove?.mutateAsync(wish?.id || '')
       }
 
@@ -72,14 +103,23 @@ export const WishForm = ({ wish, definedKey, wishImage, onCancel }: Props) => {
   const isLoading = isLoadingUpdare || isLoadingCreate || isLoadingImage
 
   const onSubmit = useCallback(
-    async (payload: WishDto) => {
+    async (payload: Form) => {
+      let categoryId = typeof payload.categoryId !== 'string' ? payload.categoryId?.id : null
+      const newCategory = typeof payload.categoryId === 'string' ? payload.categoryId : null
+      const isExistCategory = !!categories?.find((category) => newCategory === category?.id)
+
+      if (!isExistCategory && newCategory) {
+        const category = await createCategory.mutateAsync({ name: newCategory })
+        categoryId = category.id
+      }
+
       if (wish) {
-        handleUpdatePopup(payload)
+        handleUpdatePopup({ ...payload, categoryId })
       } else {
-        handleCreatePopup(payload)
+        handleCreatePopup({ ...payload, categoryId })
       }
     },
-    [handleUpdatePopup, handleCreatePopup, wish],
+    [handleUpdatePopup, handleCreatePopup, createCategory, wish, categories],
   )
 
   const nameField = useRegister({
@@ -88,7 +128,10 @@ export const WishForm = ({ wish, definedKey, wishImage, onCancel }: Props) => {
         value: true,
         message: 'Название желания обязательно',
       },
-      maxLength: 160,
+      maxLength: {
+        value: 160,
+        message: 'Максимум 160 символов',
+      },
     }),
     errors,
     withRef: false,
@@ -96,7 +139,21 @@ export const WishForm = ({ wish, definedKey, wishImage, onCancel }: Props) => {
 
   const descriptionField = useRegister({
     ...register('description', {
-      maxLength: 600,
+      maxLength: {
+        value: 600,
+        message: 'Максимум 600 символов',
+      },
+    }),
+    errors,
+    withRef: false,
+  })
+
+  const categoryField = useRegister({
+    ...register('categoryId', {
+      maxLength: {
+        value: 160,
+        message: 'Максимум 160 символов',
+      },
     }),
     errors,
     withRef: false,
@@ -165,6 +222,19 @@ export const WishForm = ({ wish, definedKey, wishImage, onCancel }: Props) => {
               placeholder="Описание желания"
               type="textarea"
               label="Описание желания"
+            />
+          </div>
+          <div>
+            <AutocompleteFieldContainer
+              {...categoryField}
+              options={categoryOptions || []}
+              disabled={isLoading || isLoadingCategories}
+              realValue={categoryValue}
+              fullWidth
+              isLoading={isLoadingCategories}
+              label="Категория желания"
+              noOptionsText="Ни одной категории еще не создавалось"
+              id="wish-category-list"
             />
           </div>
         </div>
