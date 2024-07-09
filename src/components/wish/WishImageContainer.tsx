@@ -11,12 +11,18 @@ type Props = {
   wish?: Wish
   isEditable?: boolean
   onSaveImage?: (file: File | undefined) => void
+  onDeleted?: (value: boolean) => void
 }
 
 export const WishImageContainer = (props: Props) => {
-  const { isLoading, wish, isEditable, onSaveImage } = props
+  const { isLoading, wish, isEditable, onSaveImage, onDeleted } = props
 
   const [imageSrc, setImageSrc] = useState<string | undefined | null>(wish?.imageUrl)
+
+  const handleUpdateImageSrc = (value?: string) => {
+    onDeleted?.(!value)
+    setImageSrc(value)
+  }
 
   const handleSaveWishImage = useCallback(
     async (file: File | undefined) => {
@@ -30,8 +36,8 @@ export const WishImageContainer = (props: Props) => {
   return (
     <UploadContainer
       enabled={isEditable}
-      onUpdateImageSrc={setImageSrc}
-      onRevert={() => setImageSrc(wish?.imageUrl)}
+      onUpdateImageSrc={handleUpdateImageSrc}
+      onRevert={() => handleUpdateImageSrc(wish?.imageUrl)}
       onSave={handleSaveWishImage}
       isDeletable={!!imageSrc}
       isLoading={isLoading}
@@ -55,7 +61,7 @@ export const WishImageContainer = (props: Props) => {
           </div>
           <div className="flex gap-2 items-center max-w-[360px] absolute bg-gray-200 dark:bg-slate-400 p-2 rounded-lg">
             <UploadEmoji className="text-3xl" />
-            <p>Загрузите одно изображение в формате (jpeg/png/webp/heic) не больше 1mb</p>
+            <p>Загрузите одно изображение в формате (jpeg/png/webp/heic) не больше 20mb</p>
           </div>
         </div>
       }

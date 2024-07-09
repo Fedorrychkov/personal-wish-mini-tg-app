@@ -1,8 +1,10 @@
 import Button from '@mui/material/Button'
 import { initHapticFeedback } from '@tma.js/sdk'
+import { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { API_URL } from '~/config'
+import { Category } from '~/entities'
 import { Wish } from '~/entities/wish'
 import { useAuth } from '~/providers'
 import { ROUTE } from '~/router'
@@ -18,11 +20,12 @@ type Props = {
   wish: Wish
   listKey?: string
   className?: string
+  categories?: Category[]
 }
 
 export const WishItem = (props: Props) => {
   const navigate = useNavigate()
-  const { wish, listKey, className } = props || {}
+  const { wish, listKey, className, categories } = props || {}
   const { user } = useAuth()
   const haptic = initHapticFeedback()
 
@@ -45,6 +48,8 @@ export const WishItem = (props: Props) => {
     navigate(ROUTE.wish.replace(':id', wish.id))
   }
 
+  const category = useMemo(() => categories?.find((category) => category?.id === wish?.categoryId), [wish, categories])
+
   const { disabled: bookBtnDisabled, text: bookBtnText } = getBookButtonState(wish, user)
 
   return (
@@ -58,9 +63,16 @@ export const WishItem = (props: Props) => {
           alt={`Wish Img ${wish.name || 'Название не установлено'}`}
         />
         <div className="overflow-hidden w-full">
-          <p className={cn('text-lg text-slate-900 dark:text-white truncate')}>
-            {wish.name || 'Название не установлено'}
-          </p>
+          <div className="flex justify-between">
+            <p className={cn('text-lg text-slate-900 dark:text-white truncate')}>
+              {wish.name || 'Название не установлено'}
+            </p>
+            {category && (
+              <p className="text-xs bold p-2 bg-slate-100 dark:bg-slate-400 text-slate-700 dark:text-slate-400 rounded-md truncate">
+                {category.name}
+              </p>
+            )}
+          </div>
           <p className={cn('mt-1 text-xs text-slate-900 dark:text-white truncate-2-line')}>
             {wish.description || 'Описание не установлено'}
           </p>

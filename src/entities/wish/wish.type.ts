@@ -13,7 +13,8 @@ export type Wish = {
    * Max length - 1000
    */
   description?: string
-  link?: string
+  link?: string | null
+  categoryId?: string | null
   imageUrl?: string
   createdAt?: Timestamp | null
   updatedAt?: Timestamp | null
@@ -23,5 +24,6 @@ export type WishDto = {
   name?: Wish['name']
   description?: Wish['description']
   link?: Wish['link']
+  categoryId?: Wish['categoryId']
   imageUrl?: Wish['imageUrl']
 }
