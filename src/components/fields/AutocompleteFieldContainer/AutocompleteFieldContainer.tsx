@@ -57,7 +57,13 @@ export const AutocompleteFieldContainer = forwardRef((props: Props) => {
         if (e.target instanceof HTMLInputElement) {
           const value = e?.target?.value
 
-          onChange?.(value)
+          const found = options?.find((option) => option?.title?.toLowerCase() === value?.toLowerCase())
+
+          if (!found) {
+            onChange?.(value)
+          } else {
+            onChange?.(found)
+          }
         }
 
         textFielProps?.onKeyDown?.(e)
@@ -65,7 +71,7 @@ export const AutocompleteFieldContainer = forwardRef((props: Props) => {
         return false
       }
     },
-    [textFielProps],
+    [textFielProps, options],
   )
 
   return (

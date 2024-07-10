@@ -17,6 +17,7 @@ export const useWishUpdate = (wish?: Wish, listKey?: string, onSuccess?: (wish: 
       const wish = await updateMutation.mutateAsync(body)
       haptic.impactOccurred('medium')
       onSuccess?.(wish)
+      setNotify('Желание успешно обновлено', { severity: 'success' })
     } catch (error) {
       setNotify('Произошла ошибка обновления желания', { severity: 'error' })
       haptic.impactOccurred('heavy')
