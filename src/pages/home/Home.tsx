@@ -9,6 +9,7 @@ import { DefaultLayout } from '~/layouts/default'
 import { useAuth } from '~/providers'
 import { useUserCategoryQuery, useUserWishQuery } from '~/query'
 import { ROUTE } from '~/router'
+import { cn } from '~/utils'
 
 export const Home = () => {
   const [backButton] = initBackButton()
@@ -64,6 +65,9 @@ export const Home = () => {
                   key={category.id}
                   label={category.name}
                   variant={selectedCategoryId === category.id ? undefined : 'outlined'}
+                  className={cn('dark:!text-slate-200', {
+                    'dark:!bg-slate-500': selectedCategoryId === category.id,
+                  })}
                   onClick={() => handlePickCategory(category.id)}
                 />
               ))}
@@ -89,6 +93,7 @@ export const Home = () => {
                 <div>
                   <Alert
                     severity="info"
+                    className="dark:!bg-slate-300"
                     action={
                       <Button color="primary" type="button" onClick={handleAddWish} size="small" variant="text">
                         Добавить

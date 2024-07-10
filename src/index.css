@@ -38,3 +38,11 @@ html {
           line-clamp: 2;
   -webkit-box-orient: vertical;
 }
+
+.dark-container .MuiInputBase-root:not(.Mui-error) .MuiOutlinedInput-notchedOutline  {
+  border-color: #fff;
+}
+
+.dark-container .MuiInputBase-root svg  {
+  fill: #fff;
+}

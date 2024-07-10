@@ -8,6 +8,7 @@ import { WishItem } from '~/components/wish'
 import { DefaultLayout } from '~/layouts/default'
 import { useUserCategoryQuery, useUserDataQuery, useUserWishQuery } from '~/query'
 import { ROUTE } from '~/router'
+import { cn } from '~/utils'
 
 export const UserWishList = () => {
   const navigate = useNavigate()
@@ -72,6 +73,9 @@ export const UserWishList = () => {
                     key={category.id}
                     label={category.name}
                     variant={selectedCategoryId === category.id ? undefined : 'outlined'}
+                    className={cn('dark:!text-slate-200', {
+                      'dark:!bg-slate-500': selectedCategoryId === category.id,
+                    })}
                     onClick={() => handlePickCategory(category.id)}
                   />
                 ))
@@ -96,7 +100,7 @@ export const UserWishList = () => {
                 ))
               ) : (
                 <div>
-                  <Alert severity="info">
+                  <Alert severity="info" className="dark:!bg-slate-300">
                     @{user?.username || user?.id} еще не добавил ни одного желания{' '}
                     {selectedCategoryId ? 'в выбранной категории' : ''}
                   </Alert>

@@ -33,7 +33,7 @@ function App() {
   }, [])
 
   return (
-    <div className={cn(style['app'], { dark: isNighMode })}>
+    <div className={cn(style['app'], { dark: isNighMode, 'dark-container': isNighMode })}>
       <div className={cn(style['app'], 'bg-white dark:bg-slate-800')}>
         <QueryClientProvider client={queryClient}>
           <AuthProvider>

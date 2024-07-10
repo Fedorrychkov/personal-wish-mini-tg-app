@@ -77,8 +77,14 @@ export const TextFieldContainer = forwardRef((props: Props, ref) => {
             disabled={preventDisabled || disabled}
             fullWidth={fullWidth}
             variant="outlined"
+            InputLabelProps={{
+              className: 'dark:!text-slate-200',
+            }}
             InputProps={{
-              className: cn('font-golos rounded-[8px] py-0 text-[16px] font-medium', inputClassName),
+              className: cn(
+                'font-golos rounded-[8px] py-0 text-[16px] font-medium dark:!text-slate-200',
+                inputClassName,
+              ),
               endAdornment:
                 type === 'password' ? (
                   <InputAdornment position="end">

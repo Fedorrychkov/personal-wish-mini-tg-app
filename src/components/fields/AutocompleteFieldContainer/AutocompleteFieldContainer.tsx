@@ -86,7 +86,21 @@ export const AutocompleteFieldContainer = forwardRef((props: Props) => {
               return filtered
             }}
             noOptionsText={noOptionsText}
-            renderInput={(params) => <TextField {...params} label={label} error={field?.error} />}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label={label}
+                InputLabelProps={{
+                  ...params.InputLabelProps,
+                  className: 'dark:!text-slate-200',
+                }}
+                InputProps={{
+                  ...params.InputProps,
+                  className: 'dark:!text-slate-200',
+                }}
+                error={field?.error}
+              />
+            )}
           />
           {field?.error && <FormHelperText error>{field?.helperText}</FormHelperText>}
         </FormControl>

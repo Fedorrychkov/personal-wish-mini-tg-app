@@ -59,7 +59,7 @@ export const WishImageContainer = (props: Props) => {
               alt={`Wish Image of ${wish?.name || 'Без названия'}`}
             />
           </div>
-          <div className="flex gap-2 items-center max-w-[360px] absolute bg-gray-200 dark:bg-slate-400 p-2 rounded-lg">
+          <div className="flex gap-2 items-center max-w-[360px] absolute bg-gray-200 dark:bg-slate-400 opacity-[0.9] p-2 rounded-lg">
             <UploadEmoji className="text-3xl" />
             <p>Загрузите одно изображение в формате (jpeg/png/webp/heic) не больше 20mb</p>
           </div>

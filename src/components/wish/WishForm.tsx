@@ -195,7 +195,7 @@ export const WishForm = (props: Props) => {
 
   return (
     <FormProvider {...form}>
-      <div className="py-4">
+      <div className="p-4">
         <Alert severity="warning">
           Для установки/редактирования изображения нажмите на иконку карандаша. <br /> Чтобы сохранить изменения по
           изображению нажмите на зеленую галочку
@@ -262,7 +262,7 @@ export const WishForm = (props: Props) => {
           </div>
         </div>
 
-        <div className="w-full h-[1px] bg-gray-400 my-2" />
+        <div className="w-full h-[1px] bg-gray-400 my-4" />
         <div className="gap-4 mt-2 flex justify-between">
           <Button color="primary" size="small" type="submit" variant="text" disabled={isLoading}>
             {wish ? 'Сохранить' : 'Создать'}
