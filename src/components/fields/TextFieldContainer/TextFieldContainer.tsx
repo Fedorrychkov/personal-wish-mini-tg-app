@@ -7,6 +7,8 @@ import { Controller, RefCallBack, useFormContext } from 'react-hook-form'
 import { RegisterField } from '~/hooks'
 import { cn } from '~/utils'
 
+import { useKeyboardAppended } from '../hook'
+
 type Props = {
   placeholder?: string
   label?: string
@@ -25,6 +27,8 @@ type Props = {
  */
 export const TextFieldContainer = forwardRef((props: Props, ref) => {
   const [showPassword, setShowPassword] = useState(false)
+
+  const { blurHandler, focusHandler } = useKeyboardAppended()
 
   const { watch } = useFormContext()
   const {
@@ -71,6 +75,8 @@ export const TextFieldContainer = forwardRef((props: Props, ref) => {
             onChange={defaultOnChange}
             value={isNil(value) ? '' : value}
             placeholder={label}
+            onFocus={focusHandler}
+            onBlur={blurHandler}
             label={label}
             size="small"
             className={cn('!font-golos py-0 px-0', className || 'w-full')}

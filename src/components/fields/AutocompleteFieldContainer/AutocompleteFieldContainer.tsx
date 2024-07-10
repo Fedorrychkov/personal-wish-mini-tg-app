@@ -11,6 +11,8 @@ import { Controller, useFormContext } from 'react-hook-form'
 
 import { RegisterField } from '~/hooks'
 
+import { useKeyboardAppended } from '../hook'
+
 const filter = createFilterOptions<any>()
 
 type Props = {
@@ -39,6 +41,8 @@ export const AutocompleteFieldContainer = forwardRef((props: Props) => {
     ...field
   } = props
   const { watch } = useFormContext()
+
+  const { blurHandler, focusHandler } = useKeyboardAppended()
 
   const value = realValue || watch(field.name)
 
@@ -76,6 +80,8 @@ export const AutocompleteFieldContainer = forwardRef((props: Props) => {
             value={value}
             fullWidth={fullWidth}
             disabled={disabled}
+            onFocus={focusHandler}
+            onBlur={blurHandler}
             className={className || 'w-full'}
             onChange={(_, newValue) => {
               if (typeof newValue === 'string') {
