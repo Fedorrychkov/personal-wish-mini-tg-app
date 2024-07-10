@@ -77,6 +77,8 @@ export const TextFieldContainer = forwardRef((props: Props, ref) => {
             disabled={preventDisabled || disabled}
             fullWidth={fullWidth}
             variant="outlined"
+            name={field.name}
+            id={field.name}
             InputLabelProps={{
               className: 'dark:!text-slate-200',
             }}

@@ -1,12 +1,14 @@
 import { initHapticFeedback, initPopup } from '@tma.js/sdk'
 
 import { Wish, WishDto } from '~/entities/wish'
+import { useNotifyContext } from '~/providers'
 import { useUserWishCreateMutation } from '~/query/wish'
 
 export const useWishCreate = (listKey?: string, onSuccess?: (wish: Wish) => void) => {
   const popup = initPopup()
   const createMutation = useUserWishCreateMutation(listKey)
   const haptic = initHapticFeedback()
+  const { setNotify } = useNotifyContext()
 
   const isLoading = createMutation?.isLoading
 
@@ -17,6 +19,7 @@ export const useWishCreate = (listKey?: string, onSuccess?: (wish: Wish) => void
       onSuccess?.(wish)
     } catch (error) {
       haptic.impactOccurred('heavy')
+      setNotify('Произошла ошибка при создании желания', { severity: 'error' })
     }
   }
 

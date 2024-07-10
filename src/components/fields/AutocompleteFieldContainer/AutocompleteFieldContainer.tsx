@@ -1,5 +1,12 @@
-import { Autocomplete, createFilterOptions, FormControl, FormHelperText, TextField } from '@mui/material'
-import { forwardRef } from 'react'
+import {
+  Autocomplete,
+  createFilterOptions,
+  FormControl,
+  FormHelperText,
+  TextField,
+  TextFieldProps,
+} from '@mui/material'
+import { forwardRef, KeyboardEvent, useCallback } from 'react'
 import { Controller, useFormContext } from 'react-hook-form'
 
 import { RegisterField } from '~/hooks'
@@ -16,15 +23,46 @@ type Props = {
   id?: string
   noOptionsText?: string
   realValue?: any
+  textFielProps?: TextFieldProps
 } & RegisterField
 
-// TODO: Селект должен работать с определенным стандартом options, а не только со строковым представлением
-
 export const AutocompleteFieldContainer = forwardRef((props: Props) => {
-  const { id, className, realValue, label, disabled, fullWidth, options = [], noOptionsText, ...field } = props
+  const {
+    className,
+    realValue,
+    label,
+    disabled,
+    fullWidth,
+    options = [],
+    textFielProps,
+    noOptionsText,
+    ...field
+  } = props
   const { watch } = useFormContext()
 
   const value = realValue || watch(field.name)
+
+  const handlePressKey = useCallback(
+    (onChange: any) => (e: KeyboardEvent<HTMLInputElement>) => {
+      const keyCode = e.which || e.keyCode
+
+      if (keyCode === 13) {
+        e.preventDefault()
+        e.stopPropagation()
+
+        if (e.target instanceof HTMLInputElement) {
+          const value = e?.target?.value
+
+          onChange?.(value)
+        }
+
+        textFielProps?.onKeyDown?.(e)
+
+        return false
+      }
+    },
+    [textFielProps],
+  )
 
   return (
     <Controller
@@ -33,7 +71,7 @@ export const AutocompleteFieldContainer = forwardRef((props: Props) => {
         <FormControl fullWidth className="mt-3">
           <Autocomplete
             disablePortal
-            id={id}
+            id={field.name}
             options={options}
             value={value}
             fullWidth={fullWidth}
@@ -89,6 +127,7 @@ export const AutocompleteFieldContainer = forwardRef((props: Props) => {
             renderInput={(params) => (
               <TextField
                 {...params}
+                name={field.name}
                 label={label}
                 InputLabelProps={{
                   ...params.InputLabelProps,
@@ -97,6 +136,7 @@ export const AutocompleteFieldContainer = forwardRef((props: Props) => {
                 InputProps={{
                   ...params.InputProps,
                   className: 'dark:!text-slate-200',
+                  onKeyDown: handlePressKey(defaultOnChange),
                 }}
                 error={field?.error}
               />

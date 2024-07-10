@@ -1,11 +1,13 @@
 import { initHapticFeedback, initPopup } from '@tma.js/sdk'
 
 import { Wish } from '~/entities/wish'
+import { useNotifyContext } from '~/providers'
 import { useUserWishDeleteMutation } from '~/query/wish'
 
 export const useWishDelete = (wish?: Wish, listKey?: string, onSuccess?: () => void) => {
   const popup = initPopup()
   const haptic = initHapticFeedback()
+  const { setNotify } = useNotifyContext()
 
   const deleteMutation = useUserWishDeleteMutation(wish?.id || '', listKey)
 
@@ -16,8 +18,10 @@ export const useWishDelete = (wish?: Wish, listKey?: string, onSuccess?: () => v
       await deleteMutation.mutateAsync()
       haptic.impactOccurred('medium')
       onSuccess?.()
+      setNotify('Желание успешно удалено', { severity: 'success' })
     } catch (error) {
       haptic.impactOccurred('heavy')
+      setNotify('Произошла ошибка при удалении желания', { severity: 'error' })
     }
   }
 

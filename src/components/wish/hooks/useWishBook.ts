@@ -1,7 +1,7 @@
 import { initHapticFeedback, initPopup } from '@tma.js/sdk'
 
 import { Wish } from '~/entities/wish'
-import { useAuth } from '~/providers'
+import { useAuth, useNotifyContext } from '~/providers'
 import { useUserDataQuery } from '~/query'
 import { useUserWishBookMutation } from '~/query/wish'
 
@@ -9,6 +9,7 @@ export const useWishBook = (wish?: Wish, listKey?: string, onSuccess?: () => voi
   const popup = initPopup()
   const haptic = initHapticFeedback()
   const { user } = useAuth()
+  const { setNotify } = useNotifyContext()
   const isOwner = user?.id === wish?.userId
 
   const { data: wishUserOwner } = useUserDataQuery(wish?.userId || '', wish?.userId, !isOwner)
@@ -22,6 +23,7 @@ export const useWishBook = (wish?: Wish, listKey?: string, onSuccess?: () => voi
       await bookMutation.mutateAsync()
       haptic.impactOccurred('medium')
       onSuccess?.()
+      setNotify(wish?.isBooked ? 'Бронь успешно снята' : 'Желание забронировано', { severity: 'success' })
     } catch (error) {
       haptic.impactOccurred('heavy')
     }

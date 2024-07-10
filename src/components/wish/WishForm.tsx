@@ -1,5 +1,5 @@
 import { Alert, Button } from '@mui/material'
-import { useCallback, useMemo } from 'react'
+import { KeyboardEvent, useCallback, useMemo, useRef } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 
 import { Category } from '~/entities'
@@ -19,6 +19,8 @@ import { AutocompleteFieldContainer, TextFieldContainer } from '../fields'
 import { useWishUpdate } from './hooks'
 import { useWishCreate } from './hooks/useWishCreate'
 
+const fieldQueue = ['name', 'link', 'description', 'categoryId']
+
 type Form = WishDto | (Omit<WishDto, 'categoryId'> & { categoryId: Category | WishDto['categoryId'] })
 
 type Props = {
@@ -32,6 +34,7 @@ type Props = {
 export const WishForm = (props: Props) => {
   const { wish, definedKey, wishImage, isImageDeleted, onCancel } = props
   const { user } = useAuth()
+  const formRef = useRef<HTMLFormElement | null>(null)
   const { setNotify } = useNotifyContext()
   const isOwner = user?.id === wish?.userId
   const { data: wishUserOwner } = useUserDataQuery(wish?.userId || '', wish?.userId, !isOwner)
@@ -120,6 +123,7 @@ export const WishForm = (props: Props) => {
       }
     } catch (error) {
       console.error(error)
+      setNotify('Произошла непредвиденная ошибка', { severity: 'error' })
     }
   })
 
@@ -193,6 +197,54 @@ export const WishForm = (props: Props) => {
     withRef: false,
   })
 
+  const handlePressKey = useCallback((e: KeyboardEvent<HTMLInputElement>) => {
+    const keyCode = e.which || e.keyCode
+
+    if (keyCode === 13) {
+      const currentIndex = fieldQueue?.findIndex((name) => name === (e as any).target?.name)
+      const nextIndex = currentIndex < fieldQueue?.length - 1 ? currentIndex + 1 : undefined
+
+      if (typeof nextIndex !== 'undefined') {
+        e.preventDefault()
+        e.stopPropagation()
+
+        const name = fieldQueue?.[nextIndex]
+
+        const field = document?.querySelector(`[name=${name}]`)
+
+        if (field instanceof HTMLInputElement) {
+          field?.focus?.()
+        }
+
+        if (field instanceof HTMLTextAreaElement) {
+          field?.focus?.()
+        }
+      }
+
+      if (typeof nextIndex === 'undefined' && formRef?.current && formRef?.current instanceof HTMLFormElement) {
+        const name = fieldQueue?.[currentIndex]
+
+        const field = document?.querySelector(`[name=${name}]`)
+
+        if (field instanceof HTMLInputElement) {
+          field?.blur?.()
+        }
+
+        if (field instanceof HTMLTextAreaElement) {
+          field?.blur?.()
+        }
+
+        const submitButton = formRef?.current?.querySelector('[type="submit"]')
+
+        if (submitButton instanceof HTMLButtonElement) {
+          submitButton?.focus?.()
+        }
+      }
+
+      return false
+    }
+  }, [])
+
   return (
     <FormProvider {...form}>
       <div className="p-4">
@@ -201,7 +253,7 @@ export const WishForm = (props: Props) => {
           изображению нажмите на зеленую галочку
         </Alert>
       </div>
-      <form className="p-4 pt-0" onSubmit={handleSubmit(onSubmit)}>
+      <form className="p-4 pt-0" ref={formRef} onSubmit={handleSubmit(onSubmit)}>
         <div className="py-4">
           <div className="gap-4 mt-1 flex items-baseline">
             {wish && (
@@ -224,6 +276,9 @@ export const WishForm = (props: Props) => {
               preventDisabled={isLoading}
               placeholder="Название желания"
               label="Название желания"
+              textFieldProps={{
+                onKeyDown: handlePressKey,
+              }}
               required
             />
           </div>
@@ -234,6 +289,9 @@ export const WishForm = (props: Props) => {
               preventDisabled={isLoading}
               placeholder="Ссылка на желание"
               label="Ссылка на желание"
+              textFieldProps={{
+                onKeyDown: handlePressKey,
+              }}
               required
             />
           </div>
@@ -245,6 +303,9 @@ export const WishForm = (props: Props) => {
               placeholder="Описание желания"
               type="textarea"
               label="Описание желания"
+              textFieldProps={{
+                onKeyDown: handlePressKey,
+              }}
             />
           </div>
           <div>
@@ -255,9 +316,11 @@ export const WishForm = (props: Props) => {
               realValue={categoryValue}
               fullWidth
               isLoading={isLoadingCategories}
+              textFielProps={{
+                onKeyDown: handlePressKey,
+              }}
               label="Категория желания"
               noOptionsText="Ни одной категории еще не создавалось"
-              id="wish-category-list"
             />
           </div>
         </div>
