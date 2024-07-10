@@ -121,7 +121,7 @@ export const Wish = () => {
                       {isLoadingCategory ? (
                         <Skeleton className="mt-1 rounded-md" variant="rectangular" width={100} height={20} />
                       ) : (
-                        <div className="text-xs bold p-2 bg-gray-200 text-slate-700 dark:text-slate-400 rounded-md">
+                        <div className="text-xs bold p-2 bg-gray-200 text-slate-700 dark:text-slate-800 rounded-md">
                           {category.name}
                         </div>
                       )}

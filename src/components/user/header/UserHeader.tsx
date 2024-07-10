@@ -77,6 +77,9 @@ export const UserHeader = ({ className, user: definedUser, isLoading }: Props) =
         onSave={handleSaveAvatarImage}
         isDeletable={!!avatarSrc}
         isLoading={isLoadingState}
+        editProps={{
+          className: 'top-[-10px] right-[-10px]',
+        }}
         uploadLabel={
           <div className="h-[80px] flex justify-center items-center px-4 gap-4 relative">
             <div className="flex items-center justify-center bg-slate-500 w-[80px] min-w-[80px] h-[80px] rounded-[50%] hover:bg-slate-800">

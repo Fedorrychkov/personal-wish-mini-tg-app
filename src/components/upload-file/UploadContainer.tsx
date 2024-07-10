@@ -128,7 +128,7 @@ export const UploadContainer = (props: Props) => {
                     <button
                       type="button"
                       disabled={isLoadingState}
-                      className="border-none bg-slate-200 dark:bg-slate-300 rounded-xl w-[24px] h-[24px] hover:opacity-[0.8]"
+                      className="border-none bg-slate-200 dark:bg-slate-300 rounded-[50%] w-[40px] h-[40px] hover:opacity-[0.8]"
                       title="Отменить новое изображение"
                       onClick={handleReject}
                     >
@@ -137,7 +137,7 @@ export const UploadContainer = (props: Props) => {
                     <button
                       type="button"
                       disabled={isLoadingState}
-                      className="'border-none bg-slate-200 dark:bg-slate-300 rounded-xl w-[24px] h-[24px] hover:opacity-[0.8]"
+                      className="'border-none bg-slate-200 dark:bg-slate-300 rounded-[50%] w-[40px] h-[40px] hover:opacity-[0.8]"
                       title="Сохранить новое иозображение"
                       onClick={handleSaveEdited}
                     >
@@ -149,7 +149,7 @@ export const UploadContainer = (props: Props) => {
                   <button
                     type="button"
                     disabled={isLoadingState}
-                    className="border-none bg-slate-200 dark:bg-slate-300 rounded-xl w-[24px] h-[24px] hover:opacity-[0.8]"
+                    className="border-none bg-slate-200 dark:bg-slate-300 rounded-[50%] w-[40px] h-[40px] hover:opacity-[0.8]"
                     title="Удалить текущее изображение"
                     onClick={handleRemove}
                   >
@@ -159,7 +159,7 @@ export const UploadContainer = (props: Props) => {
                 <button
                   type="button"
                   disabled={isLoadingState}
-                  className="border-none bg-slate-200 dark:bg-slate-300 rounded-xl w-[24px] h-[24px] hover:opacity-[0.8]"
+                  className="border-none bg-slate-200 dark:bg-slate-300 rounded-[50%] w-[40px] h-[40px] hover:opacity-[0.8]"
                   title="Отменить редактирование"
                   onClick={handleSwitchEditableMode}
                 >
@@ -177,7 +177,7 @@ export const UploadContainer = (props: Props) => {
               type="button"
               disabled={isLoadingState}
               className={cn(
-                'border-none absolute right-0 top-0 bg-slate-200 dark:bg-slate-400 rounded-xl w-[24px] h-[24px] hover:opacity-[0.8]',
+                'border-none absolute right-0 top-0 bg-slate-200 dark:bg-slate-400 rounded-[50%] w-[40px] h-[40px] hover:opacity-[0.8]',
                 editProps?.className,
               )}
               onClick={handleSwitchEditableMode}

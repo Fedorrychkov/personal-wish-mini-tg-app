@@ -87,7 +87,14 @@ export const Home = () => {
             <>
               {data?.length ? (
                 data?.map((wish) => (
-                  <WishItem categories={categories} className="mb-4" key={wish.id} listKey={key} wish={wish} />
+                  <WishItem
+                    categories={categories}
+                    onFilterByCategoryId={() => handlePickCategory(wish?.categoryId || '')}
+                    className="mb-4"
+                    key={wish.id}
+                    listKey={key}
+                    wish={wish}
+                  />
                 ))
               ) : (
                 <div>

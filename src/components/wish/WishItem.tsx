@@ -21,11 +21,12 @@ type Props = {
   listKey?: string
   className?: string
   categories?: Category[]
+  onFilterByCategoryId?: () => void
 }
 
 export const WishItem = (props: Props) => {
   const navigate = useNavigate()
-  const { wish, listKey, className, categories } = props || {}
+  const { wish, listKey, className, categories, onFilterByCategoryId } = props || {}
   const { user } = useAuth()
   const haptic = initHapticFeedback()
 
@@ -68,9 +69,13 @@ export const WishItem = (props: Props) => {
               {wish.name || 'Название не установлено'}
             </p>
             {category && (
-              <p className="text-xs bold p-2 bg-slate-100 dark:bg-slate-400 text-slate-700 dark:text-slate-400 rounded-md truncate">
+              <button
+                type="button"
+                onClick={onFilterByCategoryId}
+                className="text-xs bold p-2 bg-slate-100 dark:bg-slate-400 text-slate-700 dark:text-slate-100 rounded-md truncate hover:opacity-[0.8]"
+              >
                 {category.name}
-              </p>
+              </button>
             )}
           </div>
           <p className={cn('mt-1 text-xs text-slate-900 dark:text-white truncate-2-line')}>
