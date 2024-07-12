@@ -5,4 +5,5 @@ export const ROUTE = {
   wishNew: '/new',
   wish: '/wish/:id',
   unavailable: '/unavailable',
+  favorites: '/favorites',
 }

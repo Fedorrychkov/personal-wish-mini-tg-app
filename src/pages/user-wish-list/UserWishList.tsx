@@ -1,19 +1,23 @@
 import { Alert, Chip, Skeleton } from '@mui/material'
 import { initBackButton } from '@tma.js/sdk'
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 
+import { FavoriteContainer } from '~/components/favorite'
 import { UserHeader } from '~/components/user'
 import { WishItem } from '~/components/wish'
 import { DefaultLayout } from '~/layouts/default'
-import { useUserCategoryQuery, useUserDataQuery, useUserWishQuery } from '~/query'
+import { useAuth } from '~/providers'
+import { useUserCategoryQuery, useUserDataQuery, useUserFavoriteQuery, useUserWishQuery } from '~/query'
 import { ROUTE } from '~/router'
 import { cn } from '~/utils'
 
 export const UserWishList = () => {
   const navigate = useNavigate()
   const { id } = useParams()
+  const location = useLocation()
   const [backButton] = initBackButton()
+  const { user: authUser } = useAuth()
   const { data: user, isLoading: isUserLoading } = useUserDataQuery(id || '', id, !!id)
   const { data: wishlsit, isLoading, key } = useUserWishQuery(id || '', !!id)
 
@@ -26,10 +30,10 @@ export const UserWishList = () => {
   backButton.show()
 
   const handleBack = useCallback(() => {
-    navigate(ROUTE.home, { replace: true })
+    navigate(location?.state?.prevPage ?? ROUTE.home, { replace: true })
 
     return
-  }, [navigate])
+  }, [navigate, location])
 
   useEffect(() => {
     backButton.on('click', handleBack)
@@ -38,6 +42,18 @@ export const UserWishList = () => {
       backButton.off('click', handleBack)
     }
   }, [handleBack, backButton])
+
+  const {
+    data: favoriteState,
+    isLoading: isFavoriteLoading,
+    key: definedFavoriteKey,
+  } = useUserFavoriteQuery(
+    {
+      favoriteUserId: user?.id || '',
+      userId: authUser?.id || '',
+    },
+    !!user?.id && !!authUser?.id,
+  )
 
   const { data: categories, isLoading: isCategoryLoading } = useUserCategoryQuery(user?.id || '', !!user?.id)
 
@@ -54,8 +70,14 @@ export const UserWishList = () => {
         className="self-center bg-gray-200 dark:bg-slate-400 w-full py-4"
       />
       <div className="px-4">
-        <div className="py-4">
+        <div className="py-4 flex gap-4 justify-between">
           <h3 className="text-xl bold text-slate-900 dark:text-white mt-2">Желания</h3>
+          <FavoriteContainer
+            favoriteUser={user}
+            definedKey={definedFavoriteKey}
+            isLoading={isFavoriteLoading}
+            favorite={favoriteState}
+          />
         </div>
 
         {isCategoryLoading || categories?.length ? (

@@ -1,6 +1,7 @@
 import { createBrowserRouter, createRoutesFromElements, Outlet, Route, ScrollRestoration } from 'react-router-dom'
 
 import { PrivateRoute } from '~/components/guard'
+import { Favorites } from '~/pages/favorites'
 import { Home } from '~/pages/home'
 import { Unavailable } from '~/pages/unavailable'
 import { UserWishList } from '~/pages/user-wish-list'
@@ -49,6 +50,14 @@ export const router = createBrowserRouter(
         element={
           <PrivateRoute>
             <Wish />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path={ROUTE.favorites}
+        element={
+          <PrivateRoute>
+            <Favorites />
           </PrivateRoute>
         }
       />
