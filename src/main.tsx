@@ -18,6 +18,6 @@ miniApp.setHeaderColor('secondary_bg_color')
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <App />
+    <App isDark={miniApp?.isDark} />
   </React.StrictMode>,
 )

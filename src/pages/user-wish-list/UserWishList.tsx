@@ -22,6 +22,16 @@ export const UserWishList = () => {
   const { data: wishlsit, isLoading, key } = useUserWishQuery(id || '', !!id)
 
   const [selectedCategoryId, setSelectedCategory] = useState<string | undefined>(undefined)
+  const [isMeBooked, setMeBooked] = useState(false)
+  const [isUnbooked, setUnbooked] = useState(false)
+
+  const handleToggleBookedFilter = () => {
+    setMeBooked((state) => !state)
+  }
+
+  const handleToggleUnBookedFilter = () => {
+    setUnbooked((state) => !state)
+  }
 
   const handlePickCategory = useCallback((categoryId: string) => {
     setSelectedCategory((selectedCategoryId) => (selectedCategoryId === categoryId ? undefined : categoryId))
@@ -57,10 +67,21 @@ export const UserWishList = () => {
 
   const { data: categories, isLoading: isCategoryLoading } = useUserCategoryQuery(user?.id || '', !!user?.id)
 
-  const data = useMemo(
-    () => (selectedCategoryId ? wishlsit?.filter((wish) => wish?.categoryId === selectedCategoryId) : wishlsit),
-    [selectedCategoryId, wishlsit],
-  )
+  const data = useMemo(() => {
+    const selectedCategoryList = selectedCategoryId
+      ? wishlsit?.filter((wish) => wish?.categoryId === selectedCategoryId)
+      : wishlsit
+
+    const filreredBookedWishlist = isMeBooked
+      ? selectedCategoryList?.filter((wish) => wish.isBooked && wish.bookedUserId === authUser?.id)
+      : selectedCategoryList
+
+    const filreredUnBookedWishlist = isUnbooked
+      ? filreredBookedWishlist?.filter((wish) => !wish.isBooked)
+      : filreredBookedWishlist
+
+    return filreredUnBookedWishlist
+  }, [selectedCategoryId, wishlsit, authUser?.id, isMeBooked, isUnbooked])
 
   return (
     <DefaultLayout className="!px-0">
@@ -80,30 +101,50 @@ export const UserWishList = () => {
           />
         </div>
 
-        {isCategoryLoading || categories?.length ? (
-          <div className="mb-4 flex flex-wrap gap-3">
-            {isCategoryLoading && (
-              <>
-                <Skeleton className="rounded-lg" variant="rectangular" width={100} height={32} />
-                <Skeleton className="rounded-lg" variant="rectangular" width={100} height={32} />
-                <Skeleton className="rounded-lg" variant="rectangular" width={100} height={32} />
-              </>
-            )}
-            {!isCategoryLoading
-              ? categories?.map((category) => (
-                  <Chip
-                    key={category.id}
-                    label={category.name}
-                    variant={selectedCategoryId === category.id ? undefined : 'outlined'}
-                    className={cn('dark:!text-slate-200', {
-                      'dark:!bg-slate-500': selectedCategoryId === category.id,
-                    })}
-                    onClick={() => handlePickCategory(category.id)}
-                  />
-                ))
-              : null}
-          </div>
-        ) : null}
+        <div className="mb-4 flex flex-wrap gap-3">
+          {isCategoryLoading && (
+            <>
+              <Skeleton className="rounded-lg" variant="rectangular" width={100} height={32} />
+              <Skeleton className="rounded-lg" variant="rectangular" width={100} height={32} />
+              <Skeleton className="rounded-lg" variant="rectangular" width={100} height={32} />
+            </>
+          )}
+          {!isCategoryLoading
+            ? categories?.map((category) => (
+                <Chip
+                  key={category.id}
+                  label={category.name}
+                  variant={selectedCategoryId === category.id ? undefined : 'outlined'}
+                  className={cn('dark:!text-slate-200', {
+                    'dark:!bg-slate-500': selectedCategoryId === category.id,
+                  })}
+                  onClick={() => handlePickCategory(category.id)}
+                />
+              ))
+            : null}
+          <Chip
+            label="Я дарю"
+            variant={isMeBooked ? undefined : 'outlined'}
+            className={cn('dark:!text-slate-200', {
+              'dark:!bg-slate-500': isMeBooked,
+            })}
+            onClick={() => {
+              handleToggleBookedFilter()
+              setUnbooked(false)
+            }}
+          />
+          <Chip
+            label="Никто не дарит"
+            variant={isUnbooked ? undefined : 'outlined'}
+            className={cn('dark:!text-slate-200', {
+              'dark:!bg-slate-500': isUnbooked,
+            })}
+            onClick={() => {
+              handleToggleUnBookedFilter()
+              setMeBooked(false)
+            }}
+          />
+        </div>
 
         <div className="w-full h-[1px] bg-gray-400" />
 

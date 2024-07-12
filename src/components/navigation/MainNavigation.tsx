@@ -24,7 +24,7 @@ const routes = [
 
 export const MainNavigation = () => {
   return (
-    <div className="flex justify-between sticky bottom-0 left-0 bg-slate-400 dark:bg-slate-900">
+    <div className="flex justify-between sticky bottom-0 left-0 bg-slate-300 dark:bg-slate-900">
       {routes?.map((route) => (
         <NavLink
           key={route.path}
@@ -38,7 +38,7 @@ export const MainNavigation = () => {
         >
           <>
             {route.icon}
-            <p className={cn('text-xs text-slate-800 dark:text-slate-200')}>{route.title}</p>
+            <p className={cn('text-xs text-slate-900 dark:text-slate-200')}>{route.title}</p>
           </>
         </NavLink>
       ))}
