@@ -16,7 +16,7 @@ type Props = {
 function App(props: Props) {
   return (
     <div className={cn(style['app'], { dark: props.isDark, 'dark-container': props.isDark })}>
-      <div className={cn(style['app'], 'bg-slate-300 dark:bg-slate-900')}>
+      <div className={cn(style['app'], 'bg-[var(--tg-theme-bg-color)]')}>
         <QueryClientProvider client={queryClient}>
           <AuthProvider>
             <CustomizationProvider>

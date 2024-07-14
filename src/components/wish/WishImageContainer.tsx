@@ -1,8 +1,10 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 
 import { UploadEmoji } from '~/assets'
 import { Wish } from '~/entities/wish'
+import { useCustomization } from '~/providers'
 
+import { getBackgroundStyle } from '../background'
 import { ImageLoader } from '../image'
 import { UploadContainer } from '../upload-file'
 
@@ -16,6 +18,7 @@ type Props = {
 
 export const WishImageContainer = (props: Props) => {
   const { isLoading, wish, isEditable, onSaveImage, onDeleted } = props
+  const { customization } = useCustomization()
 
   const [imageSrc, setImageSrc] = useState<string | undefined | null>(wish?.imageUrl)
 
@@ -33,6 +36,8 @@ export const WishImageContainer = (props: Props) => {
     [onSaveImage],
   )
 
+  const style = useMemo(() => getBackgroundStyle(customization?.patternName), [customization?.patternName])
+
   return (
     <UploadContainer
       enabled={isEditable}
@@ -46,16 +51,23 @@ export const WishImageContainer = (props: Props) => {
       }}
       uploadLabel={
         <div className="h-[200px] w-full flex justify-center items-center gap-4 relative">
-          <div className="flex items-center justify-center bg-slate-500 w-full min-w-full h-[200px] hover:bg-slate-800">
+          <div
+            className="flex items-center justify-center bg-slate-500 w-full min-w-full h-[200px] hover:bg-slate-800 custom"
+            style={style}
+          >
             <ImageLoader
               defaultPlaceholder={
-                <div className="bg-gray-200 dark:bg-slate-400 w-full h-[200px] flex items-center justify-center">
+                <div
+                  className="bg-gray-200 dark:bg-slate-400 w-full h-[200px] flex items-center justify-center custom"
+                  style={style}
+                >
                   <p>Изображение не установлено</p>
                 </div>
               }
               src={imageSrc || ''}
               isLoading={isLoading}
-              className="bg-gray-200 dark:bg-slate-400 object-contain w-full h-[200px]"
+              className="bg-gray-200 dark:bg-slate-400 object-contain w-full h-[200px] custom"
+              style={style}
               alt={`Wish Image of ${wish?.name || 'Без названия'}`}
             />
           </div>
@@ -68,13 +80,17 @@ export const WishImageContainer = (props: Props) => {
     >
       <ImageLoader
         defaultPlaceholder={
-          <div className="bg-gray-200 dark:bg-slate-400 w-full w-full h-[200px] flex items-center justify-center">
+          <div
+            className="bg-gray-200 dark:bg-slate-400 w-full w-full h-[200px] flex items-center justify-center custom"
+            style={style}
+          >
             <p className="text-slate-900 dark:text-white">Изображение не установлено</p>
           </div>
         }
         src={imageSrc || ''}
         isLoading={isLoading}
-        className="bg-gray-200 dark:bg-slate-400 object-contain w-full w-full h-[200px]"
+        className="bg-gray-200 dark:bg-slate-400 object-contain w-full w-full h-[200px] custom"
+        style={style}
         alt={`Wish Image of ${wish?.name || 'Без названия'}`}
       />
     </UploadContainer>

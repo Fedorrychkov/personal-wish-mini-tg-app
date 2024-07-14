@@ -139,7 +139,7 @@ export const UserHeader = ({ className, user: definedUser, isLoading, editable =
           {isOwner && !isEditabledMode && editable && (
             <button
               type="button"
-              className="absolute top-[12px] right-[12px] border-none bg-slate-200 dark:bg-slate-300 rounded-[50%] w-[40px] h-[40px] hover:opacity-[0.8]"
+              className="absolute top-[8px] right-[8px] border-none bg-slate-200 dark:bg-slate-300 rounded-[50%] w-[40px] h-[40px] hover:opacity-[0.8]"
               title="Настройки"
               onClick={handleOpenCustomization}
             >

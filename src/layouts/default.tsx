@@ -18,7 +18,7 @@ export const DefaultLayout = ({ children, className }: Props) => {
   return (
     <>
       <div
-        className={cn('bg-white dark:bg-slate-800 flex flex-col w-full min-h-[100vh] px-4 custom', className)}
+        className={cn('bg-slate-100 dark:bg-slate-800 flex flex-col w-full min-h-[100vh] px-4 custom', className)}
         style={getBackgroundStyle(customization?.patternName)}
       >
         <div className="flex-1">{Children.map(arrayChildren, (child) => child)}</div>

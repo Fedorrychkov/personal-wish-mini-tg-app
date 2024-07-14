@@ -24,7 +24,7 @@ const routes = [
 
 export const MainNavigation = () => {
   return (
-    <div className="flex justify-between sticky bottom-0 left-0 bg-slate-300 dark:bg-slate-900 z-10">
+    <div className="flex justify-between sticky bottom-0 left-0 bg-[var(--tg-theme-bg-color)] z-10">
       {routes?.map((route) => (
         <NavLink
           key={route.path}

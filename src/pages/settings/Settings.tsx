@@ -97,68 +97,75 @@ export const Settings = () => {
 
         <div className="w-full h-[1px] bg-gray-400" />
 
-        <div className="mt-2 gap-4">
+        <div className="mt-2 mb-4 gap-4">
           {isLoadingCustomization ? (
             <>
               <Spinner />
             </>
           ) : (
-            <div className="gap-2">
-              <p className="text-sm bold text-slate-900 dark:text-white mt-2 mb-4">Кастомизация названия</p>
-              <FormProvider {...form}>
-                <form className="pt-0 mb-4" onSubmit={handleSubmit(onSubmit)}>
-                  <TextFieldContainer
-                    {...titleField}
-                    className="w-full mt-4"
-                    preventDisabled={customizationMutation.isLoading}
-                    placeholder="Название списка на главной"
-                    label="Название списка на главной"
-                    endAdornment={
-                      customizationMutation.isLoading ? (
-                        <div>
-                          <Spinner className="!w-[12px] !h-[12px]" />
-                        </div>
-                      ) : (
-                        <Button
-                          color="primary"
-                          size="small"
-                          type="submit"
-                          variant="text"
-                          disabled={customizationMutation.isLoading}
-                        >
-                          Сохранить
-                        </Button>
-                      )
-                    }
-                    required
-                  />
-                </form>
-              </FormProvider>
-              <p className="text-sm bold text-slate-900 dark:text-white mt-2 mb-2">Кастомизация фона</p>
-              <div className="flex gap-4 flex-wrap flex-col h-[240px] overflow-hidden overflow-x-auto">
-                <button
-                  className={cn('w-[100px] h-[100px] bg-gray-200 dark:bg-slate-400 rounded-lg relative opacity-[0.7]', {
-                    'opacity-[1]': !patternName,
-                  })}
-                  onClick={() => handleUpdatePatterName('')}
-                >
-                  {!patternName && <SaveEmoji className="absolute top-[5px] right-[5px]" />}
-                </button>
-                {patterns?.map((patternNameValue) => (
+            <div className="flex flex-col gap-2">
+              <div className="bg-slate-200 dark:bg-slate-600 p-2 rounded-lg">
+                <p className="text-sm bold text-slate-900 dark:text-white mb-4">Кастомизация названия</p>
+                <FormProvider {...form}>
+                  <form className="pt-0 mb-4" onSubmit={handleSubmit(onSubmit)}>
+                    <TextFieldContainer
+                      {...titleField}
+                      className="w-full mt-4"
+                      preventDisabled={customizationMutation.isLoading}
+                      placeholder="Название списка на главной"
+                      label="Название списка на главной"
+                      endAdornment={
+                        customizationMutation.isLoading ? (
+                          <div>
+                            <Spinner className="!w-[12px] !h-[12px]" />
+                          </div>
+                        ) : (
+                          <Button
+                            color="primary"
+                            size="small"
+                            type="submit"
+                            variant="text"
+                            disabled={customizationMutation.isLoading}
+                          >
+                            Сохранить
+                          </Button>
+                        )
+                      }
+                      required
+                    />
+                  </form>
+                </FormProvider>
+              </div>
+              <div className="bg-slate-200 dark:bg-slate-600 p-2 rounded-lg">
+                <p className="text-sm bold text-slate-900 dark:text-white mb-4">Кастомизация фона</p>
+                <div className="flex gap-4 flex-wrap flex-col h-[220px] overflow-hidden overflow-x-auto">
                   <button
-                    key={patternNameValue}
-                    style={getBackgroundStyle(patternNameValue)}
-                    onClick={() => handleUpdatePatterName(patternNameValue)}
                     className={cn(
                       'w-[100px] h-[100px] bg-gray-200 dark:bg-slate-400 rounded-lg relative opacity-[0.7]',
                       {
-                        'opacity-[1]': patternName === patternNameValue,
+                        'opacity-[1]': !patternName,
                       },
                     )}
+                    onClick={() => handleUpdatePatterName('')}
                   >
-                    {patternName === patternNameValue && <SaveEmoji className="absolute top-[5px] right-[5px]" />}
+                    {!patternName && <SaveEmoji className="absolute top-[5px] right-[5px]" />}
                   </button>
-                ))}
+                  {patterns?.map((patternNameValue) => (
+                    <button
+                      key={patternNameValue}
+                      style={getBackgroundStyle(patternNameValue)}
+                      onClick={() => handleUpdatePatterName(patternNameValue)}
+                      className={cn(
+                        'w-[100px] h-[100px] bg-gray-200 dark:bg-slate-400 rounded-lg relative opacity-[0.7]',
+                        {
+                          'opacity-[1]': patternName === patternNameValue,
+                        },
+                      )}
+                    >
+                      {patternName === patternNameValue && <SaveEmoji className="absolute top-[5px] right-[5px]" />}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
           )}

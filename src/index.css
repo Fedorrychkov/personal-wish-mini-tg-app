@@ -51,9 +51,14 @@ html {
   -webkit-text-fill-color: inherit;
 }
 
+.dark-container .custom {
+  background-blend-mode: normal;
+}
+
 .custom {
   background-attachment: fixed;
   background-repeat: repeat;
+  background-blend-mode: soft-light;
 }
 
 .custom.radiant-gradient {
