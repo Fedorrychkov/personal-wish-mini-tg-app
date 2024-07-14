@@ -46,3 +46,47 @@ html {
 .dark-container .MuiInputBase-root svg  {
   fill: #fff;
 }
+
+.dark-container .MuiInputBase-root .Mui-disabled {
+  -webkit-text-fill-color: inherit;
+}
+
+.custom {
+  background-attachment: fixed;
+  background-repeat: repeat;
+}
+
+.custom.radiant-gradient {
+  background-image: url('/public/custom/radiant-gradient.svg');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-blend-mode: exclusion;
+}
+
+.custom.confetti-doodles {
+  background-image: url('/public/custom/confetti-doodles.svg');
+  background-blend-mode: exclusion;
+}
+
+.custom.flat-mountains {
+  background-image: url('/public/custom/flat-mountains.svg');
+  background-blend-mode: exclusion;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: 50%;
+}
+
+.custom.diamond-sunset {
+  background-image: url('/public/custom/diamond-sunset.svg');
+  background-blend-mode: exclusion;
+}
+
+.custom.random-shapes {
+  background-image: url('/public/custom/random-shapes.svg');
+  background-size: 20%;
+}
+
+.custom.glamorous {
+  background-image: url('/public/custom/glamorous.svg');
+  background-size: 20%;
+}

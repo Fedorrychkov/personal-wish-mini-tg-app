@@ -1,29 +1,43 @@
 import { Skeleton } from '@mui/material'
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
-import { UploadEmoji } from '~/assets'
+import { SettingsEmoji, UploadEmoji } from '~/assets'
+import { getBackgroundStyle } from '~/components/background'
 import { ImageLoader } from '~/components/image'
 import { Avatar } from '~/components/placeholder'
 import { UploadContainer } from '~/components/upload-file'
 import { User } from '~/entities'
-import { useAuth, useNotifyContext } from '~/providers'
+import { useAuth, useCustomization, useNotifyContext } from '~/providers'
 import { useUserAvatarMutation } from '~/query'
+import { ROUTE } from '~/router'
 import { cn } from '~/utils'
 
 type Props = {
   className?: string
   user?: User
   isLoading?: boolean
+  editable?: boolean
 }
 
-export const UserHeader = ({ className, user: definedUser, isLoading }: Props) => {
+export const UserHeader = ({ className, user: definedUser, isLoading, editable = true }: Props) => {
   const { user, currentUserKey } = useAuth()
   const { upload, remove } = useUserAvatarMutation(currentUserKey)
   const { setNotify } = useNotifyContext()
+  const navigate = useNavigate()
+
+  const [isEditabledMode, setEditabledMode] = useState(false)
+
+  const { updateUserCustomizationId, customization } = useCustomization()
 
   const finalUser = definedUser || user
 
   const isOwner = !definedUser
+
+  useEffect(() => {
+    updateUserCustomizationId(finalUser?.id)
+  }, [finalUser, updateUserCustomizationId])
+
   const isLoadingState = upload.isLoading || remove.isLoading || isLoading
 
   const [avatarSrc, setAvatarSrc] = useState<string | undefined | null>(finalUser?.avatarUrl)
@@ -68,13 +82,22 @@ export const UserHeader = ({ className, user: definedUser, isLoading }: Props) =
     [upload, remove, setNotify],
   )
 
+  const handleOpenCustomization = useCallback(() => {
+    navigate(ROUTE.settings)
+  }, [navigate])
+
   return (
-    <div className={cn('flex flex-col items-center', className)}>
+    <div
+      className={cn('flex flex-col items-center custom', className)}
+      style={getBackgroundStyle(customization?.patternName)}
+    >
       <UploadContainer
-        enabled={isOwner}
+        enabled={editable ? isOwner : false}
+        defaultIsEditable={isEditabledMode}
         onUpdateImageSrc={setAvatarSrc}
         onRevert={() => setAvatarSrc(finalUser?.avatarUrl)}
         onSave={handleSaveAvatarImage}
+        onToggleEditable={setEditabledMode}
         isDeletable={!!avatarSrc}
         isLoading={isLoadingState}
         editProps={{
@@ -112,7 +135,21 @@ export const UserHeader = ({ className, user: definedUser, isLoading }: Props) =
       {isLoading ? (
         <Skeleton className="mt-1" variant="rectangular" width={100} height={28} />
       ) : (
-        <p className="text-lg text-slate-900 dark:text-white">Вишлист | @{finalUser?.username}</p>
+        <>
+          {isOwner && !isEditabledMode && editable && (
+            <button
+              type="button"
+              className="absolute top-[12px] right-[12px] border-none bg-slate-200 dark:bg-slate-300 rounded-[50%] w-[40px] h-[40px] hover:opacity-[0.8]"
+              title="Настройки"
+              onClick={handleOpenCustomization}
+            >
+              <SettingsEmoji />
+            </button>
+          )}
+          <p className="text-lg text-slate-900 dark:text-white">
+            {customization?.title ? customization?.title : <>Вишлист | @{finalUser?.username || finalUser?.id}</>}
+          </p>
+        </>
       )}
     </div>
   )

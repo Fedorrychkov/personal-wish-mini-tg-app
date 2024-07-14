@@ -4,7 +4,7 @@ import { RouterProvider } from 'react-router-dom'
 import { router } from '~/router'
 
 import style from './app.module.css'
-import { AuthProvider, NotifyProvider } from './providers'
+import { AuthProvider, CustomizationProvider, NotifyProvider } from './providers'
 import { cn } from './utils'
 
 const queryClient = new QueryClient()
@@ -16,12 +16,14 @@ type Props = {
 function App(props: Props) {
   return (
     <div className={cn(style['app'], { dark: props.isDark, 'dark-container': props.isDark })}>
-      <div className={cn(style['app'], 'bg-white dark:bg-slate-800')}>
+      <div className={cn(style['app'], 'bg-slate-300 dark:bg-slate-900')}>
         <QueryClientProvider client={queryClient}>
           <AuthProvider>
-            <NotifyProvider>
-              <RouterProvider router={router} />
-            </NotifyProvider>
+            <CustomizationProvider>
+              <NotifyProvider>
+                <RouterProvider router={router} />
+              </NotifyProvider>
+            </CustomizationProvider>
           </AuthProvider>
         </QueryClientProvider>
         <div id="keyboard-appended" />

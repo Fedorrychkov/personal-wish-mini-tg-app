@@ -7,7 +7,7 @@ import { useWishDelete, WishForm, WishImageContainer } from '~/components/wish'
 import { getBookButtonState } from '~/components/wish/helpers'
 import { useWishBook } from '~/components/wish/hooks/useWishBook'
 import { DefaultLayout } from '~/layouts/default'
-import { useAuth } from '~/providers'
+import { useAuth, useCustomization } from '~/providers'
 import { useUserDataQuery, useUserWishItemQuery, useWishCategoryQuery } from '~/query'
 import { ROUTE } from '~/router'
 
@@ -58,6 +58,12 @@ export const Wish = () => {
 
   const isOwner = user?.id === wish?.userId
   const { data: wishUserOwner } = useUserDataQuery(wish?.userId || '', wish?.userId, !isOwner)
+
+  const { updateUserCustomizationId } = useCustomization()
+
+  useEffect(() => {
+    updateUserCustomizationId(wish?.userId)
+  }, [wish?.userId, updateUserCustomizationId])
 
   const { disabled: bookBtnDisabled, text: bookBtnText } = getBookButtonState(wish, user)
 

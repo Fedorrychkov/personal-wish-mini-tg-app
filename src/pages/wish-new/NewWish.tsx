@@ -4,14 +4,22 @@ import { useNavigate } from 'react-router-dom'
 
 import { WishForm, WishImageContainer } from '~/components/wish'
 import { DefaultLayout } from '~/layouts/default'
+import { useAuth, useCustomization } from '~/providers'
 import { ROUTE } from '~/router'
 
 export const NewWish = () => {
   const navigate = useNavigate()
+  const { user } = useAuth()
   const [backButton] = initBackButton()
   const [wishImage, setWishImage] = useState<File | undefined>()
 
   backButton.show()
+
+  const { updateUserCustomizationId } = useCustomization()
+
+  useEffect(() => {
+    updateUserCustomizationId(user?.id)
+  }, [user?.id, updateUserCustomizationId])
 
   const handleBack = useCallback(() => {
     navigate(ROUTE.home, { replace: true })

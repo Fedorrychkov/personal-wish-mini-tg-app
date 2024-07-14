@@ -5,4 +5,6 @@ export const initialState: AuthType = {
   isLoading: true,
   isAuthenticated: false,
   currentUserKey: '',
+  isLoadingCustomization: false,
+  customization: undefined,
 }

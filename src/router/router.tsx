@@ -3,6 +3,7 @@ import { createBrowserRouter, createRoutesFromElements, Outlet, Route, ScrollRes
 import { PrivateRoute } from '~/components/guard'
 import { Favorites } from '~/pages/favorites'
 import { Home } from '~/pages/home'
+import { Settings } from '~/pages/settings'
 import { Unavailable } from '~/pages/unavailable'
 import { UserWishList } from '~/pages/user-wish-list'
 import { Wish } from '~/pages/wish'
@@ -58,6 +59,14 @@ export const router = createBrowserRouter(
         element={
           <PrivateRoute>
             <Favorites />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path={ROUTE.settings}
+        element={
+          <PrivateRoute>
+            <Settings />
           </PrivateRoute>
         }
       />

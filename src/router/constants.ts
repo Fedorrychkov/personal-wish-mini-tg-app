@@ -6,4 +6,5 @@ export const ROUTE = {
   wish: '/wish/:id',
   unavailable: '/unavailable',
   favorites: '/favorites',
+  settings: '/settings',
 }

@@ -4,18 +4,23 @@ import { useEffect, useState } from 'react'
 import { API_URL } from '~/config'
 import { User } from '~/entities'
 import { useUserDataQuery } from '~/query'
+import { useUserCustomizationQuery } from '~/query/customization'
 
 import { initialState } from './initial'
 
 export const useAuthState = () => {
   const launchParams = retrieveLaunchParams()
 
+  const userId = launchParams?.initData?.user?.id?.toString()
+
   const {
     data: userData,
     isLoading: isUserDataLoading,
     isFetched,
     key: currentUserKey,
-  } = useUserDataQuery(launchParams?.initData?.user?.id?.toString() || '', undefined)
+  } = useUserDataQuery(userId || '', undefined)
+
+  const { data: customization, isLoading: isLoadingCustomization } = useUserCustomizationQuery(userId || '', !!userId)
 
   const user: User | undefined = {
     id: '',
@@ -40,6 +45,8 @@ export const useAuthState = () => {
     isLoading: isFinalLoading,
     isAuthenticated,
     user,
+    isLoadingCustomization,
+    customization,
     currentUserKey,
   }
 }

@@ -7,7 +7,7 @@ import { FavoriteContainer } from '~/components/favorite'
 import { UserHeader } from '~/components/user'
 import { WishItem } from '~/components/wish'
 import { DefaultLayout } from '~/layouts/default'
-import { useAuth } from '~/providers'
+import { useAuth, useCustomization } from '~/providers'
 import { useUserCategoryQuery, useUserDataQuery, useUserFavoriteQuery, useUserWishQuery } from '~/query'
 import { ROUTE } from '~/router'
 import { cn } from '~/utils'
@@ -20,6 +20,12 @@ export const UserWishList = () => {
   const { user: authUser } = useAuth()
   const { data: user, isLoading: isUserLoading } = useUserDataQuery(id || '', id, !!id)
   const { data: wishlsit, isLoading, key } = useUserWishQuery(id || '', !!id)
+
+  const { updateUserCustomizationId } = useCustomization()
+
+  useEffect(() => {
+    updateUserCustomizationId(id)
+  }, [id, updateUserCustomizationId])
 
   const [selectedCategoryId, setSelectedCategory] = useState<string | undefined>(undefined)
   const [isMeBooked, setMeBooked] = useState(false)

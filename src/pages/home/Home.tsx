@@ -1,12 +1,12 @@
 import { Alert, Button, Chip, Skeleton } from '@mui/material'
 import { initBackButton, initHapticFeedback } from '@tma.js/sdk'
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { UserHeader } from '~/components/user'
 import { WishItem } from '~/components/wish'
 import { DefaultLayout } from '~/layouts/default'
-import { useAuth } from '~/providers'
+import { useAuth, useCustomization } from '~/providers'
 import { useUserCategoryQuery, useUserWishQuery } from '~/query'
 import { ROUTE } from '~/router'
 import { cn } from '~/utils'
@@ -17,6 +17,12 @@ export const Home = () => {
   const { user } = useAuth()
   const { data: wishlsit, isLoading, key } = useUserWishQuery(user?.id || '', !!user?.id)
   const navigate = useNavigate()
+
+  const { updateUserCustomizationId } = useCustomization()
+
+  useEffect(() => {
+    updateUserCustomizationId(user?.id)
+  }, [user?.id, updateUserCustomizationId])
 
   const [selectedCategoryId, setSelectedCategory] = useState<string | undefined>(undefined)
 

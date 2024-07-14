@@ -12,6 +12,7 @@ type Props = {
   children: ReactNode
   onUpdateImageSrc?: (src: string) => void
   onRevert?: () => void
+  onToggleEditable?: (state: boolean) => void
   enabled?: boolean
   editProps?: {
     className?: string
@@ -20,6 +21,7 @@ type Props = {
   uploadLabel?: ReactNode
   isLoading?: boolean
   isDeletable?: boolean
+  defaultIsEditable?: boolean
 }
 
 export const UploadContainer = (props: Props) => {
@@ -33,8 +35,10 @@ export const UploadContainer = (props: Props) => {
     onSave,
     isLoading = false,
     isDeletable = false,
+    defaultIsEditable = false,
+    onToggleEditable,
   } = props
-  const [isEditable, setEditable] = useState(false)
+  const [isEditable, setEditable] = useState(defaultIsEditable)
   const [draftImage, setDraftImage] = useState<File | undefined>()
   const [draftDataSrc, setDraftDataSrc] = useState<string | undefined>()
   const [isRemoved, setRemoved] = useState(false)
@@ -43,6 +47,14 @@ export const UploadContainer = (props: Props) => {
   const isLoadingState = isLoadingDropzone || isLoading
 
   const isEditedSrc = !!draftDataSrc || isRemoved
+
+  const handleToggleEditable = useCallback(
+    (state: boolean) => {
+      onToggleEditable?.(state)
+      setEditable(state)
+    },
+    [onToggleEditable],
+  )
 
   useEffect(() => {
     const reader = new FileReader()
@@ -85,25 +97,25 @@ export const UploadContainer = (props: Props) => {
     if (!enabled) return
 
     handleReject()
-    setEditable((state) => !state)
-  }, [enabled, handleReject])
+    handleToggleEditable(!isEditable)
+  }, [enabled, handleReject, handleToggleEditable, isEditable])
 
   const handleSaveEdited = useCallback(async () => {
     try {
       await onSave?.(draftImage)
       setRemoved(false)
-      setEditable((state) => !state)
+      handleToggleEditable(!isEditable)
     } catch (error) {
       setError(true)
     }
-  }, [onSave, draftImage])
+  }, [onSave, draftImage, isEditable, handleToggleEditable])
 
   useEffect(() => {
     if (!enabled) {
       handleReject()
-      setEditable(false)
+      handleToggleEditable(false)
     }
-  }, [enabled, handleReject])
+  }, [enabled, handleReject, handleToggleEditable])
 
   return (
     <div className="relative">
