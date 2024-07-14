@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { SettingsEmoji, UploadEmoji } from '~/assets'
-import { getBackgroundStyle } from '~/components/background'
+import { PatternBackground } from '~/components/background'
 import { ImageLoader } from '~/components/image'
 import { Avatar } from '~/components/placeholder'
 import { UploadContainer } from '~/components/upload-file'
@@ -87,70 +87,70 @@ export const UserHeader = ({ className, user: definedUser, isLoading, editable =
   }, [navigate])
 
   return (
-    <div
-      className={cn('flex flex-col items-center custom', className)}
-      style={getBackgroundStyle(customization?.patternName)}
-    >
-      <UploadContainer
-        enabled={editable ? isOwner : false}
-        defaultIsEditable={isEditabledMode}
-        onUpdateImageSrc={setAvatarSrc}
-        onRevert={() => setAvatarSrc(finalUser?.avatarUrl)}
-        onSave={handleSaveAvatarImage}
-        onToggleEditable={setEditabledMode}
-        isDeletable={!!avatarSrc}
-        isLoading={isLoadingState}
-        editProps={{
-          className: 'top-[-10px] right-[-10px]',
-        }}
-        uploadLabel={
-          <div className="h-[80px] flex justify-center items-center px-4 gap-4 relative">
-            <div className="flex items-center justify-center bg-slate-500 w-[80px] min-w-[80px] h-[80px] rounded-[50%] hover:bg-slate-800">
-              <ImageLoader
-                defaultPlaceholder={
-                  <Avatar text={userAvatarPlaceholder} className="w-[80px] h-[80px] rounded-[50%] opacity-[0.6]" />
-                }
-                src={avatarSrc || ''}
-                className="w-[80px] h-[80px] object-cover rounded-[50%] opacity-[0.6]"
-                alt={`Avatar of ${finalUser?.username}`}
-                isLoading={isLoading}
-              />
-              <UploadEmoji className="text-3xl absolute" />
+    <div className={cn('flex flex-col items-center relative', className)}>
+      <PatternBackground patternName={customization?.patternName} className="absolute" />
+      <div className={cn('flex flex-col items-center z-[1] relative w-full')}>
+        <UploadContainer
+          enabled={editable ? isOwner : false}
+          defaultIsEditable={isEditabledMode}
+          onUpdateImageSrc={setAvatarSrc}
+          onRevert={() => setAvatarSrc(finalUser?.avatarUrl)}
+          onSave={handleSaveAvatarImage}
+          onToggleEditable={setEditabledMode}
+          isDeletable={!!avatarSrc}
+          isLoading={isLoadingState}
+          editProps={{
+            className: 'top-[-10px] right-[-10px]',
+          }}
+          uploadLabel={
+            <div className="h-[80px] flex justify-center items-center px-4 gap-4 relative">
+              <div className="flex items-center justify-center bg-slate-500 w-[80px] min-w-[80px] h-[80px] rounded-[50%] hover:bg-slate-800">
+                <ImageLoader
+                  defaultPlaceholder={
+                    <Avatar text={userAvatarPlaceholder} className="w-[80px] h-[80px] rounded-[50%] opacity-[0.6]" />
+                  }
+                  src={avatarSrc || ''}
+                  className="w-[80px] h-[80px] object-cover rounded-[50%] opacity-[0.6]"
+                  alt={`Avatar of ${finalUser?.username}`}
+                  isLoading={isLoading}
+                />
+                <UploadEmoji className="text-3xl absolute" />
+              </div>
+              <p className="max-w-[320px] text-slate-900 dark:text-white">
+                Загрузите одно изображение в формате (jpeg/png/webp/heic) не больше 20mb
+              </p>
             </div>
-            <p className="max-w-[320px] text-slate-900 dark:text-white">
-              Загрузите одно изображение в формате (jpeg/png/webp/heic) не больше 20mb
-            </p>
-          </div>
-        }
-      >
-        <ImageLoader
-          defaultPlaceholder={<Avatar text={userAvatarPlaceholder} className="w-[80px] h-[80px] rounded-[50%]" />}
-          src={avatarSrc || ''}
-          className="w-[80px] h-[80px] object-cover rounded-[50%]"
-          alt={`Avatar of ${finalUser?.username}`}
-          isLoading={isLoading}
-        />
-      </UploadContainer>
+          }
+        >
+          <ImageLoader
+            defaultPlaceholder={<Avatar text={userAvatarPlaceholder} className="w-[80px] h-[80px] rounded-[50%]" />}
+            src={avatarSrc || ''}
+            className="w-[80px] h-[80px] object-cover rounded-[50%]"
+            alt={`Avatar of ${finalUser?.username}`}
+            isLoading={isLoading}
+          />
+        </UploadContainer>
 
-      {isLoading ? (
-        <Skeleton className="mt-1" variant="rectangular" width={100} height={28} />
-      ) : (
-        <>
-          {isOwner && !isEditabledMode && editable && (
-            <button
-              type="button"
-              className="absolute top-[8px] right-[8px] border-none bg-slate-200 dark:bg-slate-300 rounded-[50%] w-[40px] h-[40px] hover:opacity-[0.8]"
-              title="Настройки"
-              onClick={handleOpenCustomization}
-            >
-              <SettingsEmoji />
-            </button>
-          )}
-          <p className="text-lg text-slate-900 dark:text-white">
-            {customization?.title ? customization?.title : <>Вишлист | @{finalUser?.username || finalUser?.id}</>}
-          </p>
-        </>
-      )}
+        {isLoading ? (
+          <Skeleton className="mt-1" variant="rectangular" width={100} height={28} />
+        ) : (
+          <>
+            {isOwner && !isEditabledMode && editable && (
+              <button
+                type="button"
+                className="absolute top-[-12px] right-[12px] border-none bg-slate-200 dark:bg-slate-300 rounded-[50%] w-[40px] h-[40px] hover:opacity-[0.8]"
+                title="Настройки"
+                onClick={handleOpenCustomization}
+              >
+                <SettingsEmoji />
+              </button>
+            )}
+            <p className="text-lg text-slate-900 dark:text-white">
+              {customization?.title ? customization?.title : <>Вишлист | @{finalUser?.username || finalUser?.id}</>}
+            </p>
+          </>
+        )}
+      </div>
     </div>
   )
 }

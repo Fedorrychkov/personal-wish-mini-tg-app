@@ -1,10 +1,18 @@
+export const getPatternPath = (name?: string) => {
+  if (!name) {
+    return undefined
+  }
+
+  return `/custom/tg/${name}.svg`
+}
+
 export const getBackgroundStyle = (name?: string) => {
   if (!name) {
     return undefined
   }
 
   return {
-    backgroundImage: `url("/custom/tg/${name}.svg")`,
+    backgroundImage: `url("${getPatternPath(name)}")`,
   }
 }
 
