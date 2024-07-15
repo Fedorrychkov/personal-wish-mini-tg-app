@@ -14,7 +14,7 @@ export const useUserFavoriteUpdateMutation = (key?: string) => {
     {
       onSuccess: key
         ? (data: Favorite) => {
-            queryClient.setQueryData<Favorite[] | Favorite | undefined>(key || '', (forms = []) => {
+            queryClient.setQueryData<Favorite[] | Favorite | undefined>(key || '', (forms) => {
               if (!Array.isArray(forms)) {
                 return data
               }

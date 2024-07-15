@@ -14,7 +14,7 @@ export const useUserFavoriteDeleteMutation = (favoriteUserId: string, key?: stri
     {
       onSuccess: key
         ? () => {
-            queryClient.setQueryData<Favorite[] | Favorite | undefined>(key || '', (forms = []) => {
+            queryClient.setQueryData<Favorite[] | Favorite | undefined>(key || '', (forms) => {
               if (!Array.isArray(forms)) {
                 return undefined
               }
