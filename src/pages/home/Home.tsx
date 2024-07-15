@@ -47,7 +47,7 @@ export const Home = () => {
 
   return (
     <DefaultLayout className="!px-0">
-      <UserHeader className="self-center bg-gray-200 dark:bg-slate-400 w-full py-4" />
+      <UserHeader className="self-center bg-gray-200 dark:bg-slate-400 w-full py-4" categoryId={selectedCategoryId} />
       <div className="px-4">
         <div className="py-4 flex justify-between items-center">
           <h3 className="text-xl bold text-slate-900 dark:text-white mt-2">Желания</h3>

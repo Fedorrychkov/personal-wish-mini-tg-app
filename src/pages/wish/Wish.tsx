@@ -3,6 +3,7 @@ import { initBackButton, initHapticFeedback } from '@tma.js/sdk'
 import { useCallback, useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
+import { ShareEmoji } from '~/assets'
 import { useWishDelete, WishForm, WishImageContainer } from '~/components/wish'
 import { getBookButtonState } from '~/components/wish/helpers'
 import { useWishBook } from '~/components/wish/hooks/useWishBook'
@@ -10,6 +11,7 @@ import { DefaultLayout } from '~/layouts/default'
 import { useAuth, useCustomization } from '~/providers'
 import { useUserDataQuery, useUserWishItemQuery, useWishCategoryQuery } from '~/query'
 import { ROUTE } from '~/router'
+import { shareTgLink } from '~/utils'
 
 export const Wish = () => {
   const { id } = useParams()
@@ -67,6 +69,12 @@ export const Wish = () => {
 
   const { disabled: bookBtnDisabled, text: bookBtnText } = getBookButtonState(wish, user)
 
+  const handleShare = useCallback(() => {
+    const payload = JSON.stringify({ wId: wish?.id })
+
+    shareTgLink(payload)
+  }, [wish?.id])
+
   return (
     <DefaultLayout className="!px-0">
       {isLoading ? (
@@ -75,6 +83,7 @@ export const Wish = () => {
           <div className="px-4">
             <div className="py-4">
               <Skeleton className="mt-1" variant="rectangular" width={100} height={20} />
+              <Skeleton className="mt-1" variant="rectangular" width={80} height={20} />
               <Skeleton className="mt-2" variant="rectangular" width={200} height={28} />
             </div>
             <div className="w-full h-[1px] bg-gray-400" />
@@ -114,13 +123,24 @@ export const Wish = () => {
                 <div className="py-4">
                   <div className="gap-4 mt-1 flex items-baseline">
                     <div className="text-sm bold text-slate-700 dark:text-slate-400">
-                      {isOwner ? 'Мое желание' : `Желание пользователя @${wishUserOwner?.username}`}
+                      {isOwner
+                        ? 'Мое желание'
+                        : `Желание пользователя @${wishUserOwner?.username || wishUserOwner?.id}`}
                     </div>
                     {wish?.isBooked ? (
                       <div className="text-xs p-1 bg-gray-200 text-slate-700 dark:text-slate-400">
                         {wish?.bookedUserId === user?.id ? 'забронировано вами' : 'забронировано'}
                       </div>
                     ) : null}
+
+                    <button
+                      type="button"
+                      className="border-none bg-slate-200 dark:bg-slate-300 rounded-[50%] w-[40px] h-[40px] hover:opacity-[0.8]"
+                      title="Поделиться"
+                      onClick={handleShare}
+                    >
+                      <ShareEmoji />
+                    </button>
                   </div>
                   {(category || isLoadingCategory) && (
                     <div className="flex my-2">
@@ -132,6 +152,11 @@ export const Wish = () => {
                         </div>
                       )}
                     </div>
+                  )}
+                  {wish?.link && (
+                    <a href={wish?.link} className="text-md text-blue-500 mt-2" target="_blank">
+                      Ссылка на желание
+                    </a>
                   )}
                   <h3 className="text-xl bold text-slate-900 dark:text-white mt-2">{wish?.name || 'Без названия'}</h3>
                 </div>

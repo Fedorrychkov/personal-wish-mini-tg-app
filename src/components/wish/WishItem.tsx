@@ -1,7 +1,7 @@
 import Button from '@mui/material/Button'
 import { initHapticFeedback } from '@tma.js/sdk'
 import { useMemo } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 import { API_URL } from '~/config'
 import { Category } from '~/entities'
@@ -65,9 +65,12 @@ export const WishItem = (props: Props) => {
         />
         <div className="overflow-hidden w-full">
           <div className="flex justify-between">
-            <p className={cn('text-lg text-slate-900 dark:text-white truncate')}>
+            <Link
+              to={ROUTE.wish?.replace(':id', wish?.id)}
+              className={cn('text-lg text-slate-900 dark:text-white truncate')}
+            >
               {wish.name || 'Название не установлено'}
-            </p>
+            </Link>
             {category && (
               <button
                 type="button"

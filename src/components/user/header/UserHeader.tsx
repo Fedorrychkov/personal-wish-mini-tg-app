@@ -2,7 +2,7 @@ import { Skeleton } from '@mui/material'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import { SettingsEmoji, UploadEmoji } from '~/assets'
+import { SettingsEmoji, ShareEmoji, UploadEmoji } from '~/assets'
 import { PatternBackground } from '~/components/background'
 import { ImageLoader } from '~/components/image'
 import { Avatar } from '~/components/placeholder'
@@ -11,16 +11,17 @@ import { User } from '~/entities'
 import { useAuth, useCustomization, useNotifyContext } from '~/providers'
 import { useUserAvatarMutation } from '~/query'
 import { ROUTE } from '~/router'
-import { cn } from '~/utils'
+import { cn, shareTgLink } from '~/utils'
 
 type Props = {
   className?: string
   user?: User
   isLoading?: boolean
   editable?: boolean
+  categoryId?: string
 }
 
-export const UserHeader = ({ className, user: definedUser, isLoading, editable = true }: Props) => {
+export const UserHeader = ({ className, user: definedUser, isLoading, editable = true, categoryId }: Props) => {
   const { user, currentUserKey } = useAuth()
   const { upload, remove } = useUserAvatarMutation(currentUserKey)
   const { setNotify } = useNotifyContext()
@@ -86,6 +87,12 @@ export const UserHeader = ({ className, user: definedUser, isLoading, editable =
     navigate(ROUTE.settings)
   }, [navigate])
 
+  const handleShare = useCallback(() => {
+    const payload = JSON.stringify(categoryId ? { cId: categoryId } : { id: finalUser?.id })
+
+    shareTgLink(payload)
+  }, [finalUser?.id, categoryId])
+
   return (
     <div className={cn('flex flex-col items-center relative', className)}>
       <PatternBackground patternName={customization?.patternName} className="absolute" />
@@ -145,9 +152,20 @@ export const UserHeader = ({ className, user: definedUser, isLoading, editable =
                 <SettingsEmoji />
               </button>
             )}
-            <p className="text-lg text-slate-900 dark:text-white">
-              {customization?.title ? customization?.title : <>Вишлист | @{finalUser?.username || finalUser?.id}</>}
-            </p>
+            <div className="flex items-center gap-2">
+              <p className="text-lg text-slate-900 bold dark:text-white">
+                {customization?.title ? customization?.title : <>Вишлист | @{finalUser?.username || finalUser?.id}</>}
+              </p>
+
+              <button
+                type="button"
+                className="border-none bg-slate-200 dark:bg-slate-300 rounded-[50%] w-[40px] h-[40px] hover:opacity-[0.8]"
+                title="Поделиться"
+                onClick={handleShare}
+              >
+                <ShareEmoji />
+              </button>
+            </div>
           </>
         )}
       </div>

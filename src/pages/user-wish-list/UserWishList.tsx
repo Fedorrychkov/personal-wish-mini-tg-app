@@ -27,7 +27,9 @@ export const UserWishList = () => {
     updateUserCustomizationId(id)
   }, [id, updateUserCustomizationId])
 
-  const [selectedCategoryId, setSelectedCategory] = useState<string | undefined>(undefined)
+  const categoryId = new URLSearchParams(location.search).get('categoryId')
+
+  const [selectedCategoryId, setSelectedCategory] = useState<string | undefined>(categoryId || '')
   const [isMeBooked, setMeBooked] = useState(false)
   const [isUnbooked, setUnbooked] = useState(false)
 
