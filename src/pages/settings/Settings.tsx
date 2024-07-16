@@ -1,16 +1,18 @@
 import { Button } from '@mui/material'
 import { useCallback, useEffect, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
+import { Link } from 'react-router-dom'
 
 import { SaveEmoji } from '~/assets'
 import { getBackgroundStyle, getPatterns } from '~/components/background'
 import { TextFieldContainer } from '~/components/fields'
 import { Spinner } from '~/components/loaders'
 import { UserHeader } from '~/components/user'
-import { useRegister } from '~/hooks'
+import { useRegister, useTgBack } from '~/hooks'
 import { DefaultLayout } from '~/layouts/default'
 import { useAuth, useCustomization } from '~/providers'
 import { useUserCustomizationCreateMutation } from '~/query/customization'
+import { ROUTE } from '~/router'
 import { cn } from '~/utils'
 
 const patterns = getPatterns()
@@ -20,6 +22,8 @@ type Form = {
 }
 
 export const Settings = () => {
+  useTgBack({ defaultBackPath: ROUTE.home })
+
   const { user, isLoadingCustomization } = useAuth()
   const { updateUserCustomizationId, customization } = useCustomization()
 
@@ -105,7 +109,11 @@ export const Settings = () => {
           ) : (
             <div className="flex flex-col gap-2">
               <div className="bg-slate-200 dark:bg-slate-600 p-2 rounded-lg">
-                <p className="text-sm bold text-slate-900 dark:text-white mb-4">Кастомизация названия</p>
+                <p className="text-md bold text-slate-900 dark:text-white">Настройки категорий</p>
+                <Link to={ROUTE.categorySettings} className="text-sm bold text-blue-500 dark:text-blue-800">
+                  Мои списки категорий
+                </Link>
+                <p className="text-md bold text-slate-900 dark:text-white my-4">Кастомизация названия</p>
                 <FormProvider {...form}>
                   <form className="pt-0 mb-4" onSubmit={handleSubmit(onSubmit)}>
                     <TextFieldContainer
@@ -137,7 +145,7 @@ export const Settings = () => {
                 </FormProvider>
               </div>
               <div className="bg-slate-200 dark:bg-slate-600 p-2 rounded-lg">
-                <p className="text-sm bold text-slate-900 dark:text-white mb-4">Кастомизация фона</p>
+                <p className="text-md bold text-slate-900 dark:text-white mb-4">Кастомизация фона</p>
                 <div className="flex gap-4 flex-wrap flex-col h-[220px] overflow-hidden overflow-x-auto">
                   <button
                     className={cn(

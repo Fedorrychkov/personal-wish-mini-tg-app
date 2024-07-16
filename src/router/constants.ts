@@ -7,4 +7,7 @@ export const ROUTE = {
   unavailable: '/unavailable',
   favorites: '/favorites',
   settings: '/settings',
+  categorySettings: '/settings/category',
+  categoryNew: '/category/new',
+  category: '/category/:id',
 }

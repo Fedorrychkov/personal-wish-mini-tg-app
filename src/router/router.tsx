@@ -1,6 +1,8 @@
 import { createBrowserRouter, createRoutesFromElements, Outlet, Route, ScrollRestoration } from 'react-router-dom'
 
 import { PrivateRoute } from '~/components/guard'
+import { Category } from '~/pages/category'
+import { CategorySettings } from '~/pages/category-settings'
 import { Favorites } from '~/pages/favorites'
 import { Home } from '~/pages/home'
 import { Settings } from '~/pages/settings'
@@ -59,6 +61,22 @@ export const router = createBrowserRouter(
         element={
           <PrivateRoute>
             <Favorites />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path={ROUTE.category}
+        element={
+          <PrivateRoute>
+            <Category />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path={ROUTE.categorySettings}
+        element={
+          <PrivateRoute>
+            <CategorySettings />
           </PrivateRoute>
         }
       />

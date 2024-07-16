@@ -17,6 +17,12 @@ export class ClienCategoryApi {
     return response.data
   }
 
+  async update(id: string, body: CategoryDto): Promise<Category> {
+    const response = await this.client.patch(`/v1/category/${id}`, body)
+
+    return response.data
+  }
+
   async list(id?: string): Promise<Category[]> {
     const response = await this.client.get(`/v1/category/list${id ? `/${id}` : ''}`)
 

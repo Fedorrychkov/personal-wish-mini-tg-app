@@ -156,7 +156,7 @@ export const Wish = () => {
                   {wish?.link && (
                     <a
                       href={wish?.link?.includes('http') ? wish?.link : `//${wish?.link}`}
-                      className="text-md text-blue-500 mt-2"
+                      className="text-md text-blue-500 dark:text-blue-800 mt-2"
                       target="_blank"
                     >
                       Ссылка на желание
