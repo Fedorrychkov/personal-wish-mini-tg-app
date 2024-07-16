@@ -27,3 +27,7 @@ export type WishDto = {
   categoryId?: Wish['categoryId']
   imageUrl?: Wish['imageUrl']
 }
+
+export type WishFilter = {
+  categoryId?: string
+}

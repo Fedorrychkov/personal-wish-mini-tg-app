@@ -3,6 +3,7 @@ import { initBackButton } from '@tma.js/sdk'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 
+import { CategoryChip } from '~/components/category'
 import { FavoriteContainer } from '~/components/favorite'
 import { UserHeader } from '~/components/user'
 import { WishItem } from '~/components/wish'
@@ -19,8 +20,6 @@ export const UserWishList = () => {
   const [backButton] = initBackButton()
   const { user: authUser } = useAuth()
   const { data: user, isLoading: isUserLoading } = useUserDataQuery(id || '', id, !!id)
-  const { data: wishlsit, isLoading, key } = useUserWishQuery(id || '', !!id)
-
   const { updateUserCustomizationId } = useCustomization()
 
   useEffect(() => {
@@ -32,6 +31,12 @@ export const UserWishList = () => {
   const [selectedCategoryId, setSelectedCategory] = useState<string | undefined>(categoryId || '')
   const [isMeBooked, setMeBooked] = useState(false)
   const [isUnbooked, setUnbooked] = useState(false)
+
+  const {
+    data: wishlsit,
+    isLoading,
+    key,
+  } = useUserWishQuery(id || '', { categoryId: selectedCategoryId?.trim?.() }, { enabled: !!id })
 
   const handleToggleBookedFilter = () => {
     setMeBooked((state) => !state)
@@ -119,14 +124,11 @@ export const UserWishList = () => {
           )}
           {!isCategoryLoading
             ? categories?.map((category) => (
-                <Chip
+                <CategoryChip
                   key={category.id}
-                  label={category.name}
-                  variant={selectedCategoryId === category.id ? undefined : 'outlined'}
-                  className={cn('dark:!text-slate-200', {
-                    'dark:!bg-slate-500': selectedCategoryId === category.id,
-                  })}
-                  onClick={() => handlePickCategory(category.id)}
+                  category={category}
+                  selected={selectedCategoryId === category.id}
+                  onClick={handlePickCategory}
                 />
               ))
             : null}

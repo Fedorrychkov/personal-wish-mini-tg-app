@@ -2,7 +2,7 @@ import { AxiosInstance } from 'axios'
 
 import { Request } from '~/services'
 
-import { Wish, WishDto } from './wish.type'
+import { Wish, WishDto, WishFilter } from './wish.type'
 
 export class ClientWishApi {
   private readonly client: AxiosInstance
@@ -11,8 +11,8 @@ export class ClientWishApi {
     this.client = new Request().apiClient
   }
 
-  async list(id?: string): Promise<Wish[]> {
-    const response = await this.client.get(`/v1/wish/list${id ? `/${id}` : ''}`)
+  async list(id?: string, filter?: WishFilter): Promise<Wish[]> {
+    const response = await this.client.get(`/v1/wish/list${id ? `/${id}` : ''}`, { params: filter })
 
     return response.data
   }

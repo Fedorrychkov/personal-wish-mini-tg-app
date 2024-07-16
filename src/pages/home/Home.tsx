@@ -1,21 +1,21 @@
-import { Alert, Button, Chip, Skeleton } from '@mui/material'
+import { Alert, Button, Skeleton } from '@mui/material'
 import { initBackButton, initHapticFeedback } from '@tma.js/sdk'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
+import { CategoryChip } from '~/components/category'
 import { UserHeader } from '~/components/user'
 import { WishItem } from '~/components/wish'
 import { DefaultLayout } from '~/layouts/default'
-import { useAuth, useCustomization } from '~/providers'
-import { useUserCategoryQuery, useUserWishQuery } from '~/query'
+import { useAuth, useCustomization, useNotifyContext } from '~/providers'
+import { useUserCategoryDeleteMutation, useUserCategoryQuery, useUserWishQuery } from '~/query'
 import { ROUTE } from '~/router'
-import { cn } from '~/utils'
 
 export const Home = () => {
+  const { setNotify } = useNotifyContext()
   const [backButton] = initBackButton()
   const haptic = initHapticFeedback()
   const { user } = useAuth()
-  const { data: wishlsit, isLoading, key } = useUserWishQuery(user?.id || '', !!user?.id)
   const navigate = useNavigate()
 
   const { updateUserCustomizationId } = useCustomization()
@@ -25,6 +25,13 @@ export const Home = () => {
   }, [user?.id, updateUserCustomizationId])
 
   const [selectedCategoryId, setSelectedCategory] = useState<string | undefined>(undefined)
+
+  const {
+    data: wishlsit,
+    isLoading,
+    isError,
+    key,
+  } = useUserWishQuery(user?.id || '', { categoryId: selectedCategoryId?.trim?.() }, { enabled: !!user?.id })
 
   const handlePickCategory = useCallback((categoryId: string) => {
     setSelectedCategory((selectedCategoryId) => (selectedCategoryId === categoryId ? undefined : categoryId))
@@ -36,11 +43,39 @@ export const Home = () => {
     navigate(ROUTE.wishNew)
   }, [haptic, navigate])
 
-  const { data: categories, isLoading: isCategoryLoading } = useUserCategoryQuery(user?.id || '', !!user?.id)
+  const {
+    data: categories,
+    isLoading: isCategoryLoading,
+    key: definedCategoryKey,
+  } = useUserCategoryQuery(user?.id || '', !!user?.id)
 
   const data = useMemo(
     () => (selectedCategoryId ? wishlsit?.filter((wish) => wish?.categoryId === selectedCategoryId) : wishlsit),
     [selectedCategoryId, wishlsit],
+  )
+
+  const isCategoryAvailable = useMemo(
+    () => !!categories?.find((category) => category.id === selectedCategoryId),
+    [categories, selectedCategoryId],
+  )
+
+  const deleteCategoryMutation = useUserCategoryDeleteMutation(definedCategoryKey)
+
+  const handleDeleteCategory = useCallback(
+    async (id?: string) => {
+      if (!id) return
+
+      try {
+        await deleteCategoryMutation.mutate(id)
+        setSelectedCategory(undefined)
+        setNotify('Категория успешно удалена', { severity: 'success' })
+        haptic.impactOccurred('soft')
+      } catch {
+        setNotify('Не удалось удалить категорию', { severity: 'error' })
+        haptic.impactOccurred('heavy')
+      }
+    },
+    [deleteCategoryMutation, haptic, setNotify],
   )
 
   backButton.hide()
@@ -67,14 +102,11 @@ export const Home = () => {
             )}
             {!isCategoryLoading &&
               categories?.map((category) => (
-                <Chip
+                <CategoryChip
                   key={category.id}
-                  label={category.name}
-                  variant={selectedCategoryId === category.id ? undefined : 'outlined'}
-                  className={cn('dark:!text-slate-200', {
-                    'dark:!bg-slate-500': selectedCategoryId === category.id,
-                  })}
-                  onClick={() => handlePickCategory(category.id)}
+                  category={category}
+                  selected={selectedCategoryId === category.id}
+                  onClick={handlePickCategory}
                 />
               ))}
           </div>
@@ -103,7 +135,7 @@ export const Home = () => {
                   />
                 ))
               ) : (
-                <div>
+                <div className="flex flex-col gap-4">
                   <Alert
                     severity="info"
                     className="dark:!bg-slate-300"
@@ -116,6 +148,26 @@ export const Home = () => {
                     Вы еще не добавили ни одного желания {selectedCategoryId ? 'в выбранной категории' : ''}, давайте
                     создадим?
                   </Alert>
+                  {!!selectedCategoryId && isCategoryAvailable && !isError && (
+                    <Alert
+                      severity="warning"
+                      className="dark:!bg-slate-300"
+                      action={
+                        <Button
+                          color="primary"
+                          type="button"
+                          onClick={() => handleDeleteCategory(selectedCategoryId)}
+                          size="small"
+                          variant="text"
+                          disabled={deleteCategoryMutation?.isLoading}
+                        >
+                          Удалить
+                        </Button>
+                      }
+                    >
+                      Так же вы можете удалить пустую категорию
+                    </Alert>
+                  )}
                 </div>
               )}
             </>

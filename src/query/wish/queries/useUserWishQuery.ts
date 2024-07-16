@@ -1,21 +1,21 @@
 import { UseQueryOptions } from 'react-query'
 
-import { ClientWishApi, Wish } from '~/entities/wish'
+import { ClientWishApi, Wish, WishFilter } from '~/entities/wish'
 import { useQueryBuilder } from '~/hooks'
 
 export const useUserWishQuery = (
   id: string,
-  enabled = true,
+  filter: WishFilter,
   options?: Omit<UseQueryOptions<Wish[], unknown, Wish[], string>, 'queryKey' | 'queryFn'> | undefined,
 ) => {
-  const key = `user-wish-list-${id}`
+  const key = `user-wish-list-${id}-${Object.values(filter)}`
 
   const props = useQueryBuilder({
     key,
-    enabled,
+    enabled: options?.enabled ?? true,
     method: async () => {
       const api = new ClientWishApi()
-      const response = await api.list(id)
+      const response = await api.list(id, filter)
 
       return response
     },

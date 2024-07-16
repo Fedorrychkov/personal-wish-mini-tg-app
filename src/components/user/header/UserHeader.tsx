@@ -163,7 +163,7 @@ export const UserHeader = ({ className, user: definedUser, isLoading, editable =
                 title="Поделиться"
                 onClick={handleShare}
               >
-                <ShareEmoji />
+                <ShareEmoji className="text-lg" />
               </button>
             </div>
           </>

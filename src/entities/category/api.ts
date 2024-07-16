@@ -28,4 +28,10 @@ export class ClienCategoryApi {
 
     return response.data
   }
+
+  async delete(id: string): Promise<Category> {
+    const response = await this.client.delete(`/v1/category/${id}`)
+
+    return response.data
+  }
 }
