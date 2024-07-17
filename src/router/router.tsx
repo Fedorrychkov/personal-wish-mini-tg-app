@@ -2,6 +2,7 @@ import { createBrowserRouter, createRoutesFromElements, Outlet, Route, ScrollRes
 
 import { PrivateRoute } from '~/components/guard'
 import { Category } from '~/pages/category'
+import { CategoryNew } from '~/pages/category-new'
 import { CategorySettings } from '~/pages/category-settings'
 import { Favorites } from '~/pages/favorites'
 import { Home } from '~/pages/home'
@@ -76,7 +77,7 @@ export const router = createBrowserRouter(
         path={ROUTE.categoryNew}
         element={
           <PrivateRoute>
-            <Category />
+            <CategoryNew />
           </PrivateRoute>
         }
       />

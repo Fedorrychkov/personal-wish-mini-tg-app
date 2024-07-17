@@ -1,4 +1,4 @@
-import { Alert, Button, Skeleton } from '@mui/material'
+import { Alert, Button, Chip, Skeleton } from '@mui/material'
 import { initBackButton, initHapticFeedback } from '@tma.js/sdk'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -10,6 +10,7 @@ import { DefaultLayout } from '~/layouts/default'
 import { useAuth, useCustomization, useNotifyContext } from '~/providers'
 import { useUserCategoryDeleteMutation, useUserCategoryQuery, useUserWishQuery } from '~/query'
 import { ROUTE } from '~/router'
+import { cn } from '~/utils'
 
 export const Home = () => {
   const { setNotify } = useNotifyContext()
@@ -42,6 +43,10 @@ export const Home = () => {
 
     navigate(ROUTE.wishNew)
   }, [haptic, navigate])
+
+  const handleAddCategory = useCallback(() => {
+    navigate(ROUTE.categoryNew, { state: { prevPage: ROUTE.home }, replace: true })
+  }, [navigate])
 
   const {
     data: categories,
@@ -93,6 +98,12 @@ export const Home = () => {
 
         {isCategoryLoading || categories?.length ? (
           <div className="mb-4 flex flex-wrap gap-3">
+            <Chip
+              label="Добавить"
+              variant="filled"
+              className={cn('dark:!text-slate-200')}
+              onClick={handleAddCategory}
+            />
             {isCategoryLoading && (
               <>
                 <Skeleton className="rounded-lg" variant="rectangular" width={100} height={32} />

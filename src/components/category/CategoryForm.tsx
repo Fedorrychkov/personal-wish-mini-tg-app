@@ -7,7 +7,7 @@ import { useRegister } from '~/hooks'
 
 import { TextFieldContainer } from '../fields'
 import { Spinner } from '../loaders'
-import { useCategoryDelete, useCategoryUpdate } from './hooks'
+import { useCategoryCreate, useCategoryDelete, useCategoryUpdate } from './hooks'
 
 type Props = {
   category?: Category
@@ -17,6 +17,8 @@ type Props = {
 
 export const CategoryForm = (props: Props) => {
   const { category, definedKey, onCancel } = props
+
+  const isNew = !category
 
   const form = useForm<CategoryDto>({
     mode: 'onChange',
@@ -36,19 +38,29 @@ export const CategoryForm = (props: Props) => {
     }, 1000)
   })
 
+  const { isLoading: isLoadingCreation, handleCreatePopup } = useCategoryCreate(definedKey, () => {
+    setTimeout(() => {
+      onCancel?.()
+    }, 1000)
+  })
+
   const { isLoading: isLoadingDeletion, handleDeletePopup } = useCategoryDelete(category, definedKey, () => {
     setTimeout(() => {
       onCancel?.()
     }, 1000)
   })
 
-  const isLoading = isLoadingDeletion || isLoadingUpdates
+  const isLoading = isLoadingDeletion || isLoadingUpdates || isLoadingCreation
 
   const onSubmit = useCallback(
     (payload: CategoryDto) => {
-      handleUpdatePopup(payload)
+      if (isNew) {
+        handleCreatePopup(payload)
+      } else {
+        handleUpdatePopup(payload)
+      }
     },
-    [handleUpdatePopup],
+    [handleUpdatePopup, handleCreatePopup, isNew],
   )
 
   const nameField = useRegister({
@@ -125,7 +137,7 @@ export const CategoryForm = (props: Props) => {
         <div className="w-full h-[1px] bg-gray-400 mt-4" />
         <div className="gap-4 mt-2 flex justify-between">
           <Button color="primary" size="small" type="submit" variant="text" disabled={isLoading}>
-            {isLoading ? <Spinner /> : 'Обновить'}
+            {isLoading ? <Spinner /> : isNew ? 'Создать' : 'Обновить'}
           </Button>
 
           <Button color="primary" type="button" size="small" variant="text" onClick={onCancel}>
