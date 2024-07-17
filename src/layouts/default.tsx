@@ -20,6 +20,7 @@ export const DefaultLayout = ({ children, className }: Props) => {
       <div className={cn('bg-slate-100 dark:bg-slate-800 flex flex-col w-full min-h-[100vh] px-4', className)}>
         <div className="flex-1 z-[1]">{Children.map(arrayChildren, (child) => child)}</div>
         <PatternBackground patternName={customization?.patternName} />
+        <div id="keyboard-appended" />
       </div>
       <MainNavigation />
     </>

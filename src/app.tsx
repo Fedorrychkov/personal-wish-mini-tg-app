@@ -26,7 +26,6 @@ function App(props: Props) {
             </CustomizationProvider>
           </AuthProvider>
         </QueryClientProvider>
-        <div id="keyboard-appended" />
       </div>
     </div>
   )

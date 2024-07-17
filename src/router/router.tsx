@@ -73,6 +73,14 @@ export const router = createBrowserRouter(
         }
       />
       <Route
+        path={ROUTE.categoryNew}
+        element={
+          <PrivateRoute>
+            <Category />
+          </PrivateRoute>
+        }
+      />
+      <Route
         path={ROUTE.categorySettings}
         element={
           <PrivateRoute>

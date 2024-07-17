@@ -322,6 +322,12 @@ export const WishForm = (props: Props) => {
               label="Категория желания"
               noOptionsText="Ни одной категории еще не создавалось"
             />
+            {typeof categoryId !== 'string' && categoryId?.isPrivate && (
+              <Alert severity="info" className="mt-4">
+                Выбрана приватная категория, желание будет доступно только приглашенным в эту категорию пользователям.
+                Внести изменения в категорию можно на странице настроек категории
+              </Alert>
+            )}
           </div>
         </div>
 

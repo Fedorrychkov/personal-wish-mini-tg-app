@@ -3,7 +3,7 @@ import { initBackButton, initHapticFeedback } from '@tma.js/sdk'
 import { useCallback, useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
-import { ShareEmoji } from '~/assets'
+import { OpenEmoji, ShareEmoji } from '~/assets'
 import { useWishDelete, WishForm, WishImageContainer } from '~/components/wish'
 import { getBookButtonState } from '~/components/wish/helpers'
 import { useWishBook } from '~/components/wish/hooks/useWishBook'
@@ -74,6 +74,12 @@ export const Wish = () => {
 
     shareTgLink(payload)
   }, [wish?.id])
+
+  const handleOpenCategory = useCallback(() => {
+    navigate(ROUTE?.category?.replace(':id', category?.id || ''), {
+      state: { prevPage: ROUTE.wish?.replace(':id', wish?.id || '') },
+    })
+  }, [navigate, category?.id, wish?.id])
 
   return (
     <DefaultLayout className="!px-0">
@@ -147,9 +153,28 @@ export const Wish = () => {
                       {isLoadingCategory ? (
                         <Skeleton className="mt-1 rounded-md" variant="rectangular" width={100} height={20} />
                       ) : (
-                        <div className="text-xs bold p-2 bg-gray-200 text-slate-700 dark:text-slate-800 rounded-md">
-                          {category.name}
-                        </div>
+                        <>
+                          {isOwner ? (
+                            <button
+                              onClick={handleOpenCategory}
+                              type="button"
+                              className="flex text-xs bold p-2 bg-gray-200 text-slate-700 dark:text-slate-800 rounded-md gap-1 items-center"
+                              key={category.id}
+                            >
+                              <div className="flex flex-1 flex-col items-start">
+                                <p className="text-sm bold text-blue-500 dark:text-blue-800">{category.name}</p>
+                                <p className="text-sm bold text-slate-900 dark:text-white">
+                                  {category?.isPrivate ? '(приватная, по приглашению)' : ''}
+                                </p>
+                              </div>
+                              <OpenEmoji />
+                            </button>
+                          ) : (
+                            <div className="text-xs bold p-2 bg-gray-200 text-slate-700 dark:text-slate-800 rounded-md">
+                              {category.name}
+                            </div>
+                          )}
+                        </>
                       )}
                     </div>
                   )}
