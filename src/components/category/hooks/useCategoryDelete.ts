@@ -4,7 +4,7 @@ import { Category } from '~/entities'
 import { useNotifyContext } from '~/providers'
 import { useUserCategoryDeleteMutation } from '~/query'
 
-export const useCategoryDelete = (category?: Category, listKey?: string, onSuccess?: (category: Category) => void) => {
+export const useCategoryDelete = (category?: Category, listKey?: string, onSuccess?: () => void) => {
   const popup = initPopup()
   const deleteMutation = useUserCategoryDeleteMutation(listKey)
   const haptic = initHapticFeedback()
@@ -14,9 +14,9 @@ export const useCategoryDelete = (category?: Category, listKey?: string, onSucce
 
   const handleDeleteCategory = async (id: string) => {
     try {
-      const category = await deleteMutation.mutateAsync(id)
+      await deleteMutation.mutateAsync(id)
       haptic.impactOccurred('medium')
-      onSuccess?.(category)
+      onSuccess?.()
       setNotify('Категория успешно удалена', { severity: 'success' })
     } catch (error) {
       setNotify('Произошла ошибка удаления категории', { severity: 'error' })
