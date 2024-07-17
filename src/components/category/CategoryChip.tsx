@@ -46,7 +46,7 @@ export const CategoryChip = (props: Props) => {
       e.preventDefault()
       e.stopPropagation()
 
-      navigate(ROUTE.category?.replace(':id', category.id), { replace: true })
+      navigate(ROUTE.category?.replace(':id', category.id), { state: { prevPage: ROUTE.home }, replace: true })
     },
     [navigate, category?.id],
   )

@@ -1,20 +1,20 @@
 import { useMutation, useQueryClient } from 'react-query'
 
-import { Category, CategoryDto, ClienCategoryApi } from '~/entities'
+import { CategoryWhitelist, CategoryWhitelistDto, ClienCategoryWhitelistApi } from '~/entities'
 
-export const useUserCategoryCreateMutation = (key?: string) => {
+export const useUserCategoryWhitelistCreateMutation = (key?: string) => {
   const queryClient = useQueryClient()
 
   return useMutation(
-    (body: CategoryDto) => {
-      const api = new ClienCategoryApi()
+    (body: CategoryWhitelistDto) => {
+      const api = new ClienCategoryWhitelistApi()
 
       return api.create(body)
     },
     {
       onSuccess: key
-        ? (data: Category) => {
-            queryClient.setQueryData<Category[] | Category | undefined>(key || '', (forms = []) => {
+        ? (data: CategoryWhitelist) => {
+            queryClient.setQueryData<CategoryWhitelist[] | CategoryWhitelist | undefined>(key || '', (forms = []) => {
               if (!Array.isArray(forms)) {
                 return data
               }

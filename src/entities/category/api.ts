@@ -35,7 +35,7 @@ export class ClienCategoryApi {
     return response.data
   }
 
-  async delete(id: string): Promise<Category> {
+  async delete(id: string): Promise<{ success: boolean; id: string }> {
     const response = await this.client.delete(`/v1/category/${id}`)
 
     return response.data

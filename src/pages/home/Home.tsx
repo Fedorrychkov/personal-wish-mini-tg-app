@@ -96,32 +96,25 @@ export const Home = () => {
           </Button>
         </div>
 
-        {isCategoryLoading || categories?.length ? (
-          <div className="mb-4 flex flex-wrap gap-3">
-            <Chip
-              label="Добавить"
-              variant="filled"
-              className={cn('dark:!text-slate-200')}
-              onClick={handleAddCategory}
-            />
-            {isCategoryLoading && (
-              <>
-                <Skeleton className="rounded-lg" variant="rectangular" width={100} height={32} />
-                <Skeleton className="rounded-lg" variant="rectangular" width={100} height={32} />
-                <Skeleton className="rounded-lg" variant="rectangular" width={100} height={32} />
-              </>
-            )}
-            {!isCategoryLoading &&
-              categories?.map((category) => (
-                <CategoryChip
-                  key={category.id}
-                  category={category}
-                  selected={selectedCategoryId === category.id}
-                  onClick={handlePickCategory}
-                />
-              ))}
-          </div>
-        ) : null}
+        <div className="mb-4 flex flex-wrap gap-3">
+          <Chip label="Добавить" variant="filled" className={cn('dark:!text-slate-200')} onClick={handleAddCategory} />
+          {isCategoryLoading && (
+            <>
+              <Skeleton className="rounded-lg" variant="rectangular" width={100} height={32} />
+              <Skeleton className="rounded-lg" variant="rectangular" width={100} height={32} />
+              <Skeleton className="rounded-lg" variant="rectangular" width={100} height={32} />
+            </>
+          )}
+          {!isCategoryLoading &&
+            categories?.map((category) => (
+              <CategoryChip
+                key={category.id}
+                category={category}
+                selected={selectedCategoryId === category.id}
+                onClick={handlePickCategory}
+              />
+            ))}
+        </div>
 
         <div className="w-full h-[1px] bg-gray-400" />
 

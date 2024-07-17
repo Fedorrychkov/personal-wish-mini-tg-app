@@ -3,6 +3,7 @@ import { useCallback } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 
 import { CategoryForm, CategoryFormSkeleton } from '~/components/category'
+import { CategoryWhitelist } from '~/components/category-whitelist'
 import { UserHeader } from '~/components/user'
 import { useTgBack } from '~/hooks'
 import { DefaultLayout } from '~/layouts/default'
@@ -75,13 +76,23 @@ export const Category = () => {
 
         <div className="w-full h-[1px] bg-gray-400" />
 
-        <div className="bg-slate-200 dark:bg-slate-600 p-4 rounded-lg my-4">
-          {isCategoryLoading && !category ? (
+        {isCategoryLoading && !category ? (
+          <div className="bg-slate-200 dark:bg-slate-600 p-4 rounded-lg my-4">
             <CategoryFormSkeleton />
-          ) : (
-            <CategoryForm definedKey={definedCategoryKey} category={category} onCancel={handleBackToSettings} />
-          )}
-        </div>
+          </div>
+        ) : (
+          <>
+            <div className="bg-slate-200 dark:bg-slate-600 p-4 rounded-lg my-4">
+              <CategoryForm definedKey={definedCategoryKey} category={category} onCancel={handleBackToSettings} />
+            </div>
+
+            {category?.isPrivate && (
+              <div className="bg-slate-200 dark:bg-slate-600 p-4 rounded-lg my-4">
+                <CategoryWhitelist category={category} />
+              </div>
+            )}
+          </>
+        )}
       </div>
     </DefaultLayout>
   )

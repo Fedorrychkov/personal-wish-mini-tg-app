@@ -3,7 +3,7 @@ import { ReactNode } from 'react'
 import { cn } from '~/utils'
 
 type Props = {
-  text: ReactNode
+  text?: ReactNode
   className?: string
 }
 
