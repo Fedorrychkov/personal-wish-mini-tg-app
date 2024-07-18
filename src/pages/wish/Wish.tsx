@@ -1,5 +1,6 @@
 import { Button, Skeleton } from '@mui/material'
-import { initBackButton, initHapticFeedback } from '@tma.js/sdk'
+import { initHapticFeedback } from '@tma.js/sdk'
+import { AxiosError } from 'axios'
 import { useCallback, useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
@@ -7,45 +8,60 @@ import { OpenEmoji, ShareEmoji } from '~/assets'
 import { useWishDelete, WishForm, WishImageContainer } from '~/components/wish'
 import { getBookButtonState } from '~/components/wish/helpers'
 import { useWishBook } from '~/components/wish/hooks/useWishBook'
+import { getErrorMessageByCode } from '~/errors'
+import { useTgBack } from '~/hooks'
 import { DefaultLayout } from '~/layouts/default'
-import { useAuth, useCustomization } from '~/providers'
+import { useAuth, useCustomization, useNotifyContext } from '~/providers'
 import { useUserDataQuery, useUserWishItemQuery, useWishCategoryQuery } from '~/query'
 import { ROUTE } from '~/router'
 import { shareTgLink } from '~/utils'
 
 export const Wish = () => {
+  const { setNotify } = useNotifyContext()
   const { id } = useParams()
   const navigate = useNavigate()
-  const [backButton] = initBackButton()
   const haptic = initHapticFeedback()
   const { user } = useAuth()
   const [isEditable, setEditable] = useState(false)
-  const { data: wish, isLoading, isFetched, key } = useUserWishItemQuery(id || '', `${user?.id}`)
+
+  const {
+    data: wish,
+    isLoading,
+    isFetched,
+    isError,
+    key,
+  } = useUserWishItemQuery(id || '', `${user?.id}`, !!id && !!user?.id, {
+    onError: (error: unknown) => {
+      if (error instanceof AxiosError) {
+        const message = getErrorMessageByCode(error?.response?.data?.code)
+
+        setNotify(message, { severity: 'error' })
+      }
+
+      setTimeout(() => {
+        navigate(ROUTE.home, { replace: true })
+      }, 1000)
+    },
+  })
+
+  const isUnavailable = isLoading || isError
 
   const [wishImage, setWishImage] = useState<File | undefined>()
   const [isDeleted, setDeleted] = useState(false)
 
-  backButton.show()
+  useTgBack({
+    backHandler: () => {
+      if (wish && wish?.userId !== user?.id) {
+        navigate(ROUTE.userWishList?.replace(':id', wish?.userId || ''), { replace: true })
 
-  const handleBack = useCallback(() => {
-    if (wish?.userId !== user?.id) {
-      navigate(ROUTE.userWishList?.replace(':id', wish?.userId || ''), { replace: true })
+        return
+      }
+
+      navigate(ROUTE.home, { replace: true })
 
       return
-    }
-
-    navigate(ROUTE.home, { replace: true })
-
-    return
-  }, [navigate, wish, user])
-
-  useEffect(() => {
-    backButton.on('click', handleBack)
-
-    return () => {
-      backButton.off('click', handleBack)
-    }
-  }, [handleBack, backButton])
+    },
+  })
 
   const { handleDeletePopup, isLoading: isDeletionLoading } = useWishDelete(wish, '', () => {
     navigate(ROUTE.home, { replace: true })
@@ -83,7 +99,7 @@ export const Wish = () => {
 
   return (
     <DefaultLayout className="!px-0">
-      {isLoading ? (
+      {isUnavailable ? (
         <>
           <Skeleton height={200} width="100%" className="bg-gray-200 dark:bg-slate-400 !scale-x-[1] !scale-y-[1]" />
           <div className="px-4">
@@ -112,7 +128,7 @@ export const Wish = () => {
             onDeleted={setDeleted}
             isLoading={!wish || isLoading || !isFetched}
           />
-          <div className="px-4">
+          <div>
             {isEditable ? (
               <WishForm
                 wish={wish}
@@ -126,7 +142,7 @@ export const Wish = () => {
               />
             ) : (
               <div className="pb-4 pt-0">
-                <div className="py-4">
+                <div className="p-4 bg-slate-200/[.5] dark:bg-slate-900/[.5]">
                   <div className="gap-4 mt-1 flex items-baseline">
                     <div className="text-sm bold text-slate-700 dark:text-slate-400">
                       {isOwner
@@ -158,19 +174,19 @@ export const Wish = () => {
                             <button
                               onClick={handleOpenCategory}
                               type="button"
-                              className="flex text-xs bold p-2 bg-gray-200 text-slate-700 dark:text-slate-800 rounded-md gap-1 items-center"
+                              className="flex text-xs p-2 bg-gray-200 dark:bg-gray-800 text-slate-700 dark:text-slate-800 rounded-md gap-1 items-center"
                               key={category.id}
                             >
                               <div className="flex flex-1 flex-col items-start">
-                                <p className="text-sm bold text-blue-500 dark:text-blue-800">{category.name}</p>
-                                <p className="text-sm bold text-slate-900 dark:text-white">
+                                <p className="text-sm text-blue-500 dark:text-blue-200">{category.name}</p>
+                                <p className="text-sm text-slate-900 dark:text-white">
                                   {category?.isPrivate ? '(приватная, по приглашению)' : ''}
                                 </p>
                               </div>
                               <OpenEmoji />
                             </button>
                           ) : (
-                            <div className="text-xs bold p-2 bg-gray-200 text-slate-700 dark:text-slate-800 rounded-md">
+                            <div className="text-xs p-2 bg-gray-200 text-slate-700 dark:text-slate-800 rounded-md">
                               {category.name}
                             </div>
                           )}
@@ -181,7 +197,7 @@ export const Wish = () => {
                   {wish?.link && (
                     <a
                       href={wish?.link?.includes('http') ? wish?.link : `//${wish?.link}`}
-                      className="text-md text-blue-500 dark:text-blue-800 mt-2"
+                      className="text-md text-blue-500 dark:text-blue-200 mt-2"
                       target="_blank"
                     >
                       Ссылка на желание
@@ -190,14 +206,14 @@ export const Wish = () => {
                   <h3 className="text-xl bold text-slate-900 dark:text-white mt-2">{wish?.name || 'Без названия'}</h3>
                 </div>
                 <div className="w-full h-[1px] bg-gray-400" />
-                <div className="mt-2 gap-4">
+                <div className="mt-2 gap-4 p-4 bg-slate-200/[.5] dark:bg-slate-900/[.5]">
                   <p className="text-sm bold text-slate-900 dark:text-white mt-2 whitespace-pre-wrap">
                     {wish?.description || 'Без Описания'}
                   </p>
                 </div>
 
                 <div className="w-full h-[1px] bg-gray-400 my-2" />
-                <div className="gap-4 mt-2 flex justify-between">
+                <div className="gap-4 mt-2 flex justify-between p-4 bg-slate-200/[.5] dark:bg-slate-900/[.5]">
                   {isOwner ? (
                     <>
                       <Button

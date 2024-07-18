@@ -110,7 +110,7 @@ export const Settings = () => {
             <div className="flex flex-col gap-2">
               <div className="bg-slate-200 dark:bg-slate-600 p-2 rounded-lg">
                 <p className="text-md bold text-slate-900 dark:text-white">Настройки категорий</p>
-                <Link to={ROUTE.categorySettings} className="text-sm bold text-blue-500 dark:text-blue-800">
+                <Link to={ROUTE.categorySettings} className="text-sm bold text-blue-500 dark:text-blue-200">
                   Мои списки категорий
                 </Link>
                 <p className="text-md bold text-slate-900 dark:text-white my-4">Кастомизация названия</p>

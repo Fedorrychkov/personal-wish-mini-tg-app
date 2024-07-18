@@ -17,6 +17,7 @@ const aliases = [
   'config',
   'assets',
   'constants',
+  'errors',
 ]
 
 const isProduction = process.env.NODE_ENV === 'production'

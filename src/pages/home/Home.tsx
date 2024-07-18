@@ -97,7 +97,12 @@ export const Home = () => {
         </div>
 
         <div className="mb-4 flex flex-wrap gap-3">
-          <Chip label="Добавить" variant="filled" className={cn('dark:!text-slate-200')} onClick={handleAddCategory} />
+          <Chip
+            label="Добавить"
+            variant="filled"
+            className={cn('dark:!text-slate-200 dark:!bg-slate-600')}
+            onClick={handleAddCategory}
+          />
           {isCategoryLoading && (
             <>
               <Skeleton className="rounded-lg" variant="rectangular" width={100} height={32} />

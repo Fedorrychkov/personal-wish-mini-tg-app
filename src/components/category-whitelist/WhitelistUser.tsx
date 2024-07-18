@@ -84,7 +84,7 @@ export const WhitelistUser = (props: Props) => {
             <Link
               to={ROUTE.userWishList?.replace(':id', userId)}
               state={{ prevPage: ROUTE.category?.replace(':id', categoryId) }}
-              className="text-md text-blue-500 dark:text-blue-800 truncate"
+              className="text-md text-blue-500 dark:text-blue-200 truncate"
             >
               @{user?.username || user?.id}
             </Link>

@@ -26,17 +26,27 @@ export const UserWishList = () => {
     updateUserCustomizationId(id)
   }, [id, updateUserCustomizationId])
 
-  const categoryId = new URLSearchParams(location.search).get('categoryId')
+  const categoryId = new URLSearchParams(location.search).get('categoryId')?.trim?.()
 
-  const [selectedCategoryId, setSelectedCategory] = useState<string | undefined>(categoryId || '')
+  const [selectedCategoryId, setSelectedCategory] = useState<string | undefined>('')
   const [isMeBooked, setMeBooked] = useState(false)
   const [isUnbooked, setUnbooked] = useState(false)
+
+  const { data: categories, isLoading: isCategoryLoading } = useUserCategoryQuery(user?.id || '', !!user?.id)
+
+  useEffect(() => {
+    const availableCatId = categories?.find((category) => category.id === categoryId)?.id
+
+    if (!selectedCategoryId && availableCatId) {
+      setSelectedCategory(availableCatId)
+    }
+  }, [selectedCategoryId, categories, categoryId])
 
   const {
     data: wishlsit,
     isLoading,
     key,
-  } = useUserWishQuery(id || '', { categoryId: selectedCategoryId?.trim?.() }, { enabled: !!id })
+  } = useUserWishQuery(id || '', { categoryId: selectedCategoryId }, { enabled: !!id })
 
   const handleToggleBookedFilter = () => {
     setMeBooked((state) => !state)
@@ -77,8 +87,6 @@ export const UserWishList = () => {
     },
     !!user?.id && !!authUser?.id,
   )
-
-  const { data: categories, isLoading: isCategoryLoading } = useUserCategoryQuery(user?.id || '', !!user?.id)
 
   const data = useMemo(() => {
     const selectedCategoryList = selectedCategoryId
@@ -134,10 +142,13 @@ export const UserWishList = () => {
             : null}
           <Chip
             label="Я дарю"
-            variant={isMeBooked ? undefined : 'outlined'}
-            className={cn('dark:!text-slate-200', {
-              'dark:!bg-slate-500': isMeBooked,
-            })}
+            variant={isMeBooked ? 'outlined' : undefined}
+            className={cn(
+              'dark:!text-slate-200 !bg-slate-200/[.5] dark:!bg-slate-900/[.5] hover:!bg-slate-200 dark:hover:!bg-slate-900',
+              {
+                'dark:!bg-slate-800 !bg-slate-200': isMeBooked,
+              },
+            )}
             onClick={() => {
               handleToggleBookedFilter()
               setUnbooked(false)
@@ -145,10 +156,13 @@ export const UserWishList = () => {
           />
           <Chip
             label="Никто не дарит"
-            variant={isUnbooked ? undefined : 'outlined'}
-            className={cn('dark:!text-slate-200', {
-              'dark:!bg-slate-500': isUnbooked,
-            })}
+            variant={isUnbooked ? 'outlined' : undefined}
+            className={cn(
+              'dark:!text-slate-200 !bg-slate-200/[.5] dark:!bg-slate-900/[.5] hover:!bg-slate-200 dark:hover:!bg-slate-900',
+              {
+                'dark:!bg-slate-800 !bg-slate-200': isUnbooked,
+              },
+            )}
             onClick={() => {
               handleToggleUnBookedFilter()
               setMeBooked(false)

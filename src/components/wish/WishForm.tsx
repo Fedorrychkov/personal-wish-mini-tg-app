@@ -99,8 +99,11 @@ export const WishForm = (props: Props) => {
       }
 
       onCancel?.()
+
+      setNotify('Желание успешно обновлено', { severity: 'success' })
     } catch (error) {
       console.error(error)
+      setNotify('Произошла непредвиденная ошибка', { severity: 'error' })
     }
   })
 
@@ -111,7 +114,7 @@ export const WishForm = (props: Props) => {
           await upload?.mutateAsync({ id: wish.id, file: wishImage })
           onCancel?.()
 
-          setNotify('Изображение успешно установлено', { severity: 'success' })
+          setNotify('Желание успешно создано с изображением установлено', { severity: 'success' })
         } catch (error) {
           setNotify('Произошла ошибка сохранения изображения, попробуйте еще раз или выберите другое изображение', {
             severity: 'error',
@@ -121,6 +124,10 @@ export const WishForm = (props: Props) => {
 
         return
       }
+
+      onCancel?.()
+
+      setNotify('Желание успешно создано', { severity: 'success' })
     } catch (error) {
       console.error(error)
       setNotify('Произошла непредвиденная ошибка', { severity: 'error' })
@@ -253,7 +260,11 @@ export const WishForm = (props: Props) => {
           изображению нажмите на зеленую галочку
         </Alert>
       </div>
-      <form className="p-4 pt-0" ref={formRef} onSubmit={handleSubmit(onSubmit)}>
+      <form
+        className="p-4 pt-0 bg-slate-200/[.5] dark:bg-slate-900/[.5]"
+        ref={formRef}
+        onSubmit={handleSubmit(onSubmit)}
+      >
         <div className="py-4">
           <div className="gap-4 mt-1 flex items-baseline">
             {wish && (

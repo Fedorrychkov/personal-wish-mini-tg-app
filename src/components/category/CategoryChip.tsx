@@ -82,10 +82,13 @@ export const CategoryChip = (props: Props) => {
           </div>
         </div>
       }
-      variant={selected ? undefined : 'outlined'}
-      className={cn('dark:!text-slate-200', {
-        'dark:!bg-slate-500': selected,
-      })}
+      variant={selected ? 'outlined' : undefined}
+      className={cn(
+        'dark:!text-slate-200 !bg-slate-200/[.5] dark:!bg-slate-900/[.5] hover:!bg-slate-200 dark:hover:!bg-slate-900',
+        {
+          'dark:!bg-slate-800 !bg-slate-200': selected,
+        },
+      )}
       onClick={handleClick}
     />
   )

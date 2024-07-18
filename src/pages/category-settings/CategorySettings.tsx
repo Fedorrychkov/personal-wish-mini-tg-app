@@ -53,11 +53,11 @@ export const CategorySettings = () => {
                     categories?.map((category) => (
                       <Link
                         to={ROUTE?.category?.replace(':id', category.id)}
-                        className="flex p-2 bg-slate-300 dark:bg-slate-400 items-center justify-between rounded-lg"
+                        className="flex p-2 bg-slate-300 dark:bg-slate-800 items-center justify-between rounded-lg"
                         key={category.id}
                       >
                         <div className="flex-1">
-                          <p className="text-sm bold text-blue-500 dark:text-blue-800">{category.name}</p>
+                          <p className="text-sm bold text-blue-500 dark:text-blue-200">{category.name}</p>
                           <p className="text-sm bold text-slate-900 dark:text-white">
                             {category?.isPrivate ? '(приватная, по приглашению)' : ''}
                           </p>
