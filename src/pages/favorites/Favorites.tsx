@@ -1,15 +1,22 @@
-import { Alert, Skeleton } from '@mui/material'
-import { useEffect } from 'react'
+import { Alert, Button, Skeleton } from '@mui/material'
+import { MouseEvent, useCallback, useEffect, useState } from 'react'
 
 import { Favorite } from '~/components/favorite'
-import { UserHeader } from '~/components/user'
+import { useFavoriteSettledByPopup } from '~/components/favorite/hooks'
+import { SearchUser, UserHeader, UserResult } from '~/components/user'
+import { User } from '~/entities'
 import { DefaultLayout } from '~/layouts/default'
 import { useAuth, useCustomization } from '~/providers'
 import { useUserFavoritesQuery } from '~/query'
 
 export const Favorites = () => {
   const { user } = useAuth()
-  const { data: favorites, isLoading } = useUserFavoritesQuery(user?.id || '', !!user?.id)
+  const { data: favorites, isLoading, key: definedKey } = useUserFavoritesQuery(user?.id || '', !!user?.id)
+  const [searchedData, setSearchedData] = useState<User | undefined>()
+
+  const handleSearched = (user?: User) => {
+    setSearchedData(user)
+  }
 
   const { updateUserCustomizationId } = useCustomization()
 
@@ -17,12 +24,59 @@ export const Favorites = () => {
     updateUserCustomizationId(user?.id)
   }, [user?.id, updateUserCustomizationId])
 
+  const { handleFavoritePopup, isLoading: isLoadingFavoriteSettled } = useFavoriteSettledByPopup(definedKey, () => {
+    setSearchedData(undefined)
+  })
+
+  const handleCreateFavorite = useCallback(
+    (e: MouseEvent<HTMLButtonElement>) => {
+      e?.preventDefault()
+      e?.stopPropagation()
+
+      handleFavoritePopup({ favoriteUserId: searchedData?.id || '', wishlistNotifyEnabled: false }, searchedData)
+    },
+    [searchedData, handleFavoritePopup],
+  )
+
   return (
     <DefaultLayout className="!px-0">
       <UserHeader className="self-center bg-gray-200 dark:bg-slate-400 w-full py-4" editable={false} />
       <div className="px-4">
         <div className="py-4 flex justify-between items-center">
           <h3 className="text-xl bold text-slate-900 dark:text-white mt-2">Избранные</h3>
+        </div>
+
+        <div className="w-full h-[1px] bg-gray-400" />
+        <div className="my-3 p-3 rounded-lg bg-slate-200/[.5] dark:bg-slate-900/[.5]">
+          <SearchUser
+            onSearched={handleSearched}
+            knowedUserIds={favorites?.map((favorite) => favorite.favoriteUserId)}
+          />
+
+          {searchedData && (
+            <div className="flex-col gap-2 my-4">
+              <h3 className="text-md text-slate-900 dark:text-white my-2">Найденный пользователь</h3>
+
+              <UserResult
+                user={searchedData}
+                isLoading={isLoadingFavoriteSettled}
+                bottomContaner={
+                  <div className="mt-2">
+                    <Button
+                      color="primary"
+                      size="small"
+                      type="submit"
+                      variant="text"
+                      disabled={isLoading}
+                      onClick={handleCreateFavorite}
+                    >
+                      Добавить пользователя в избранное
+                    </Button>
+                  </div>
+                }
+              />
+            </div>
+          )}
         </div>
 
         <div className="w-full h-[1px] bg-gray-400" />

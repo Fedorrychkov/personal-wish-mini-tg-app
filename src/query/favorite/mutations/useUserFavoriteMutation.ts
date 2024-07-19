@@ -27,6 +27,8 @@ export const useUserFavoriteMutation = (key?: string) => {
                 return item
               })
 
+              items.unshift(data)
+
               return items
             })
           }

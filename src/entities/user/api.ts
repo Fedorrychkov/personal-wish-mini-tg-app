@@ -23,6 +23,12 @@ export class ClientUserApi {
     return response.data
   }
 
+  async findUserByUsername(username: string): Promise<User> {
+    const response = await this.client.get(`/v1/user/find/username/${username}`)
+
+    return response.data
+  }
+
   async uploadAvatar(payload: FormData): Promise<User> {
     const response = await this.client.post('/v1/user/avatar', payload)
 
