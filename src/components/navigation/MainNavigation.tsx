@@ -30,10 +30,13 @@ export const MainNavigation = () => {
           key={route.path}
           to={route.path}
           className={({ isActive }) => {
-            return cn('flex font-bold flex-col items-center justify-center px-4 flex-1 py-2 text-lg opacity-[0.7]', {
-              '!opacity-[1] hover:!opacity-[0.8]': isActive,
-              'hover:!opacity-[1]': !isActive,
-            })
+            return cn(
+              'flex font-bold flex-col items-center justify-center px-4 flex-1 py-2 pb-[30px] text-lg opacity-[0.7]',
+              {
+                '!opacity-[1] hover:!opacity-[0.8]': isActive,
+                'hover:!opacity-[1]': !isActive,
+              },
+            )
           }}
         >
           <>
