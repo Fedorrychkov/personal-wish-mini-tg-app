@@ -71,7 +71,7 @@ export const ImageLoader = (props: Props) => {
     <>
       {(isMediaLoading || isLoading) && (
         <div className={cn('flex items-center justify-center', className)}>
-          <Spinner />
+          <Spinner className="!w-[24px] !h-[24px]" />
         </div>
       )}
       {!isLoading && src && (

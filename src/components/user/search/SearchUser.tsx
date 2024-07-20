@@ -95,7 +95,7 @@ export const SearchUser = (props?: Props) => {
             found?.username?.toLowerCase?.() === user?.username?.toLowerCase?.()
               ? 'Никнейм не должен совпадать с вашим'
               : ''
-          const otherUsersText = found ? 'Пользователь с таким ником уже ваш' : ''
+          const otherUsersText = found ? 'Пользователь с таким ником уже доступен для выбора' : ''
 
           const isEmpty = !ownerText && !otherUsersText
 

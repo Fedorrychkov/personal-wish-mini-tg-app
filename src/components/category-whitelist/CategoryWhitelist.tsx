@@ -1,9 +1,10 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 
-import { Category } from '~/entities'
+import { Category, User } from '~/entities'
 import { useAuth } from '~/providers'
 import { useCategoryWhitelistQuery, useUserFavoritesQuery } from '~/query'
 
+import { SearchUser } from '../user'
 import { CategoryWhitelistSkeleton } from './skeletons'
 import { WhitelistUser } from './WhitelistUser'
 
@@ -16,6 +17,12 @@ export const CategoryWhitelist = (props: Props) => {
   const { category } = props
 
   const { data: favorites, isLoading: isFavoritesLoading } = useUserFavoritesQuery(user?.id || '', !!user?.id)
+
+  const [searchedData, setSearchedData] = useState<User | undefined>()
+
+  const handleSearched = (user?: User) => {
+    setSearchedData(user)
+  }
 
   const {
     data: whitelist,
@@ -64,6 +71,11 @@ export const CategoryWhitelist = (props: Props) => {
 
   const isLoading = isFavoritesLoading || isWhitelistLoading || isAllWhitelistLoading
 
+  const definedUserIds = useMemo(
+    () => [...unwhitelistedUsers, ...(whitelist?.length ? whitelist.map((item) => item.whitelistedUserId) : [])],
+    [unwhitelistedUsers, whitelist],
+  )
+
   return (
     <div className="gap-4 flex flex-col">
       {isLoading ? (
@@ -76,6 +88,18 @@ export const CategoryWhitelist = (props: Props) => {
             </h3>
           </div>
           <div className="flex flex-col">
+            <p className="text-sm font-bold text-slate-900 dark:text-white mb-2">Поиск других пользователей:</p>
+            <div className="flex flex-col gap-3 mb-4">
+              <SearchUser onSearched={handleSearched} knowedUserIds={definedUserIds} />
+              {searchedData && (
+                <WhitelistUser
+                  definedKey={definedWhitelistKey}
+                  userId={searchedData?.id}
+                  categoryId={category.id}
+                  type="add"
+                />
+              )}
+            </div>
             <p className="text-sm font-bold text-slate-900 dark:text-white mb-2">Кого можно добавить:</p>
             <div className="flex flex-col gap-3">
               {unwhitelistedUsers?.length ? (
