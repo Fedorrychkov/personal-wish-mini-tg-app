@@ -4,7 +4,13 @@ import { RouterProvider } from 'react-router-dom'
 import { router } from '~/router'
 
 import style from './app.module.css'
-import { AuthProvider, CustomizationProvider, LayoutProvider, NotifyProvider } from './providers'
+import {
+  AuthProvider,
+  CustomizationProvider,
+  LayoutProvider,
+  NotifyProvider,
+  OnboardingContainerProvider,
+} from './providers'
 import { cn } from './utils'
 
 const queryClient = new QueryClient()
@@ -22,7 +28,9 @@ function App(props: Props) {
             <CustomizationProvider>
               <NotifyProvider>
                 <LayoutProvider>
-                  <RouterProvider router={router} />
+                  <OnboardingContainerProvider>
+                    <RouterProvider router={router} />
+                  </OnboardingContainerProvider>
                 </LayoutProvider>
               </NotifyProvider>
             </CustomizationProvider>

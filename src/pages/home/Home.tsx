@@ -3,11 +3,12 @@ import { initBackButton, initHapticFeedback } from '@tma.js/sdk'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
+import { InfoEmoji } from '~/assets'
 import { CategoryChip } from '~/components/category'
 import { UserHeader } from '~/components/user'
 import { WishItem } from '~/components/wish'
 import { DefaultLayout } from '~/layouts/default'
-import { useAuth, useCustomization, useNotifyContext } from '~/providers'
+import { ONBOARDING_DATA_NAME, useAuth, useCustomization, useNotifyContext, useOnboarding } from '~/providers'
 import { useUserCategoryDeleteMutation, useUserCategoryQuery, useUserWishQuery } from '~/query'
 import { ROUTE } from '~/router'
 import { cn } from '~/utils'
@@ -85,13 +86,29 @@ export const Home = () => {
 
   backButton.hide()
 
+  const { handleStart } = useOnboarding()
+
   return (
-    <DefaultLayout className="!px-0">
+    <DefaultLayout className="!px-0 relative">
+      <button
+        type="button"
+        onClick={handleStart}
+        className="z-[10] absolute left-[12px] top-[12px] flex items-center justify-center bg-blue-600 rounded-[50%] p-2 text-white font-bold hover:opacity-[0.8] w-[32px] h-[32px]"
+      >
+        <InfoEmoji className="text-sm" />
+      </button>
       <UserHeader className="self-center bg-gray-200 dark:bg-slate-400 w-full py-4" categoryId={selectedCategoryId} />
       <div className="px-4">
         <div className="py-4 flex justify-between items-center">
-          <h3 className="text-xl bold text-slate-900 dark:text-white mt-2">Желания</h3>
-          <Button color="primary" type="button" onClick={handleAddWish} size="small" variant="text">
+          <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-2">Желания</h3>
+          <Button
+            color="primary"
+            data-tour={ONBOARDING_DATA_NAME.wishMainNewWish}
+            type="button"
+            onClick={handleAddWish}
+            size="small"
+            variant="text"
+          >
             Добавить
           </Button>
         </div>
@@ -101,6 +118,7 @@ export const Home = () => {
             label="Добавить"
             variant="filled"
             className={cn('dark:!text-slate-200 dark:!bg-slate-600')}
+            data-tour={ONBOARDING_DATA_NAME.wishMainNewCategory}
             onClick={handleAddCategory}
           />
           {isCategoryLoading && (

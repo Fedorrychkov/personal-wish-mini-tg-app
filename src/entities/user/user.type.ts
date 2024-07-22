@@ -10,6 +10,11 @@ export type User = {
   avatarUrl?: string | null
   isBot?: boolean | null
   phone?: string | null
+  appOnboardingKey?: string | null
   createdAt?: Timestamp | null
   updatedAt?: Timestamp | null
+}
+
+export type UserDto = {
+  appOnboardingKey?: string
 }

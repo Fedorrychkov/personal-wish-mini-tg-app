@@ -21,6 +21,10 @@ body {
   background-color: var(--tg-theme-bg-color);
 }
 
+body:is([data-scroll="false"]) {
+  overflow: hidden;
+}
+
 html {
   background-color: var(--tg-theme-bg-color);
 }

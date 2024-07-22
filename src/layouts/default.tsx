@@ -2,7 +2,7 @@ import { Children, ReactNode, useMemo } from 'react'
 
 import { PatternBackground } from '~/components/background'
 import { MainNavigation } from '~/components/navigation'
-import { useCustomization, useLayout } from '~/providers'
+import { OnboardingWelcome, useCustomization, useLayout } from '~/providers'
 import { cn } from '~/utils'
 
 type Props = {
@@ -25,6 +25,7 @@ export const DefaultLayout = ({ children, className }: Props) => {
         <div id="keyboard-appended" style={{ minHeight: 68 }} />
       </div>
       <MainNavigation />
+      <OnboardingWelcome />
     </>
   )
 }

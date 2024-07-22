@@ -2,7 +2,7 @@ import { AxiosInstance } from 'axios'
 
 import { Request } from '~/services'
 
-import { User } from './user.type'
+import { User, UserDto } from './user.type'
 
 export class ClientUserApi {
   private readonly client: AxiosInstance
@@ -31,6 +31,12 @@ export class ClientUserApi {
 
   async uploadAvatar(payload: FormData): Promise<User> {
     const response = await this.client.post('/v1/user/avatar', payload)
+
+    return response.data
+  }
+
+  async updateOnboarding(payload: UserDto): Promise<User> {
+    const response = await this.client.patch('/v1/user/onboarding', payload)
 
     return response.data
   }

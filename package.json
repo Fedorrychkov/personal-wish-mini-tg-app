@@ -19,6 +19,7 @@
     "@fontsource/roboto": "^5.0.13",
     "@mui/icons-material": "^5.15.19",
     "@mui/material": "^5.15.19",
+    "@reactour/tour": "^3.7.0",
     "@tma.js/sdk": "^2.5.0",
     "axios": "^1.7.2",
     "browser-image-compression": "^2.0.2",
