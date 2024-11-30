@@ -35,6 +35,12 @@ export class ClienCategoryApi {
     return response.data
   }
 
+  async wishCount(id: string): Promise<{ count: number }> {
+    const response = await this.client.get(`/v1/category/${id}/wish-count`)
+
+    return response.data
+  }
+
   async delete(id: string): Promise<{ success: boolean; id: string }> {
     const response = await this.client.delete(`/v1/category/${id}`)
 

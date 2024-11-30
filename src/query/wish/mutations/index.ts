@@ -1,5 +1,7 @@
 export * from './useUserWishBookMutation'
+export * from './useUserWishCopyMutation'
 export * from './useUserWishCreateMutation'
 export * from './useUserWishDeleteMutation'
+export * from './useUserWishGivenMutation'
 export * from './useUserWishImageMutation'
 export * from './useUserWishUpdateMutation'

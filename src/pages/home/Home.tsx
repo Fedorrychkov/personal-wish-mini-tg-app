@@ -7,6 +7,7 @@ import { InfoEmoji } from '~/assets'
 import { CategoryChip } from '~/components/category'
 import { UserHeader } from '~/components/user'
 import { WishItem } from '~/components/wish'
+import { WishStatus } from '~/entities/wish'
 import { DefaultLayout } from '~/layouts/default'
 import { ONBOARDING_DATA_NAME, useAuth, useCustomization, useNotifyContext, useOnboarding } from '~/providers'
 import { useUserCategoryDeleteMutation, useUserCategoryQuery, useUserWishQuery } from '~/query'
@@ -27,16 +28,25 @@ export const Home = () => {
   }, [user?.id, updateUserCustomizationId])
 
   const [selectedCategoryId, setSelectedCategory] = useState<string | undefined>(undefined)
+  const [isGiven, setIsGiven] = useState<boolean>(false)
 
   const {
     data: wishlsit,
     isLoading,
     isError,
     key,
-  } = useUserWishQuery(user?.id || '', { categoryId: selectedCategoryId?.trim?.() }, { enabled: !!user?.id })
+  } = useUserWishQuery(
+    user?.id || '',
+    { categoryId: selectedCategoryId?.trim?.(), status: isGiven ? WishStatus.GIVEN : WishStatus.ACTIVE },
+    { enabled: !!user?.id },
+  )
 
   const handlePickCategory = useCallback((categoryId: string) => {
     setSelectedCategory((selectedCategoryId) => (selectedCategoryId === categoryId ? undefined : categoryId))
+  }, [])
+
+  const handlePickGiven = useCallback(() => {
+    setIsGiven((state) => !state)
   }, [])
 
   const handleAddWish = useCallback(() => {
@@ -54,6 +64,11 @@ export const Home = () => {
     isLoading: isCategoryLoading,
     key: definedCategoryKey,
   } = useUserCategoryQuery(user?.id || '', !!user?.id)
+
+  const selectedCategoryName = useMemo(
+    () => categories?.find((category) => category.id === selectedCategoryId)?.name,
+    [categories, selectedCategoryId],
+  )
 
   const data = useMemo(
     () => (selectedCategoryId ? wishlsit?.filter((wish) => wish?.categoryId === selectedCategoryId) : wishlsit),
@@ -88,6 +103,20 @@ export const Home = () => {
 
   const { handleStart } = useOnboarding()
 
+  const filterEnabledText = useMemo(() => {
+    let text = ''
+
+    if (selectedCategoryId) {
+      text = selectedCategoryName || ''
+    }
+
+    if (isGiven) {
+      text = text?.length ? `${text} (подаренные)` : 'Подаренные'
+    }
+
+    return text
+  }, [selectedCategoryId, isGiven, selectedCategoryName])
+
   return (
     <DefaultLayout className="!px-0 relative">
       <button
@@ -99,7 +128,14 @@ export const Home = () => {
       </button>
       <UserHeader className="self-center bg-gray-200 dark:bg-slate-400 w-full py-4" categoryId={selectedCategoryId} />
       <div className="px-4">
-        <div className="py-4 flex justify-between items-center">
+        {filterEnabledText && (
+          <div className="flex flex-col mt-4 items-start">
+            <div className="text-xs font-bold p-1 bg-gray-200 text-slate-700 dark:text-slate-400 rounded-xl px-2 py-1">
+              {filterEnabledText}
+            </div>
+          </div>
+        )}
+        <div className={cn('flex justify-between items-center pb-4', { 'py-4': !filterEnabledText })}>
           <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-2">Желания</h3>
           <Button
             color="primary"
@@ -120,6 +156,12 @@ export const Home = () => {
             className={cn('dark:!text-slate-200 dark:!bg-slate-600')}
             data-tour={ONBOARDING_DATA_NAME.wishMainNewCategory}
             onClick={handleAddCategory}
+          />
+          <Chip
+            label="Подаренные"
+            variant={isGiven ? 'filled' : 'outlined'}
+            className={cn('dark:!text-slate-200 dark:!bg-slate-600')}
+            onClick={handlePickGiven}
           />
           {isCategoryLoading && (
             <>
@@ -167,13 +209,21 @@ export const Home = () => {
                     severity="info"
                     className="dark:!bg-slate-300"
                     action={
-                      <Button color="primary" type="button" onClick={handleAddWish} size="small" variant="text">
-                        Добавить
-                      </Button>
+                      !isGiven && (
+                        <Button color="primary" type="button" onClick={handleAddWish} size="small" variant="text">
+                          Добавить
+                        </Button>
+                      )
                     }
                   >
-                    Вы еще не добавили ни одного желания {selectedCategoryId ? 'в выбранной категории' : ''}, давайте
-                    создадим?
+                    {isGiven ? (
+                      <>У вас еще нет ни одного подаренного желания</>
+                    ) : (
+                      <>
+                        Вы еще не добавили ни одного желания {selectedCategoryId ? 'в выбранной категории' : ''},
+                        давайте создадим?
+                      </>
+                    )}
                   </Alert>
                   {!!selectedCategoryId && isCategoryAvailable && !isError && (
                     <Alert

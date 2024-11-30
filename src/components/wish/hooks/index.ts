@@ -1,3 +1,5 @@
 export * from './useWishBook'
+export * from './useWishCopy'
 export * from './useWishDelete'
+export * from './useWishGiven'
 export * from './useWishUpdate'

@@ -4,10 +4,11 @@ import { AxiosError } from 'axios'
 import { useCallback, useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
-import { OpenEmoji, ShareEmoji } from '~/assets'
-import { useWishDelete, WishForm, WishImageContainer } from '~/components/wish'
+import { DeleteEmoji, OpenEmoji, ShareEmoji } from '~/assets'
+import { useWishCopy, useWishDelete, useWishGiven, WishForm, WishImageContainer } from '~/components/wish'
 import { getBookButtonState } from '~/components/wish/helpers'
 import { useWishBook } from '~/components/wish/hooks/useWishBook'
+import { WishStatus } from '~/entities/wish'
 import { getErrorMessageByCode } from '~/errors'
 import { useTgBack } from '~/hooks'
 import { DefaultLayout } from '~/layouts/default'
@@ -67,12 +68,18 @@ export const Wish = () => {
     navigate(ROUTE.home, { replace: true })
   })
 
+  const { handleGivenPopup, isLoading: isGivenLoading } = useWishGiven(wish, key || '')
+
   const { data: category, isLoading: isLoadingCategory } = useWishCategoryQuery(
     wish?.categoryId || '',
     !!wish?.categoryId,
   )
 
   const { handleBookPopup, isLoading: isBookingLoading } = useWishBook(wish, key || '')
+
+  const { handleCopyPopup, isLoading: isCopyLoading } = useWishCopy(wish, (wish) => {
+    navigate(ROUTE.wish?.replace(':id', wish?.id || ''))
+  })
 
   const isOwner = user?.id === wish?.userId
   const { data: wishUserOwner } = useUserDataQuery(wish?.userId || '', wish?.userId, !isOwner)
@@ -121,13 +128,29 @@ export const Wish = () => {
         </>
       ) : (
         <>
-          <WishImageContainer
-            onSaveImage={setWishImage}
-            isEditable={isEditable}
-            wish={wish}
-            onDeleted={setDeleted}
-            isLoading={!wish || isLoading || !isFetched}
-          />
+          <div className="relative">
+            <WishImageContainer
+              onSaveImage={setWishImage}
+              isEditable={isEditable}
+              wish={wish}
+              onDeleted={setDeleted}
+              isLoading={!wish || isLoading || !isFetched}
+            />
+
+            {isOwner && !isEditable && wish?.status !== WishStatus.GIVEN && (
+              <Button
+                color="error"
+                size="small"
+                type="button"
+                variant="contained"
+                className="!p-0 !min-w-0 max-w-[24px] h-[24px] w-full !bg-red-200 !rounded-full !absolute top-2 right-2"
+                onClick={handleDeletePopup}
+                disabled={isLoading || isDeletionLoading || isBookingLoading}
+              >
+                <DeleteEmoji />
+              </Button>
+            )}
+          </div>
           <div>
             {isEditable ? (
               <WishForm
@@ -154,6 +177,9 @@ export const Wish = () => {
                         {wish?.bookedUserId === user?.id ? 'забронировано вами' : 'забронировано'}
                       </div>
                     ) : null}
+                    {wish?.status === WishStatus.GIVEN && (
+                      <div className="text-xs p-1 bg-gray-200 text-slate-700 dark:text-slate-400">Выполнено</div>
+                    )}
 
                     <button
                       type="button"
@@ -213,8 +239,8 @@ export const Wish = () => {
                 </div>
 
                 <div className="w-full h-[1px] bg-gray-400 my-2" />
-                <div className="gap-4 mt-2 flex justify-between p-4 bg-slate-200/[.5] dark:bg-slate-900/[.5]">
-                  {isOwner ? (
+                <div className="gap-4 mt-2 flex flex-col justify-between p-4 bg-slate-200/[.5] dark:bg-slate-900/[.5]">
+                  {isOwner && wish?.status !== WishStatus.GIVEN && (
                     <>
                       <Button
                         color="primary"
@@ -236,24 +262,50 @@ export const Wish = () => {
                         size="small"
                         type="button"
                         variant="text"
-                        onClick={handleDeletePopup}
-                        disabled={isLoading || isDeletionLoading || isBookingLoading}
+                        onClick={handleGivenPopup}
+                        disabled={isLoading || isDeletionLoading || isBookingLoading || isGivenLoading}
                       >
-                        Удалить
+                        Подарили
                       </Button>
                     </>
-                  ) : null}
+                  )}
 
-                  <Button
-                    color="primary"
-                    type="button"
-                    size="small"
-                    variant="text"
-                    onClick={handleBookPopup}
-                    disabled={bookBtnDisabled || isBookingLoading}
-                  >
-                    {bookBtnText}
-                  </Button>
+                  {wish?.status !== WishStatus.GIVEN && (
+                    <Button
+                      color="primary"
+                      type="button"
+                      size="small"
+                      variant="text"
+                      onClick={handleBookPopup}
+                      disabled={bookBtnDisabled || isBookingLoading}
+                    >
+                      {bookBtnText}
+                    </Button>
+                  )}
+                  {isOwner && wish?.status === WishStatus.GIVEN && (
+                    <Button
+                      color="error"
+                      type="button"
+                      disabled={isCopyLoading}
+                      onClick={handleCopyPopup}
+                      size="small"
+                      variant="text"
+                    >
+                      Повторить желание
+                    </Button>
+                  )}
+                  {!isOwner && (
+                    <Button
+                      color="error"
+                      type="button"
+                      disabled={isCopyLoading}
+                      onClick={handleCopyPopup}
+                      size="small"
+                      variant="text"
+                    >
+                      Хочу себе
+                    </Button>
+                  )}
                 </div>
               </div>
             )}

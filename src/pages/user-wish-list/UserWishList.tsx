@@ -104,6 +104,29 @@ export const UserWishList = () => {
     return filreredUnBookedWishlist
   }, [selectedCategoryId, wishlsit, authUser?.id, isMeBooked, isUnbooked])
 
+  const selectedCategoryName = useMemo(
+    () => categories?.find((category) => category.id === selectedCategoryId)?.name,
+    [categories, selectedCategoryId],
+  )
+
+  const filterEnabledText = useMemo(() => {
+    let text = ''
+
+    if (selectedCategoryId) {
+      text = selectedCategoryName || ''
+    }
+
+    if (isMeBooked) {
+      text = text?.length ? `${text} (я дарю)` : 'Я дарю'
+    }
+
+    if (isUnbooked) {
+      text = text?.length ? `${text} (никто не дарит)` : 'Никто не дарит'
+    }
+
+    return text
+  }, [selectedCategoryId, selectedCategoryName, isMeBooked, isUnbooked])
+
   return (
     <DefaultLayout className="!px-0">
       <UserHeader
@@ -112,7 +135,14 @@ export const UserWishList = () => {
         className="self-center bg-gray-200 dark:bg-slate-400 w-full py-4"
       />
       <div className="px-4">
-        <div className="py-4 flex gap-4 justify-between">
+        {filterEnabledText && (
+          <div className="flex flex-col mt-4 items-start">
+            <div className="text-xs font-bold p-1 bg-gray-200 text-slate-700 dark:text-slate-400 rounded-xl px-2 py-1">
+              {filterEnabledText}
+            </div>
+          </div>
+        )}
+        <div className={cn('flex justify-between items-center pb-4', { 'py-4': !filterEnabledText })}>
           <h3 className="text-xl bold text-slate-900 dark:text-white mt-2">Желания</h3>
           <FavoriteContainer
             favoriteUser={user}

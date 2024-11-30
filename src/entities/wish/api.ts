@@ -35,6 +35,18 @@ export class ClientWishApi {
     return response.data
   }
 
+  async givenToggle(id: string): Promise<Wish> {
+    const response = await this.client.patch(`/v1/wish/given/${id}`)
+
+    return response.data
+  }
+
+  async copyWish(id: string): Promise<Wish> {
+    const response = await this.client.post(`/v1/wish/copy/${id}`)
+
+    return response.data
+  }
+
   async update(id: string, body: WishDto): Promise<Wish> {
     const response = await this.client.patch(`/v1/wish/${id}`, body)
 

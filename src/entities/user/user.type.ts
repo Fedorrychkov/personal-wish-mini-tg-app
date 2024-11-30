@@ -11,8 +11,14 @@ export type User = {
   isBot?: boolean | null
   phone?: string | null
   appOnboardingKey?: string | null
+  role?: UserRole[] | null
   createdAt?: Timestamp | null
   updatedAt?: Timestamp | null
+}
+
+export enum UserRole {
+  ADMIN = 'ADMIN_ROLE',
+  USER = 'USER_ROLE',
 }
 
 export type UserDto = {

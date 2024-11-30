@@ -16,8 +16,14 @@ export type Wish = {
   link?: string | null
   categoryId?: string | null
   imageUrl?: string
+  status?: WishStatus | null
   createdAt?: Timestamp | null
   updatedAt?: Timestamp | null
+}
+
+export enum WishStatus {
+  ACTIVE = 'ACTIVE',
+  GIVEN = 'GIVEN',
 }
 
 export type WishDto = {
@@ -30,4 +36,5 @@ export type WishDto = {
 
 export type WishFilter = {
   categoryId?: string
+  status?: WishStatus
 }
