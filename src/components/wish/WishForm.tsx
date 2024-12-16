@@ -163,8 +163,8 @@ export const WishForm = (props: Props) => {
         message: 'Название желания обязательно',
       },
       maxLength: {
-        value: 160,
-        message: 'Максимум 160 символов',
+        value: 560,
+        message: 'Максимум 560 символов',
       },
     }),
     errors,
@@ -174,8 +174,8 @@ export const WishForm = (props: Props) => {
   const descriptionField = useRegister({
     ...register('description', {
       maxLength: {
-        value: 600,
-        message: 'Максимум 600 символов',
+        value: 1600,
+        message: 'Максимум 1600 символов',
       },
     }),
     errors,
@@ -185,8 +185,8 @@ export const WishForm = (props: Props) => {
   const categoryField = useRegister({
     ...register('categoryId', {
       maxLength: {
-        value: 160,
-        message: 'Максимум 160 символов',
+        value: 360,
+        message: 'Максимум 360 символов',
       },
     }),
     errors,
