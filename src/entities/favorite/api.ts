@@ -29,6 +29,18 @@ export class ClientFavoriteApi {
     return response.data
   }
 
+  async subscribers(userId: string): Promise<Favorite[]> {
+    const response = await this.client.get('/v1/favorite/subscribers', { params: { userId } })
+
+    return response.data
+  }
+
+  async subscribes(userId: string): Promise<Favorite[]> {
+    const response = await this.client.get('/v1/favorite/subscribes', { params: { userId } })
+
+    return response.data
+  }
+
   async get(favoriteUserId: string): Promise<Favorite> {
     const response = await this.client.get(`/v1/favorite/${favoriteUserId}`)
 

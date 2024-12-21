@@ -17,6 +17,12 @@ export class ClientWishApi {
     return response.data
   }
 
+  async listCount(userId?: string): Promise<{ count: number }> {
+    const response = await this.client.get('/v1/wish/list/count', { params: { userId } })
+
+    return response.data
+  }
+
   async get(id: string): Promise<Wish> {
     const response = await this.client.get(`/v1/wish/${id}`)
 

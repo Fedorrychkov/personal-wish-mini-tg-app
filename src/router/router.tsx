@@ -7,6 +7,7 @@ import { CategorySettings } from '~/pages/category-settings'
 import { Favorites } from '~/pages/favorites'
 import { Home } from '~/pages/home'
 import { Settings } from '~/pages/settings'
+import { SubscribeRoot } from '~/pages/subscribe-root'
 import { Unavailable } from '~/pages/unavailable'
 import { UserWishList } from '~/pages/user-wish-list'
 import { Wish } from '~/pages/wish'
@@ -62,6 +63,14 @@ export const router = createBrowserRouter(
         element={
           <PrivateRoute>
             <Favorites />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path={ROUTE.subscribeRoot}
+        element={
+          <PrivateRoute>
+            <SubscribeRoot />
           </PrivateRoute>
         }
       />

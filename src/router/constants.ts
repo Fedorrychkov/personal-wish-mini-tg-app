@@ -6,6 +6,7 @@ export const ROUTE = {
   wish: '/wish/:id',
   unavailable: '/unavailable',
   favorites: '/favorites',
+  subscribeRoot: '/favorites/:id',
   settings: '/settings',
   categorySettings: '/settings/category',
   categoryNew: '/category/new',

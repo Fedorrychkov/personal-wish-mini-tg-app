@@ -16,6 +16,7 @@ export const ONBOARDING_DATA_NAME = {
   wishMainNewWish: 'user-wish-main-wish-new',
   userWishList: 'user-wish-list',
   userFavorites: 'user-favorites',
+  userSocial: 'user-social',
 }
 
 export const ONBOARDING_SELECTORS = {
@@ -30,6 +31,7 @@ export const ONBOARDING_SELECTORS = {
   wishMainNewWish: `[data-tour="${ONBOARDING_DATA_NAME.wishMainNewWish}"]`,
   userWishList: `[data-tour="${ONBOARDING_DATA_NAME.userWishList}"]`,
   userFavorites: `[data-tour="${ONBOARDING_DATA_NAME.userFavorites}"]`,
+  userSocial: `[data-tour="${ONBOARDING_DATA_NAME.userSocial}"]`,
 }
 
 export const ONBOARDING_MAIN_STEPS = (): StepType[] => [
@@ -52,6 +54,12 @@ export const ONBOARDING_MAIN_STEPS = (): StepType[] => [
   {
     selector: ONBOARDING_SELECTORS.wishMainSettingsData,
     content: <OnboardingStep text="Для попадания в настройки, достаточно нажать на эту иконку" />,
+  },
+  {
+    selector: ONBOARDING_SELECTORS.userSocial,
+    content: (
+      <OnboardingStep text="У каждого пользователя есть возможность через вкладку избранных формировать свой список подписок и подписчиков" />
+    ),
   },
   {
     selector: ONBOARDING_SELECTORS.wishMainNewCategory,

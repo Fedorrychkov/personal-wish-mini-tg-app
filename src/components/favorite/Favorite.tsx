@@ -1,7 +1,7 @@
 import { Skeleton } from '@mui/material'
 import { initBackButton, initHapticFeedback } from '@tma.js/sdk'
 import { useCallback, useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 
 import type { Favorite as FavoriteType } from '~/entities'
 import { useUserDataQuery } from '~/query'
@@ -14,29 +14,33 @@ import { Avatar } from '../placeholder'
 type Props = {
   favorite: FavoriteType
   className?: string
+  type?: 'subscribes' | 'subscribers'
 }
 
 export const Favorite = (props: Props) => {
   const [backButton] = initBackButton()
   const haptic = initHapticFeedback()
   const navigate = useNavigate()
-  const { favorite, className } = props
+  const location = useLocation()
+  const { favorite, className, type } = props
 
   backButton.show()
 
-  const { data: favoriteUser, isLoading } = useUserDataQuery(
-    favorite?.favoriteUserId || '',
-    favorite?.favoriteUserId || '',
-    !!favorite?.favoriteUserId,
-  )
+  const finalUserId = type
+    ? type === 'subscribes'
+      ? favorite?.favoriteUserId
+      : favorite?.userId
+    : favorite?.favoriteUserId
+
+  const { data: favoriteUser, isLoading } = useUserDataQuery(finalUserId || '', finalUserId || '', !!finalUserId)
 
   const handleOpenUser = useCallback(() => {
     haptic.impactOccurred('medium')
 
-    navigate(ROUTE.userWishList.replace(':id', favorite?.favoriteUserId || favoriteUser?.id || ''), {
-      state: { prevPage: ROUTE.favorites },
+    navigate(ROUTE.userWishList.replace(':id', finalUserId || ''), {
+      state: { prevPage: location.pathname },
     })
-  }, [favoriteUser, favorite?.favoriteUserId, haptic, navigate])
+  }, [finalUserId, haptic, navigate, location.pathname])
 
   const handleBack = useCallback(() => {
     navigate(ROUTE.home, { replace: true })

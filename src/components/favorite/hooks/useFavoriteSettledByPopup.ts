@@ -1,6 +1,8 @@
 import { initHapticFeedback, initPopup } from '@tma.js/sdk'
+import { AxiosError } from 'axios'
 
 import { FavoriteDto, User } from '~/entities'
+import { getErrorMessageByCode } from '~/errors'
 import { useNotifyContext } from '~/providers'
 import { useUserFavoriteMutation } from '~/query'
 
@@ -23,7 +25,19 @@ export const useFavoriteSettledByPopup = (listKey?: string, onSuccess?: () => vo
         { severity: 'success' },
       )
     } catch (error) {
-      setNotify('Произошла ошибка при добавлении пользователя в избранные', { severity: 'error' })
+      let code
+
+      if (error instanceof AxiosError) {
+        code = error?.response?.data?.code
+      }
+
+      const message = getErrorMessageByCode(
+        code,
+        'Произошла ошибка при добавлении пользователя в избранные',
+        'favorites',
+      )
+
+      setNotify(message, { severity: 'error' })
       haptic.impactOccurred('heavy')
     }
   }

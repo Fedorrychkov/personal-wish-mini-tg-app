@@ -183,7 +183,7 @@ export const Home = () => {
 
         <div className="w-full h-[1px] bg-gray-400" />
 
-        <div className="mt-2 gap-4">
+        <div className="mt-2 gap-4" data-scroll-container="wish-list">
           {isLoading ? (
             <>
               <Skeleton className="mb-4 rounded-lg" variant="rectangular" width="100%" height={118} />
