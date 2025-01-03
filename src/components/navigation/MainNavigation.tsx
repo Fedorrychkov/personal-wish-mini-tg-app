@@ -1,6 +1,6 @@
 import { NavLink } from 'react-router-dom'
 
-import { HeartEmoji, InfoEmoji, ListEmoji, NewEmoji } from '~/assets'
+import { GamesEmoji, InfoEmoji, ListEmoji, NewEmoji } from '~/assets'
 import { ONBOARDING_DATA_NAME, useOnboarding } from '~/providers'
 import { ROUTE } from '~/router'
 import { cn } from '~/utils'
@@ -17,9 +17,9 @@ const routes = [
     title: 'Добавить',
   },
   {
-    icon: <HeartEmoji />,
-    path: ROUTE.favorites,
-    title: 'Избранные',
+    icon: <GamesEmoji />,
+    path: ROUTE.games,
+    title: 'Игры',
   },
 ]
 
@@ -33,7 +33,7 @@ export const MainNavigation = () => {
           key={route.path}
           to={route.path}
           {...(route.path === ROUTE.home ? { 'data-tour': ONBOARDING_DATA_NAME.userWishList } : {})}
-          {...(route.path === ROUTE.favorites ? { 'data-tour': ONBOARDING_DATA_NAME.userFavorites } : {})}
+          {...(route.path === ROUTE.games ? { 'data-tour': ONBOARDING_DATA_NAME.userGames } : {})}
           className={({ isActive }) => {
             return cn(
               'flex font-bold flex-col items-center justify-center px-4 flex-1 py-2 pb-4 text-lg opacity-[0.7]',

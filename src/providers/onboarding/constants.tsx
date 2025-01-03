@@ -16,6 +16,7 @@ export const ONBOARDING_DATA_NAME = {
   wishMainNewWish: 'user-wish-main-wish-new',
   userWishList: 'user-wish-list',
   userFavorites: 'user-favorites',
+  userGames: 'user-games',
   userSocial: 'user-social',
 }
 
@@ -30,7 +31,7 @@ export const ONBOARDING_SELECTORS = {
   wishMainNewCategory: `[data-tour="${ONBOARDING_DATA_NAME.wishMainNewCategory}"]`,
   wishMainNewWish: `[data-tour="${ONBOARDING_DATA_NAME.wishMainNewWish}"]`,
   userWishList: `[data-tour="${ONBOARDING_DATA_NAME.userWishList}"]`,
-  userFavorites: `[data-tour="${ONBOARDING_DATA_NAME.userFavorites}"]`,
+  userGames: `[data-tour="${ONBOARDING_DATA_NAME.userGames}"]`,
   userSocial: `[data-tour="${ONBOARDING_DATA_NAME.userSocial}"]`,
 }
 
@@ -76,9 +77,7 @@ export const ONBOARDING_MAIN_STEPS = (): StepType[] => [
     content: <OnboardingStep text="Это навигация на главную страницу, на которой вы сейчас находитесь" />,
   },
   {
-    selector: ONBOARDING_SELECTORS.userFavorites,
-    content: (
-      <OnboardingStep text="Вам так же доступна страница избранных пользователей, на ней можно найти и добавить/удалить пользователя из избранных" />
-    ),
+    selector: ONBOARDING_SELECTORS.userGames,
+    content: <OnboardingStep text={'В приложении доступны игры, одна из них - "Тайный Санта"'} />,
   },
 ]

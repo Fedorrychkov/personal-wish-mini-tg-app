@@ -5,6 +5,7 @@ import { Category } from '~/pages/category'
 import { CategoryNew } from '~/pages/category-new'
 import { CategorySettings } from '~/pages/category-settings'
 import { Favorites } from '~/pages/favorites'
+import { GameByIdPage, GamePage, Games } from '~/pages/games'
 import { Home } from '~/pages/home'
 import { Settings } from '~/pages/settings'
 import { SubscribeRoot } from '~/pages/subscribe-root'
@@ -103,6 +104,30 @@ export const router = createBrowserRouter(
         element={
           <PrivateRoute>
             <Settings />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path={ROUTE.games}
+        element={
+          <PrivateRoute>
+            <Games />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path={ROUTE.game}
+        element={
+          <PrivateRoute>
+            <GamePage />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path={ROUTE.gameById}
+        element={
+          <PrivateRoute>
+            <GameByIdPage />
           </PrivateRoute>
         }
       />

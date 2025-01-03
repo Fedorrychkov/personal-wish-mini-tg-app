@@ -1,6 +1,7 @@
 export * from './CloseEmoji'
 export * from './DeleteEmoji'
 export * from './EditEmoji'
+export * from './GamesEmoji'
 export * from './HeartEmoji'
 export * from './InfoEmoji'
 export * from './ListEmoji'

@@ -1,13 +1,14 @@
 import { Alert, Button, Chip, Skeleton } from '@mui/material'
-import { initBackButton, initHapticFeedback } from '@tma.js/sdk'
+import { initHapticFeedback } from '@tma.js/sdk'
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 import { InfoEmoji } from '~/assets'
 import { CategoryChip } from '~/components/category'
 import { UserHeader } from '~/components/user'
 import { WishItem } from '~/components/wish'
-import { WishStatus } from '~/entities/wish'
+import { WishStatus } from '~/entities'
+import { useTgBack } from '~/hooks'
 import { DefaultLayout } from '~/layouts/default'
 import { ONBOARDING_DATA_NAME, useAuth, useCustomization, useNotifyContext, useOnboarding } from '~/providers'
 import { useUserCategoryDeleteMutation, useUserCategoryQuery, useUserWishQuery } from '~/query'
@@ -16,10 +17,15 @@ import { cn } from '~/utils'
 
 export const Home = () => {
   const { setNotify } = useNotifyContext()
-  const [backButton] = initBackButton()
   const haptic = initHapticFeedback()
   const { user } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
+
+  useTgBack({
+    defaultBackPath: location.state?.prevPage,
+    isShowBackButton: !!location.state?.prevPage,
+  })
 
   const { updateUserCustomizationId } = useCustomization()
 
@@ -98,8 +104,6 @@ export const Home = () => {
     },
     [deleteCategoryMutation, haptic, setNotify],
   )
-
-  backButton.hide()
 
   const { handleStart } = useOnboarding()
 

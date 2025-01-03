@@ -7,15 +7,22 @@ import { ROUTE } from '~/router'
 type Props = {
   backHandler?: () => void
   defaultBackPath?: string
+  isShowBackButton?: boolean
 }
 
 export const useTgBack = (props?: Props) => {
-  const { defaultBackPath, backHandler } = props || {}
+  const { defaultBackPath, backHandler, isShowBackButton = true } = props || {}
 
   const [backButton] = initBackButton()
   const navigate = useNavigate()
 
-  backButton.show()
+  useEffect(() => {
+    if (!isShowBackButton) {
+      backButton.hide()
+    } else {
+      backButton.show()
+    }
+  }, [isShowBackButton, backButton])
 
   const handleBack = useCallback(() => {
     if (backHandler) {

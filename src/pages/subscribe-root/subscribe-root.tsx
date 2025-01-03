@@ -1,12 +1,17 @@
 import { Alert, Skeleton } from '@mui/material'
-import { useLocation, useParams } from 'react-router-dom'
+import { NavLink, useLocation, useParams } from 'react-router-dom'
 
+import { HeartEmoji } from '~/assets'
 import { Favorite } from '~/components/favorite'
 import { UserHeader } from '~/components/user'
+import { useTgBack } from '~/hooks'
 import { DefaultLayout } from '~/layouts/default'
 import { useUserDataQuery, useUserFavoriteSubscribesQuery } from '~/query'
+import { ROUTE } from '~/router'
 
 export const SubscribeRoot = () => {
+  useTgBack({ defaultBackPath: ROUTE.home })
+
   const { id: userId } = useParams()
   const location = useLocation()
   const { data: definedUser } = useUserDataQuery(userId || '', userId, !!userId)
@@ -27,6 +32,10 @@ export const SubscribeRoot = () => {
           <h3 className="text-xl bold text-slate-900 dark:text-white mt-2">
             {type === 'subscribes' ? 'Подписки' : 'Подписчики'}
           </h3>
+          <NavLink to={ROUTE.favorites} className="text-slate-900 dark:text-white gap-2 flex items-center">
+            <HeartEmoji />
+            Избранные
+          </NavLink>
         </div>
 
         <div className="w-full h-[1px] bg-gray-400" />

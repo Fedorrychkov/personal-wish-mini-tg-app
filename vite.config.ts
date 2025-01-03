@@ -46,6 +46,7 @@ export default defineConfig({
       find: `~/${alias}`,
       replacement: path.resolve(__dirname, `src/${alias}`),
     })),
+    extensions: ['.js', '.ts', '.jsx', '.tsx'],
   },
   build: {
     outDir: './dist',
