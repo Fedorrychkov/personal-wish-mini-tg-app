@@ -27,7 +27,6 @@ export const useAcceptParticipantInvitationMutation = (gameId: string, key?: str
                 return item
               })
 
-
               return items
             })
           }

@@ -1,4 +1,5 @@
 import { Alert, Button } from '@mui/material'
+import { initPopup } from '@tma.js/sdk'
 import { KeyboardEvent, useCallback, useMemo, useRef } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 
@@ -32,6 +33,8 @@ type Props = {
 }
 
 export const WishForm = (props: Props) => {
+  const popup = initPopup()
+
   const { wish, definedKey, wishImage, isImageDeleted, onCancel } = props
   const { user } = useAuth()
   const formRef = useRef<HTMLFormElement | null>(null)
@@ -66,8 +69,34 @@ export const WishForm = (props: Props) => {
   })
 
   const { handleSubmit, register, watch, formState } = form
-  const { errors } = formState
+  const { errors, isDirty } = formState
   const categoryId = watch('categoryId')
+
+  const handleCancel = useCallback(() => {
+    if (!isDirty) {
+      onCancel?.()
+
+      return
+    }
+
+    popup
+      .open({
+        title: 'Вы уверены, что хотите отменить изменения?',
+        message: 'Вы потеряете все изменения, которые вы сделали в этом желании',
+        buttons: [
+          { id: 'ok', type: 'default', text: 'Отменить' },
+          { id: 'cancel', type: 'destructive', text: 'Назад' },
+        ],
+      })
+      .then((buttonId) => {
+        if (!buttonId || buttonId === 'cancel') {
+          return
+        }
+
+        onCancel?.()
+        setNotify('Изменения отменены', { severity: 'success' })
+      })
+  }, [onCancel, setNotify, popup, isDirty])
 
   const categoryValue = useMemo(() => {
     const option = categoryOptions?.find((category) =>
@@ -343,12 +372,27 @@ export const WishForm = (props: Props) => {
         </div>
 
         <div className="w-full h-[1px] bg-gray-400 my-4" />
-        <div className="gap-4 mt-2 flex justify-between">
-          <Button color="primary" size="small" type="submit" variant="text" disabled={isLoading}>
+        <div className="gap-4 mt-2 flex flex-col">
+          <Button
+            color="primary"
+            size="small"
+            type="submit"
+            className="w-full"
+            variant="contained"
+            disabled={isLoading}
+          >
             {wish ? 'Сохранить' : 'Создать'}
           </Button>
 
-          <Button color="primary" type="button" size="small" variant="text" onClick={onCancel} disabled={isLoading}>
+          <Button
+            color="primary"
+            type="button"
+            size="small"
+            className="w-full"
+            variant="text"
+            onClick={handleCancel}
+            disabled={isLoading}
+          >
             Отменить
           </Button>
         </div>
