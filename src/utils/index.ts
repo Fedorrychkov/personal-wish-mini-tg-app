@@ -1,3 +1,5 @@
 export * from './classnames'
 export * from './share'
+export * from './time'
+export * from './validateNumber'
 export * from './validateUrl'

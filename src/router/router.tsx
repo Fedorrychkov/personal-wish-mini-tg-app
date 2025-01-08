@@ -4,11 +4,13 @@ import { PrivateRoute } from '~/components/guard'
 import { Category } from '~/pages/category'
 import { CategoryNew } from '~/pages/category-new'
 import { CategorySettings } from '~/pages/category-settings'
+import { DepositPage } from '~/pages/deposit'
 import { Favorites } from '~/pages/favorites'
 import { GameByIdPage, GamePage, Games } from '~/pages/games'
 import { Home } from '~/pages/home'
 import { Settings } from '~/pages/settings'
 import { SubscribeRoot } from '~/pages/subscribe-root'
+import { TransactionList } from '~/pages/transaction'
 import { Unavailable } from '~/pages/unavailable'
 import { UserWishList } from '~/pages/user-wish-list'
 import { Wish } from '~/pages/wish'
@@ -128,6 +130,22 @@ export const router = createBrowserRouter(
         element={
           <PrivateRoute>
             <GameByIdPage />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path={ROUTE.transaction}
+        element={
+          <PrivateRoute>
+            <TransactionList />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path={ROUTE.deposit}
+        element={
+          <PrivateRoute>
+            <DepositPage />
           </PrivateRoute>
         }
       />

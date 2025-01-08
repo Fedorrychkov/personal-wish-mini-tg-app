@@ -14,4 +14,6 @@ export const ROUTE = {
   categorySettings: '/settings/category',
   categoryNew: '/category/new',
   category: '/category/:id',
+  transaction: '/transaction',
+  deposit: '/deposit',
 }

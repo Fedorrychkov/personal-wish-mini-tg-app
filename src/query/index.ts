@@ -1,5 +1,6 @@
 export * from './category'
 export * from './category-whitelist'
 export * from './favorite'
+export * from './transaction'
 export * from './user'
 export * from './wish'

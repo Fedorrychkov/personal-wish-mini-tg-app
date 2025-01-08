@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 import { InfoEmoji } from '~/assets'
+import { BalanceContainer } from '~/components/balance'
 import { CategoryChip } from '~/components/category'
 import { UserHeader } from '~/components/user'
 import { WishItem } from '~/components/wish'
@@ -139,6 +140,7 @@ export const Home = () => {
             </div>
           </div>
         )}
+        <BalanceContainer className="mt-4" />
         <div className={cn('flex justify-between items-center pb-4', { 'py-4': !filterEnabledText })}>
           <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-2">Желания</h3>
           <Button
@@ -155,7 +157,7 @@ export const Home = () => {
 
         <div className="mb-4 flex flex-wrap gap-3">
           <Chip
-            label="Добавить"
+            label="Добавить категорию"
             variant="filled"
             className={cn('dark:!text-slate-200 dark:!bg-slate-600')}
             data-tour={ONBOARDING_DATA_NAME.wishMainNewCategory}
