@@ -141,8 +141,8 @@ export const Home = () => {
           </div>
         )}
         <BalanceContainer className="mt-4" />
-        <div className={cn('flex justify-between items-center pb-4', { 'py-4': !filterEnabledText })}>
-          <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-2">Желания</h3>
+        <div className={cn('flex justify-between items-center pb-4 mt-2', { 'py-4': !filterEnabledText })}>
+          <h3 className="text-xl font-bold text-slate-900 dark:text-white">Желания</h3>
           <Button
             color="primary"
             data-tour={ONBOARDING_DATA_NAME.wishMainNewWish}
