@@ -51,7 +51,7 @@ export const SubscribeRoot = () => {
             <>
               {favorites?.length ? (
                 favorites?.map((favorite) => (
-                  <Favorite favorite={favorite} type={type} className="mb-4" key={favorite.id} />
+                  <Favorite favorite={favorite} type={type} className="mb-4" key={favorite.id} isTransfer />
                 ))
               ) : (
                 <div>

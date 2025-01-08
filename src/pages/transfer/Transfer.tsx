@@ -1,45 +1,50 @@
-import { Button, Chip, FormControlLabel, Switch } from '@mui/material'
+import { Avatar, Button, Chip, FormControlLabel, Switch } from '@mui/material'
 import { AxiosError } from 'axios'
 import { useCallback, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 
 import { TextFieldContainer } from '~/components/fields'
 import { NumberFormat } from '~/components/NumberFormat'
 import { UserHeader } from '~/components/user'
-import { TRANSACTION_DEPOSIT_COMISSION, TRANSACTION_DEPOSIT_COMISSION_NUMBER } from '~/constants'
-import { TransactionBalanceItem, transactionCurrencyLabels, TransactionType } from '~/entities'
+import { TRANSACTION_WITHDRAW_COMISSION, TRANSACTION_WITHDRAW_COMISSION_NUMBER } from '~/constants'
+import { BalanceTransfer, transactionCurrencyLabels } from '~/entities'
 import { useRegister, useTgBack } from '~/hooks'
 import { DefaultLayout } from '~/layouts/default'
 import { useAuth, useNotifyContext } from '~/providers'
-import { useTopupTransactionMutation, useTransactionUserBalanceQuery } from '~/query'
+import { useTransactionUserBalanceQuery, useTransferTransactionMutation, useUserDataQuery } from '~/query'
 import { ROUTE } from '~/router'
-import { NUMBER_ABSOLUTE_REGEXP, tgUtils } from '~/utils'
+import { NUMBER_REGEXP_WITH_DOT } from '~/utils'
 
 const amountChips = [10, 100, 1000, 3000, 5000]
 
-export const DepositPage = () => {
+export const TransferPage = () => {
   const { user } = useAuth()
-  const [isSupport, setIsSupport] = useState(false)
+  const { userId } = useParams()
   const location = useLocation()
+  const navigate = useNavigate()
+  const [isAnonymous, setIsAnonymous] = useState(false)
+
+  const { data: targetUser } = useUserDataQuery(userId || '', userId || '', !!userId)
+
+  const prevRoute = location.state?.prevPage || ROUTE.home
 
   const { setNotify } = useNotifyContext()
 
   const { data: balance } = useTransactionUserBalanceQuery(!!user?.id)
-  const topupTransactionMutation = useTopupTransactionMutation()
-
-  const amountProps = location.state?.amount || 50
+  const transferTransactionMutation = useTransferTransactionMutation()
 
   useTgBack({
-    defaultBackPath: location.state?.prevPage || ROUTE.home,
+    defaultBackPath: prevRoute,
   })
 
-  const form = useForm<TransactionBalanceItem>({
+  const form = useForm<BalanceTransfer>({
     mode: 'onChange',
     reValidateMode: 'onChange',
     defaultValues: {
-      amount: amountProps ? amountProps.toString() : '50',
+      amount: '10',
       currency: 'XTR',
+      targetUserId: userId,
     },
   })
 
@@ -47,19 +52,25 @@ export const DepositPage = () => {
   const { errors } = formState
 
   const handleSubmit = useCallback(
-    async (values: TransactionBalanceItem) => {
+    async (values: BalanceTransfer) => {
       try {
-        const response = await topupTransactionMutation.mutateAsync({
+        await transferTransactionMutation.mutateAsync({
           ...values,
-          type: isSupport ? TransactionType.SUPPORT : TransactionType.USER_TOPUP,
+          isAnonymous,
         })
 
-        const { invoiceLink } = response
-        setNotify('Счет на оплату успешно создан', { severity: 'success' })
+        setNotify(
+          'Внутренний перевод успешно выполнен, транзакция появится в истории транзакций, вы автоматически будете перенаправлены через 5 секунд',
+          {
+            severity: 'success',
+          },
+        )
 
-        tgUtils.openTelegramLink(invoiceLink)
+        setTimeout(() => {
+          navigate(ROUTE.transaction)
+        }, 5000)
       } catch (error) {
-        let message = 'Ошибка при создании счета на оплату'
+        let message = 'Ошибка при переводе средств, попробуйте позже или обратитесь в поддержку'
 
         if (error instanceof AxiosError) {
           message = error.response?.data?.message || message
@@ -70,7 +81,7 @@ export const DepositPage = () => {
         console.error(error)
       }
     },
-    [topupTransactionMutation, setNotify, isSupport],
+    [transferTransactionMutation, setNotify, navigate, isAnonymous],
   )
 
   const amountField = useRegister({
@@ -80,8 +91,8 @@ export const DepositPage = () => {
         message: 'Сумма обязательна',
       },
       pattern: {
-        value: NUMBER_ABSOLUTE_REGEXP,
-        message: 'Не верный формат суммы, доступны только целые числа, примеры: 1, 10, 100, 1000',
+        value: NUMBER_REGEXP_WITH_DOT,
+        message: 'Не верный формат суммы, пример корректного формата: 1, 1.1, 0.002',
       },
     }),
     errors,
@@ -105,17 +116,23 @@ export const DepositPage = () => {
 
   const [amount, currency] = watch(['amount', 'currency'])
 
-  const isLoading = topupTransactionMutation?.isLoading
+  const isLoading = transferTransactionMutation?.isLoading
+
+  const handleOpenUser = () => {
+    navigate(ROUTE.userWishList?.replace(':id', userId || ''), {
+      state: { prevPage: ROUTE.transferToUser?.replace(':userId', userId || '') },
+    })
+  }
 
   return (
     <DefaultLayout className="!px-0 !mb-6">
       <UserHeader className="self-center bg-gray-200 dark:bg-slate-400 w-full py-4" editable={false} />
       <div className="flex flex-col gap-2">
         <div className="p-4 flex flex-col justify-start items-start">
-          <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-2">Пополнение баланса</h3>
+          <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-2">Внутренний перевод</h3>
           <p className="text-slate-500 dark:text-slate-400 text-[14px] font-normal">
-            На данный момент, пополнение баланса доступно только в Telegram Stars {transactionCurrencyLabels['XTR']}{' '}
-            Тикер - (XTR)
+            Перевод доступен в валюте баланса пользователя, на данный момент доступен в Telegram Stars{' '}
+            {transactionCurrencyLabels['XTR']} Тикер - (XTR)
           </p>
         </div>
 
@@ -133,7 +150,7 @@ export const DepositPage = () => {
               </>
             ) : (
               <p className="text-slate-600 dark:text-slate-200 text-[14px] font-medium text-center">
-                Баланс пуст, для пополнения введите сумму и нажмите на кнопку "Оплатить"
+                Баланс пуст, для перевода пополните баланс
               </p>
             )}
           </div>
@@ -148,8 +165,8 @@ export const DepositPage = () => {
                   {...amountField}
                   className="w-full mt-4"
                   preventDisabled={isLoading}
-                  placeholder="Сумма пополнения"
-                  label="Сумма пополнения"
+                  placeholder="Сумма перевода"
+                  label="Сумма перевода"
                   required
                 />
                 <div className="flex flex-wrap gap-4 my-2">
@@ -171,57 +188,68 @@ export const DepositPage = () => {
               <TextFieldContainer
                 {...currencyField}
                 className="w-full mt-4"
-                placeholder="Валюта пополнения"
-                label="Валюта пополнения"
+                placeholder="Валюта перевода"
+                label="Валюта перевода"
                 preventDisabled
                 required
                 disabled
               />
+              <div className="flex flex-col gap-1">
+                <p className="text-slate-500 dark:text-slate-400 text-[14px] font-normal text-left mx-4">
+                  Вы переводите средства пользователю:
+                </p>
+                <div
+                  className="flex flex-row gap-4 justify-start items-center border-[1px] border-slate-200 dark:border-slate-200 rounded-lg p-[2px] cursor-pointer hover:opacity-80"
+                  onClick={handleOpenUser}
+                >
+                  <Avatar
+                    alt={targetUser?.username || targetUser?.firstName || targetUser?.lastName || targetUser?.id}
+                    src={targetUser?.avatarUrl || ''}
+                  />
+                  <p className="text-slate-500 dark:text-slate-400 text-[14px] font-normal text-left">
+                    {targetUser?.username || targetUser?.firstName || targetUser?.lastName || targetUser?.id}
+                  </p>
+                </div>
+              </div>
               <FormControlLabel
                 className="w-full"
                 control={
                   <>
                     <Switch
-                      checked={isSupport}
-                      value={isSupport}
-                      disabled={isLoading || currency !== 'XTR'}
-                      onChange={(_, checked) => setIsSupport(checked)}
+                      checked={isAnonymous}
+                      value={isAnonymous}
+                      disabled={isLoading}
+                      onChange={(_, checked) => setIsAnonymous(checked)}
                     />
                   </>
                 }
-                label={`Поддержка бота (средств не будут зачислены на баланс) ${isSupport ? '(Да)' : '(Нет)'}`}
+                label={`Анонимный перевод ${isAnonymous ? '(Да)' : '(Нет)'}`}
               />
               <div className="flex flex-col gap-2 justify-center items-center">
                 <p className="text-slate-500 dark:text-slate-400 text-[14px] font-normal text-center">
-                  Обратите внимание, при пополнении баланса, сервис удерживает комиссию в размере{' '}
-                  {TRANSACTION_DEPOSIT_COMISSION}% от суммы пополнения
+                  Обратите внимание, при переводе средств, сервис удерживает комиссию в размере{' '}
+                  {TRANSACTION_WITHDRAW_COMISSION}% от суммы перевода
                 </p>
                 <p className="text-slate-500 dark:text-slate-400 text-[14px] font-normal text-center">
-                  При возврате средств, возвращется полная стоимость пополнения
+                  Внутренний перевод не поддерживает возврат средств
                 </p>
                 <p className="text-slate-500 dark:text-slate-400 text-[14px] font-normal text-center">
                   При переводе средств, вы соглашаетесь с этими условиями и условиями использования сервиса
                 </p>
               </div>
               <Button type="submit" variant="contained" color="primary" fullWidth>
-                Оплатить <NumberFormat value={amount || 0} />{' '}
+                Перевести <NumberFormat value={amount || 0} />{' '}
                 {currency ? transactionCurrencyLabels[currency] || currency : ''}
               </Button>
-              {!isSupport && (
-                <div className="flex flex-col gap-2 justify-center items-center">
-                  <p className="text-slate-500 dark:text-slate-400 text-[14px] font-normal text-center">
-                    На баланс будет зачислено{' '}
-                    <NumberFormat
-                      value={Number(amount || 0) - Number(amount || 0) * TRANSACTION_DEPOSIT_COMISSION_NUMBER}
-                    />{' '}
-                    {currency ? transactionCurrencyLabels[currency] || currency : ''}
-                  </p>
-                  <p className="text-slate-500 dark:text-slate-400 text-[14px] font-normal text-center">
-                    Этот перевод можно отменить в течении 21 дня, но если на вашем внутреннем балансе не достаточно
-                    средств, перевод не удасться отменить
-                  </p>
-                </div>
-              )}
+              <div className="flex flex-col gap-2 justify-center items-center">
+                <p className="text-slate-500 dark:text-slate-400 text-[14px] font-normal text-center">
+                  Вы переведете пользователю{' '}
+                  <NumberFormat
+                    value={Number(amount || 0) - Number(amount || 0) * TRANSACTION_WITHDRAW_COMISSION_NUMBER}
+                  />{' '}
+                  {currency ? transactionCurrencyLabels[currency] || currency : ''} эту операцию невозможно отменить
+                </p>
+              </div>
             </form>
           </FormProvider>
         </div>

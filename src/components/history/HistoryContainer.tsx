@@ -20,19 +20,19 @@ export function HistoryContainer<T>(props: Props<T>) {
       {data.map((group, index) => (
         <Fragment key={group.datetime}>
           <div className={cn('flex flex-col gap-4', historyGroupClassName)}>
-            <h3 className="font-medium">{formatHistoryDate(group.datetime)}</h3>
+            <h3 className="font-medium text-slate-500 dark:text-slate-200">{formatHistoryDate(group.datetime)}</h3>
             <div className="flex flex-col gap-2">
               {group.list.map((item, index) => (
                 <Fragment key={item.key}>
                   <ItemComponent key={index} value={item} className={cn('w-full', historyItemClassName)} />
                   {index !== group?.list?.length - 1 && (
-                    <div className="h-[2px] w-full bg-slate-100 dark:bg-slate-200" />
+                    <div className="h-[2px] w-full bg-slate-100 dark:bg-slate-500" />
                   )}
                 </Fragment>
               ))}
             </div>
           </div>
-          {index !== data.length - 1 && <div className="h-[2px] w-full bg-slate-100 dark:bg-slate-200" />}
+          {index !== data.length - 1 && <div className="h-[2px] w-full bg-slate-100 dark:bg-slate-500" />}
         </Fragment>
       ))}
     </div>

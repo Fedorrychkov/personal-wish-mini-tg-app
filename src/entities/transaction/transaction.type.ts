@@ -11,6 +11,8 @@ export type Transaction = {
   provider: TransactionProvider
   amount: string
   currency: AnyString
+  payload?: string | null
+  wishId?: string | null
   providerInvoiceId?: string
   comissionPercent?: number
   comissionAmount?: string
@@ -48,6 +50,12 @@ export enum TransactionStatus {
 export enum TransactionProvider {
   TELEGRAM = 'TELEGRAM',
   BLOCKCHAIN = 'BLOCKCHAIN',
+  INTERNAL = 'INTERNAL',
+}
+
+export enum TransactionPayloadType {
+  TRANSFER = 'transfer',
+  SHOW_WISH_BOOKED_USER = 'show_wish_booked_user',
 }
 
 export enum TransactionType {
@@ -71,6 +79,10 @@ export enum TransactionType {
    * Возврат денег
    */
   REFUND = 'REFUND',
+  /**
+   * Оплата в приложении
+   */
+  PURCHASE = 'PURCHASE',
 }
 
 export type TransactionFilter = {
@@ -89,8 +101,33 @@ export type TransactionBalanceTopupResponse = {
   invoiceLink: string
 }
 
+export type BalanceTransfer = {
+  amount: string
+  currency: AnyCurrency
+  targetUserId: string
+  isAnonymous?: boolean
+}
+
 export type TransactionBalanceTopup = {
   amount?: string
   currency?: AnyCurrency
   type?: TransactionType
+}
+
+export type TransactionPayload = {
+  type: TransactionPayloadType
+  message: string
+  userId?: string
+  isAnonymous?: boolean
+}
+
+export type Purchase = {
+  amount: string
+  currency: AnyCurrency
+  payload: TransactionPayload
+  wishId?: string
+}
+
+export type PurchaseFilter = {
+  wishId?: string
 }

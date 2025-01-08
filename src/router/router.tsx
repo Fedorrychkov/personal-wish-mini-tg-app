@@ -11,6 +11,7 @@ import { Home } from '~/pages/home'
 import { Settings } from '~/pages/settings'
 import { SubscribeRoot } from '~/pages/subscribe-root'
 import { TransactionList } from '~/pages/transaction'
+import { TransferPage } from '~/pages/transfer'
 import { Unavailable } from '~/pages/unavailable'
 import { UserWishList } from '~/pages/user-wish-list'
 import { Wish } from '~/pages/wish'
@@ -146,6 +147,14 @@ export const router = createBrowserRouter(
         element={
           <PrivateRoute>
             <DepositPage />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path={ROUTE.transferToUser}
+        element={
+          <PrivateRoute>
+            <TransferPage />
           </PrivateRoute>
         }
       />

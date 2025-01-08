@@ -5,10 +5,12 @@ import { useLocation, useNavigate } from 'react-router-dom'
 
 import { DepositEmoji, TransactionsEmoji, WithdrawEmoji } from '~/assets/emoji'
 import { transactionCurrencyLabels } from '~/entities'
-import { useAuth } from '~/providers'
+import { ONBOARDING_DATA_NAME, useAuth } from '~/providers'
 import { useTransactionUserBalanceQuery } from '~/query'
 import { ROUTE } from '~/router'
 import { cn } from '~/utils'
+
+import { NumberFormat } from '../NumberFormat'
 
 type Props = {
   className?: string
@@ -27,6 +29,7 @@ export const BalanceContainer = ({ className }: Props) => {
       {
         icon: <DepositEmoji />,
         label: 'Пополнить',
+        dataTour: ONBOARDING_DATA_NAME.userTopup,
         onClick: () => navigate(ROUTE.deposit),
       },
       {
@@ -48,7 +51,7 @@ export const BalanceContainer = ({ className }: Props) => {
               ],
             })
             .then((buttonId) => {
-              if ((!buttonId || buttonId === 'cancel') && location.pathname === ROUTE.transaction) {
+              if (!buttonId || buttonId === 'cancel' || location.pathname === ROUTE.transaction) {
                 return
               }
 
@@ -62,6 +65,7 @@ export const BalanceContainer = ({ className }: Props) => {
       buttons.push({
         icon: <TransactionsEmoji />,
         label: 'Транзакции',
+        dataTour: ONBOARDING_DATA_NAME.userTransactions,
         onClick: () => navigate(ROUTE.transaction),
       })
     }
@@ -71,13 +75,14 @@ export const BalanceContainer = ({ className }: Props) => {
 
   return (
     <div className={cn('w-full flex gap-4 items-start justify-between w-full', className)}>
-      <div className="flex flex-col gap-1">
+      <div className="flex flex-col gap-1" data-tour={ONBOARDING_DATA_NAME.userBalance}>
         <p className="text-slate-800 dark:text-slate-200 text-[14px] font-bold">Баланс</p>
         {balance?.length ? (
           <>
             {balance.map((item) => (
               <p key={item.currency} className="text-slate-800 dark:text-slate-200 text-[14px] font-medium">
-                {item.amount} {item.currency ? transactionCurrencyLabels[item.currency] || item.currency : ''}
+                <NumberFormat value={item.amount} />{' '}
+                {item.currency ? transactionCurrencyLabels[item.currency] || item.currency : ''}
               </p>
             ))}
           </>
@@ -91,6 +96,7 @@ export const BalanceContainer = ({ className }: Props) => {
           color="primary"
           size="small"
           variant="text"
+          data-tour={button.dataTour}
           onClick={button.onClick}
           className="flex flex-col items-center justify-center bg-slate-300 dark:bg-slate-700 rounded-lg p-2"
         >

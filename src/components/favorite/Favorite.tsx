@@ -1,4 +1,4 @@
-import { Skeleton } from '@mui/material'
+import { Button, Skeleton } from '@mui/material'
 import { initBackButton, initHapticFeedback } from '@tma.js/sdk'
 import { useCallback, useEffect } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
@@ -15,6 +15,7 @@ type Props = {
   favorite: FavoriteType
   className?: string
   type?: 'subscribes' | 'subscribers'
+  isTransfer?: boolean
 }
 
 export const Favorite = (props: Props) => {
@@ -22,7 +23,7 @@ export const Favorite = (props: Props) => {
   const haptic = initHapticFeedback()
   const navigate = useNavigate()
   const location = useLocation()
-  const { favorite, className, type } = props
+  const { favorite, className, type, isTransfer } = props
 
   backButton.show()
 
@@ -56,6 +57,21 @@ export const Favorite = (props: Props) => {
     }
   }, [handleBack, backButton])
 
+  const handleTransfer = useCallback(
+    (e: React.MouseEvent<HTMLButtonElement>) => {
+      e.stopPropagation()
+
+      if (!isTransfer) {
+        return
+      }
+
+      navigate(ROUTE.transferToUser.replace(':userId', finalUserId || ''), {
+        state: { prevPage: location.pathname },
+      })
+    },
+    [navigate, location.pathname, isTransfer, finalUserId],
+  )
+
   return (
     <div
       className={cn('flex gap-2 w-full bg-slate-200 dark:bg-slate-600 p-2 rounded-lg cursor-pointer', className)}
@@ -88,6 +104,11 @@ export const Favorite = (props: Props) => {
             <p className="text-md text-slate-900 dark:text-white truncate">
               {favorite?.wishlistNotifyEnabled ? 'Уведомления включены' : 'Уведомления отключены'}
             </p>
+            {isTransfer && (
+              <Button variant="text" color="primary" onClick={handleTransfer} className="mt-2 !p-0">
+                <span className="text-sm text-slate-900 dark:text-white">Пополнить баланс</span>
+              </Button>
+            )}
           </>
         )}
       </div>

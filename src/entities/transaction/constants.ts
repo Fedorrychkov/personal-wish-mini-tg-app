@@ -38,6 +38,7 @@ export const transactionTypeLabels: Record<TransactionType, string> = {
   [TransactionType.GAME_TOPUP]: 'Оплата участия',
   [TransactionType.SUPPORT]: 'Донат',
   [TransactionType.REFUND]: 'Возврат',
+  [TransactionType.PURCHASE]: 'Покупка в приложении',
 }
 
 export const transactionTypeColors: Record<TransactionType, string> = {
@@ -46,6 +47,7 @@ export const transactionTypeColors: Record<TransactionType, string> = {
   [TransactionType.GAME_TOPUP]: 'text-blue-200',
   [TransactionType.SUPPORT]: 'text-yellow-400',
   [TransactionType.REFUND]: 'text-purple-200',
+  [TransactionType.PURCHASE]: 'text-red-200',
 }
 
 export const transactionTypeIcons: Record<TransactionType, string> = {
@@ -54,11 +56,13 @@ export const transactionTypeIcons: Record<TransactionType, string> = {
   [TransactionType.GAME_TOPUP]: '🎮',
   [TransactionType.SUPPORT]: '💖',
   [TransactionType.REFUND]: '💸',
+  [TransactionType.PURCHASE]: '🛒',
 }
 
 export const transactionProviderLabels: Record<TransactionProvider, string> = {
   [TransactionProvider.TELEGRAM]: 'Telegram',
   [TransactionProvider.BLOCKCHAIN]: 'Blockchain',
+  [TransactionProvider.INTERNAL]: 'Внутренний перевод',
 }
 
 export const transactionCurrencyLabels: Record<AnyCurrency, string> = {

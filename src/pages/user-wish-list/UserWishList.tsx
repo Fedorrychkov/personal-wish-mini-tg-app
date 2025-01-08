@@ -1,5 +1,4 @@
 import { Alert, Chip, Skeleton } from '@mui/material'
-import { initBackButton } from '@tma.js/sdk'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 
@@ -7,6 +6,8 @@ import { CategoryChip } from '~/components/category'
 import { FavoriteContainer } from '~/components/favorite'
 import { UserHeader } from '~/components/user'
 import { WishItem } from '~/components/wish'
+import { transactionCurrencyLabels } from '~/entities'
+import { useTgBack } from '~/hooks'
 import { DefaultLayout } from '~/layouts/default'
 import { useAuth, useCustomization } from '~/providers'
 import { useUserCategoryQuery, useUserDataQuery, useUserFavoriteQuery, useUserWishQuery } from '~/query'
@@ -17,10 +18,13 @@ export const UserWishList = () => {
   const navigate = useNavigate()
   const { id } = useParams()
   const location = useLocation()
-  const [backButton] = initBackButton()
   const { user: authUser } = useAuth()
   const { data: user, isLoading: isUserLoading } = useUserDataQuery(id || '', id, !!id)
   const { updateUserCustomizationId } = useCustomization()
+
+  useTgBack({
+    defaultBackPath: location?.state?.prevPage ?? ROUTE.home,
+  })
 
   useEffect(() => {
     updateUserCustomizationId(id)
@@ -59,22 +63,6 @@ export const UserWishList = () => {
   const handlePickCategory = useCallback((categoryId: string) => {
     setSelectedCategory((selectedCategoryId) => (selectedCategoryId === categoryId ? undefined : categoryId))
   }, [])
-
-  backButton.show()
-
-  const handleBack = useCallback(() => {
-    navigate(location?.state?.prevPage ?? ROUTE.home, { replace: true })
-
-    return
-  }, [navigate, location])
-
-  useEffect(() => {
-    backButton.on('click', handleBack)
-
-    return () => {
-      backButton.off('click', handleBack)
-    }
-  }, [handleBack, backButton])
 
   const {
     data: favoriteState,
@@ -196,6 +184,18 @@ export const UserWishList = () => {
             onClick={() => {
               handleToggleUnBookedFilter()
               setMeBooked(false)
+            }}
+          />
+          <Chip
+            label={`Подарить ${transactionCurrencyLabels['XTR']}`}
+            variant="filled"
+            className="!bg-blue-600 dark:!bg-blue-500 !text-white font-bold"
+            onClick={() => {
+              navigate(ROUTE.transferToUser?.replace(':userId', user?.id || ''), {
+                state: {
+                  prevPage: ROUTE.userWishList?.replace(':id', user?.id || ''),
+                },
+              })
             }}
           />
         </div>

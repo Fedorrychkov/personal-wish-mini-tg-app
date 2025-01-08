@@ -1,6 +1,6 @@
 import { ErrorModule, ERRORS, SupportedErrorCodes } from './errors'
 
-export const getErrorMessageByCode = (code: SupportedErrorCodes, defaultError?: string, module?: ErrorModule) => {
+export const getErrorMessageByCode = (code?: SupportedErrorCodes, defaultError?: string, module?: ErrorModule) => {
   let errorCodes: Record<string, string> = {}
 
   const defaultErrorText =

@@ -3,6 +3,9 @@ import { AxiosInstance } from 'axios'
 import { Request } from '~/services'
 
 import {
+  BalanceTransfer,
+  Purchase,
+  PurchaseFilter,
   Transaction,
   TransactionBalanceItem,
   TransactionBalanceTopup,
@@ -48,6 +51,24 @@ export class ClientTransactionApi {
 
   async topup(body: TransactionBalanceTopup): Promise<TransactionBalanceTopupResponse> {
     const response = await this.client.post('/v1/transaction/balance/topup', body)
+
+    return response.data
+  }
+
+  async transfer(body: BalanceTransfer): Promise<Transaction> {
+    const response = await this.client.post('/v1/transaction/balance/transfer', body)
+
+    return response.data
+  }
+
+  async purchase(body: Purchase): Promise<Transaction> {
+    const response = await this.client.post('/v1/transaction/purchase', body)
+
+    return response.data
+  }
+
+  async findPurchase(filter: PurchaseFilter): Promise<Transaction[]> {
+    const response = await this.client.get('/v1/transaction/purchase', { params: filter })
 
     return response.data
   }

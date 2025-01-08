@@ -2,18 +2,33 @@ import { Button, Skeleton } from '@mui/material'
 import { initHapticFeedback } from '@tma.js/sdk'
 import { AxiosError } from 'axios'
 import { useCallback, useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 
 import { DeleteEmoji, OpenEmoji, ShareEmoji } from '~/assets'
-import { useWishCopy, useWishDelete, useWishGiven, WishForm, WishImageContainer } from '~/components/wish'
+import { TransactionUserItem } from '~/components/history'
+import {
+  useWishBookedInfoPurchase,
+  useWishCopy,
+  useWishDelete,
+  useWishGiven,
+  WishForm,
+  WishImageContainer,
+} from '~/components/wish'
 import { getBookButtonState } from '~/components/wish/helpers'
 import { useWishBook } from '~/components/wish/hooks/useWishBook'
-import { WishStatus } from '~/entities'
+import { TRANSACTION_BOOKED_USERS_XTR_AMOUNT, TRANSACTION_DEPOSIT_COMISSION_NUMBER } from '~/constants'
+import { transactionCurrencyLabels, TransactionPayloadType, WishStatus } from '~/entities'
 import { getErrorMessageByCode } from '~/errors'
 import { useTgBack } from '~/hooks'
 import { DefaultLayout } from '~/layouts/default'
 import { useAuth, useCustomization, useNotifyContext } from '~/providers'
-import { useUserDataQuery, useUserWishItemQuery, useWishCategoryQuery } from '~/query'
+import {
+  usePurchaseTransactionQuery,
+  useTransactionUserBalanceQuery,
+  useUserDataQuery,
+  useUserWishItemQuery,
+  useWishCategoryQuery,
+} from '~/query'
 import { ROUTE } from '~/router'
 import { shareTgLink } from '~/utils'
 
@@ -24,6 +39,60 @@ export const Wish = () => {
   const haptic = initHapticFeedback()
   const { user } = useAuth()
   const [isEditable, setEditable] = useState(false)
+  const [isBookedUsersOpenFlow, setBookedUsersOpenFlow] = useState(false)
+  const [isBookedUserOpen, setBookedUserOpen] = useState(false)
+  const [balanceNotEnough, setBalanceNotEnough] = useState(false)
+  const {
+    isLoading: isPurchaseLoading,
+    refetch: refetchPurchases,
+    key: purchaseKey,
+  } = usePurchaseTransactionQuery(
+    {
+      wishId: id || '',
+      userId: user?.id || '',
+    },
+    !!id && !!user?.id,
+    {
+      onSuccess: (transactions) => {
+        if (transactions?.length) {
+          setBookedUserOpen(true)
+          setBookedUsersOpenFlow(false)
+          setBalanceNotEnough(false)
+        }
+      },
+    },
+  )
+
+  const { handlePopup } = useWishBookedInfoPurchase(purchaseKey, () => {
+    refetchPurchases()
+  })
+
+  const { isLoading: isBalanceLoading, refetch: refetchUserBalance } = useTransactionUserBalanceQuery(
+    !!user?.id && isBookedUsersOpenFlow,
+    {
+      onSuccess: (balance) => {
+        const balanceXTR = balance?.find((item) => item.currency === 'XTR')
+
+        if (balanceXTR?.amount && Number(balanceXTR?.amount) >= TRANSACTION_BOOKED_USERS_XTR_AMOUNT) {
+          // TODO: показать кто подарил если баланс ок
+          handlePopup({
+            wishId: id || '',
+            payload: {
+              type: TransactionPayloadType.SHOW_WISH_BOOKED_USER,
+              message: 'Оплата услуги за просмотр кто подарил/забронировал желание',
+            },
+            amount: TRANSACTION_BOOKED_USERS_XTR_AMOUNT.toString(),
+            currency: 'XTR',
+          })
+
+          return
+        }
+
+        setBookedUsersOpenFlow(false)
+        setBalanceNotEnough(true)
+      },
+    },
+  )
 
   const {
     data: wish,
@@ -103,6 +172,16 @@ export const Wish = () => {
       state: { prevPage: ROUTE.wish?.replace(':id', wish?.id || '') },
     })
   }, [navigate, category?.id, wish?.id])
+
+  const handleShowBookedUsers = useCallback(() => {
+    setBookedUsersOpenFlow((state) => {
+      if (state) {
+        refetchUserBalance()
+      }
+
+      return true
+    })
+  }, [refetchUserBalance])
 
   return (
     <DefaultLayout className="!px-0">
@@ -239,7 +318,7 @@ export const Wish = () => {
                 </div>
 
                 <div className="w-full h-[1px] bg-gray-400 my-2" />
-                <div className="gap-4 mt-2 flex flex-col justify-between p-4 bg-slate-200/[.5] dark:bg-slate-900/[.5]">
+                <div className="gap-1 mt-2 flex flex-col justify-between p-4 bg-slate-200/[.5] dark:bg-slate-900/[.5]">
                   {isOwner && wish?.status !== WishStatus.GIVEN && (
                     <>
                       <Button
@@ -305,6 +384,56 @@ export const Wish = () => {
                     >
                       Хочу себе
                     </Button>
+                  )}
+                  {wish?.bookedUserId && wish?.bookedUserId !== user?.id && (
+                    <>
+                      {isBookedUserOpen ? (
+                        <div className="flex flex-col gap-2 items-center justify-center">
+                          <div className="text-sm text-center text-slate-600 dark:text-slate-600 flex flex-col items-center justify-center gap-1">
+                            <span>{wish.status === WishStatus.GIVEN ? 'Подарил' : 'Забронировал'}</span>
+                            <Link
+                              to={ROUTE.userWishList?.replace(':id', wish?.bookedUserId || '')}
+                              className="text-sm text-center flex items-center justify-center gap-2 text-blue-700 dark:text-blue-700"
+                            >
+                              <TransactionUserItem userId={wish?.bookedUserId} showMeta />
+                            </Link>
+                          </div>
+                        </div>
+                      ) : (
+                        <Button
+                          color="error"
+                          type="button"
+                          disabled={isLoading || isBalanceLoading || isPurchaseLoading}
+                          onClick={handleShowBookedUsers}
+                          size="small"
+                          variant="text"
+                        >
+                          Посмотреть кто {wish.status === WishStatus.GIVEN ? 'подарил' : 'забронировал'} за{' '}
+                          {TRANSACTION_BOOKED_USERS_XTR_AMOUNT} {transactionCurrencyLabels['XTR']}
+                        </Button>
+                      )}
+                      {balanceNotEnough && (
+                        <div className="flex flex-col gap-2 items-center justify-center">
+                          <p className="text-xs text-center text-red-700 dark:text-red-400">
+                            Баланс не достаточен для просмотра того, кто{' '}
+                            {wish.status === WishStatus.GIVEN ? 'подарил' : 'забронировал'} желание
+                          </p>
+                          <Link
+                            to={ROUTE.deposit}
+                            state={{
+                              prevPage: ROUTE.wish?.replace(':id', wish?.id || ''),
+                              amount:
+                                TRANSACTION_BOOKED_USERS_XTR_AMOUNT +
+                                10 +
+                                TRANSACTION_BOOKED_USERS_XTR_AMOUNT * TRANSACTION_DEPOSIT_COMISSION_NUMBER,
+                            }}
+                            className="text-sm text-center text-blue-700 dark:text-blue-700"
+                          >
+                            Пополнить баланс
+                          </Link>
+                        </div>
+                      )}
+                    </>
                   )}
                 </div>
               </div>

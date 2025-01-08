@@ -18,6 +18,9 @@ export const ONBOARDING_DATA_NAME = {
   userFavorites: 'user-favorites',
   userGames: 'user-games',
   userSocial: 'user-social',
+  userBalance: 'user-balance',
+  userTopup: 'user-topup',
+  userTransactions: 'user-transactions',
 }
 
 export const ONBOARDING_SELECTORS = {
@@ -33,6 +36,9 @@ export const ONBOARDING_SELECTORS = {
   userWishList: `[data-tour="${ONBOARDING_DATA_NAME.userWishList}"]`,
   userGames: `[data-tour="${ONBOARDING_DATA_NAME.userGames}"]`,
   userSocial: `[data-tour="${ONBOARDING_DATA_NAME.userSocial}"]`,
+  userBalance: `[data-tour="${ONBOARDING_DATA_NAME.userBalance}"]`,
+  userTopup: `[data-tour="${ONBOARDING_DATA_NAME.userTopup}"]`,
+  userTransactions: `[data-tour="${ONBOARDING_DATA_NAME.userTransactions}"]`,
 }
 
 export const ONBOARDING_MAIN_STEPS = (): StepType[] => [
@@ -61,6 +67,20 @@ export const ONBOARDING_MAIN_STEPS = (): StepType[] => [
     content: (
       <OnboardingStep text="У каждого пользователя есть возможность через вкладку избранных формировать свой список подписок и подписчиков" />
     ),
+  },
+  {
+    selector: ONBOARDING_SELECTORS.userBalance,
+    content: (
+      <OnboardingStep text="Это ваш внутренний баланс, при помощи внутреннего баланса вы можете совершать платежи в этом приложении" />
+    ),
+  },
+  {
+    selector: ONBOARDING_SELECTORS.userTopup,
+    content: <OnboardingStep text="Пополнение собственнного баланса в приложении" />,
+  },
+  {
+    selector: ONBOARDING_SELECTORS.userTransactions,
+    content: <OnboardingStep text="Список транзакций, отображает все транзакции совершенные в приложении" />,
   },
   {
     selector: ONBOARDING_SELECTORS.wishMainNewCategory,

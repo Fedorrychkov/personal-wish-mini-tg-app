@@ -16,4 +16,5 @@ export const ROUTE = {
   category: '/category/:id',
   transaction: '/transaction',
   deposit: '/deposit',
+  transferToUser: '/transfer/:userId',
 }
