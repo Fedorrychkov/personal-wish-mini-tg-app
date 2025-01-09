@@ -51,12 +51,14 @@ function App(props: Props) {
       }
     }
 
-    // Загрузка скрипта Метрики
-    const script = document.createElement('script')
-    script.src = 'https://mc.yandex.ru/metrika/tag.js'
-    script.async = true
-    script.onload = initYM
-    document.head.appendChild(script)
+    if (YANDEX_METRICA_ID) {
+      // Загрузка скрипта Метрики
+      const script = document.createElement('script')
+      script.src = 'https://mc.yandex.ru/metrika/tag.js'
+      script.async = true
+      script.onload = initYM
+      document.head.appendChild(script)
+    }
   }, [])
 
   return (

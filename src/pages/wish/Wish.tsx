@@ -74,7 +74,6 @@ export const Wish = () => {
         const balanceXTR = balance?.find((item) => item.currency === 'XTR')
 
         if (balanceXTR?.amount && Number(balanceXTR?.amount) >= TRANSACTION_BOOKED_USERS_XTR_AMOUNT) {
-          // TODO: показать кто подарил если баланс ок
           handlePopup({
             wishId: id || '',
             payload: {

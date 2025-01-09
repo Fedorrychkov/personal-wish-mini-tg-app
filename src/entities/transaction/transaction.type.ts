@@ -21,6 +21,7 @@ export type Transaction = {
    * ID игры, к которой привязана транзакция, может быть пустой, еслли это например - поддержка разработчика
    */
   gameId?: string | null
+  santaGameId?: string | null
   /**
    * Время до которого можно вернуть деньги
    */
@@ -56,6 +57,7 @@ export enum TransactionProvider {
 export enum TransactionPayloadType {
   TRANSFER = 'transfer',
   SHOW_WISH_BOOKED_USER = 'show_wish_booked_user',
+  SHOW_SECRET_SANTA_USER = 'show_secret_santa_user',
 }
 
 export enum TransactionType {
@@ -126,8 +128,10 @@ export type Purchase = {
   currency: AnyCurrency
   payload: TransactionPayload
   wishId?: string
+  santaGameId?: string
 }
 
 export type PurchaseFilter = {
   wishId?: string
+  santaGameId?: string
 }

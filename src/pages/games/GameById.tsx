@@ -1,6 +1,6 @@
 import { CircularProgress } from '@mui/material'
 import { useMemo } from 'react'
-import { Navigate, useParams } from 'react-router-dom'
+import { Navigate, useLocation, useParams } from 'react-router-dom'
 
 import { SantaGameView } from '~/components/games'
 import { UserHeader } from '~/components/user'
@@ -12,6 +12,7 @@ import { ROUTE } from '~/router/constants'
 
 export const GameByIdPage = () => {
   const { id } = useParams()
+  const location = useLocation()
 
   const { data: game, isLoading, isFetched } = useGameQuery(id || '', !!id)
 
@@ -24,9 +25,20 @@ export const GameByIdPage = () => {
     }
   }, [game])
 
+  const prevPage = useMemo(() => {
+    if (location.state?.prevPage) {
+      return location.state.prevPage
+    }
+
+    if (game?.type === GameType.SANTA) {
+      return ROUTE.game.replace(':type', game?.type?.toLowerCase() || '')
+    }
+
+    return ROUTE.games
+  }, [location, game])
+
   useTgBack({
-    defaultBackPath:
-      game?.type === GameType.SANTA ? ROUTE.game.replace(':type', game.type?.toLowerCase()) : ROUTE.games,
+    defaultBackPath: prevPage,
   })
 
   if (!game && !isLoading && isFetched) {

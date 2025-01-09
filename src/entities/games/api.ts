@@ -53,6 +53,12 @@ export class ClientGamesApi {
     return response.data
   }
 
+  async getGameMySanta(gameId: string): Promise<GameParticipant> {
+    const response = await this.client.get<GameParticipant>(`/v1/game/${gameId}/participant/my/santa`)
+
+    return response.data
+  }
+
   async shareGameWithParticipant(gameId: string, userId: string): Promise<GameParticipant> {
     const response = await this.client.post<GameParticipant>(`/v1/game/${gameId}/participant`, { userId })
 

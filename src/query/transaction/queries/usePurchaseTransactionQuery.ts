@@ -15,7 +15,10 @@ export const usePurchaseTransactionQuery = (
     enabled,
     method: async () => {
       const api = new ClientTransactionApi()
-      const response = await api.findPurchase({ wishId: params?.wishId })
+      const response = await api.findPurchase({
+        wishId: params?.wishId,
+        santaGameId: params?.santaGameId,
+      })
 
       return response
     },

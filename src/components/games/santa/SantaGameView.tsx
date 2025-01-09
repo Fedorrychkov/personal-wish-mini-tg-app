@@ -3,9 +3,22 @@ import { useCallback, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { ShareEmoji } from '~/assets'
+import { TransactionUserItem } from '~/components/history'
+import {
+  TRANSACTION_DEPOSIT_COMISSION_NUMBER,
+  TRANSACTION_SANTA_GAME_XTR_STOPPED_AMOUNT,
+  TRANSACTION_SANTA_GAME_XTR_UNSTOPPED_AMOUNT,
+} from '~/constants'
+import { transactionCurrencyLabels, TransactionPayloadType } from '~/entities'
 import { GameResponse, GameStatus, gameStatusColors, gameStatusNames } from '~/entities/games'
 import { useAuth, useNotifyContext } from '~/providers'
-import { useAcceptParticipantInvitationMutation, useMyParticipantQuery, useParticipantsQuery } from '~/query/game'
+import { usePurchaseTransactionQuery, useTransactionUserBalanceQuery } from '~/query'
+import {
+  useAcceptParticipantInvitationMutation,
+  useMyParticipantQuery,
+  useMySantaQuery,
+  useParticipantsQuery,
+} from '~/query/game'
 import { ROUTE } from '~/router'
 import { shareTgLink } from '~/utils'
 
@@ -13,6 +26,7 @@ import { GameParticipantItem } from './GameParticipant'
 import { useCancelByPopup } from './hooks/useCancelByPopup'
 import { useFinishByPopup } from './hooks/useFinishByPopup'
 import { useRunByPopup } from './hooks/useRunByPopup'
+import { useSecretSantaInfoPurchase } from './hooks/useSecretSantaInfoPurchase'
 import { SantaInviteSubscribtions } from './SantaInviteSubscribtions'
 import { SubscribtionsItem } from './SubscribtionsItem'
 
@@ -22,6 +36,10 @@ type SantaGameProps = {
 
 export const SantaGameView = ({ game }: SantaGameProps) => {
   const { setNotify } = useNotifyContext()
+
+  const [isSantaUserOpenFlow, setSantaUserOpenFlow] = useState(false)
+  const [isSantaUserOpen, setSantaUserOpen] = useState(false)
+  const [balanceNotEnough, setBalanceNotEnough] = useState(false)
 
   const {
     data: participants,
@@ -34,6 +52,70 @@ export const SantaGameView = ({ game }: SantaGameProps) => {
   const { data: myParticipant } = useMyParticipantQuery(
     game.id,
     !!game.id && !!game.status && ![GameStatus.CREATED, GameStatus.CANCELLED].includes(game.status),
+  )
+
+  const {
+    isLoading: isPurchaseLoading,
+    refetch: refetchPurchases,
+    key: purchaseKey,
+  } = usePurchaseTransactionQuery(
+    {
+      santaGameId: game.id || '',
+      userId: user?.id || '',
+    },
+    !!game.id && !!user?.id,
+    {
+      onSuccess: (transactions) => {
+        if (transactions?.length) {
+          setSantaUserOpen(true)
+          setSantaUserOpenFlow(false)
+          setBalanceNotEnough(false)
+        }
+      },
+    },
+  )
+
+  const { data: mySanta } = useMySantaQuery(
+    game.id,
+    !!game.id && !!game.status && ![GameStatus.CREATED].includes(game.status) && !!myParticipant && isSantaUserOpen,
+  )
+
+  const finalAmoount = [GameStatus.FINISHED, GameStatus.CANCELLED].includes(game?.status || GameStatus.CREATED)
+    ? TRANSACTION_SANTA_GAME_XTR_STOPPED_AMOUNT
+    : TRANSACTION_SANTA_GAME_XTR_UNSTOPPED_AMOUNT
+
+  const { handlePopup } = useSecretSantaInfoPurchase(purchaseKey, () => {
+    refetchPurchases()
+  })
+
+  const { isLoading: isBalanceLoading, refetch: refetchUserBalance } = useTransactionUserBalanceQuery(
+    !!user?.id && isSantaUserOpenFlow,
+    {
+      onSuccess: (balance) => {
+        if (!game?.status) {
+          return
+        }
+
+        const balanceXTR = balance?.find((item) => item.currency === 'XTR')
+
+        if (balanceXTR?.amount && Number(balanceXTR?.amount) >= finalAmoount) {
+          handlePopup({
+            santaGameId: game.id || '',
+            payload: {
+              type: TransactionPayloadType.SHOW_SECRET_SANTA_USER,
+              message: 'Оплата услуги за просмотр кто является Вашим Сантой в игре',
+            },
+            amount: finalAmoount.toString(),
+            currency: 'XTR',
+          })
+
+          return
+        }
+
+        setSantaUserOpenFlow(false)
+        setBalanceNotEnough(true)
+      },
+    },
   )
 
   const [value, setValue] = useState<string>('0')
@@ -82,6 +164,16 @@ export const SantaGameView = ({ game }: SantaGameProps) => {
     }
   }, [acceptInvitationMutation, setNotify])
 
+  const handleShowSantaUser = useCallback(() => {
+    setSantaUserOpenFlow((state) => {
+      if (state) {
+        refetchUserBalance()
+      }
+
+      return true
+    })
+  }, [refetchUserBalance])
+
   return (
     <div className="flex flex-col gap-2 py-4 px-4">
       <h3 className="text-xl bold text-slate-900 dark:text-white">Игра: {game?.name}</h3>
@@ -122,12 +214,61 @@ export const SantaGameView = ({ game }: SantaGameProps) => {
           </Button>
         </Alert>
       )}
+      {myParticipant &&
+        game?.status &&
+        [GameStatus.ACTIVE, GameStatus.FINISHED, GameStatus.CANCELLED].includes(game.status) && (
+          <>
+            {isSantaUserOpen ? (
+              <div className="flex gap-2 items-center justify-start">
+                <div className="text-sm text-center text-slate-600 dark:text-slate-200 flex items-center justify-start gap-4">
+                  <span>Ваш санта:</span>
+                  <Link
+                    to={ROUTE.userWishList?.replace(':id', mySanta?.userId || '')}
+                    state={{ prevPage: ROUTE.gameById.replace(':id', game.id) }}
+                    className="text-sm text-center flex items-center justify-center gap-2 text-blue-700 dark:text-blue-700"
+                  >
+                    <TransactionUserItem userId={mySanta?.userId} showMeta />
+                  </Link>
+                </div>
+              </div>
+            ) : (
+              <Button
+                color="error"
+                type="button"
+                disabled={isBalanceLoading || isPurchaseLoading}
+                onClick={handleShowSantaUser}
+                size="small"
+                variant="text"
+              >
+                Посмотреть кто является Вашим Сантой {finalAmoount} {transactionCurrencyLabels['XTR']}
+              </Button>
+            )}
+            {balanceNotEnough && (
+              <div className="flex flex-col gap-2 items-center justify-center">
+                <p className="text-xs text-center text-red-700 dark:text-red-400">
+                  Баланс не достаточен для просмотра того, кто является Вашим Сантой
+                </p>
+                <Link
+                  to={ROUTE.deposit}
+                  state={{
+                    prevPage: ROUTE.gameById.replace(':id', game?.id || ''),
+                    amount: finalAmoount + 10 + finalAmoount * TRANSACTION_DEPOSIT_COMISSION_NUMBER,
+                  }}
+                  className="text-sm text-center text-blue-700 dark:text-blue-700"
+                >
+                  Пополнить баланс
+                </Link>
+              </div>
+            )}
+          </>
+        )}
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Tabs value={value} onChange={handleChange} aria-label="Santa game tabs" variant="scrollable">
           <Tab label="Основная информация" value="0" className="w-[50%]" />
           <Tab label="Пригласить из подписок" value="1" className="w-[50%]" disabled={!isNotStarted} />
         </Tabs>
       </Box>
+
       <div className="flex flex-col gap-4 mt-4">
         <div role="tabpanel" hidden={value !== '0'} id="simple-tabpanel-0" aria-labelledby="simple-tab-0">
           {value === '0' && (

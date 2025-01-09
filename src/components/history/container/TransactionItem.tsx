@@ -94,13 +94,25 @@ export const TransactionItem = (props: Props) => {
               </Link>
             )}
             {!transactionPayload?.isAnonymous &&
-              transactionPayload?.type === TransactionPayloadType.SHOW_WISH_BOOKED_USER && (
+              transactionPayload?.type === TransactionPayloadType.SHOW_WISH_BOOKED_USER &&
+              value?.wishId && (
                 <Link
                   to={ROUTE.wish?.replace(':id', value?.wishId || '')}
                   state={{ prevPage: ROUTE.transaction }}
                   className="flex flex-row gap-2 items-center text-blue-600 dark:text-blue-500"
                 >
                   <span>Открыть желание</span>
+                </Link>
+              )}
+            {!transactionPayload?.isAnonymous &&
+              transactionPayload?.type === TransactionPayloadType.SHOW_SECRET_SANTA_USER &&
+              value?.santaGameId && (
+                <Link
+                  to={ROUTE.gameById?.replace(':id', value?.santaGameId || '')}
+                  state={{ prevPage: ROUTE.transaction }}
+                  className="flex flex-row gap-2 items-center text-blue-600 dark:text-blue-500"
+                >
+                  <span>Открыть секретного Санту</span>
                 </Link>
               )}
           </div>
