@@ -1,6 +1,7 @@
 import { AxiosInstance } from 'axios'
 
 import { Request } from '~/services'
+import { PaginationResponse } from '~/types'
 
 import {
   BalanceTransfer,
@@ -19,8 +20,8 @@ export class ClientTransactionApi {
     this.client = new Request().apiClient
   }
 
-  async list(): Promise<Transaction[]> {
-    const response = await this.client.get('/v1/transaction/list')
+  async list(pageParam?: string): Promise<PaginationResponse<Transaction>> {
+    const response = await this.client.get('/v1/transaction/list', { params: { createdAt: pageParam } })
 
     return response.data
   }
@@ -51,6 +52,12 @@ export class ClientTransactionApi {
 
   async topup(body: TransactionBalanceTopup): Promise<TransactionBalanceTopupResponse> {
     const response = await this.client.post('/v1/transaction/balance/topup', body)
+
+    return response.data
+  }
+
+  async refferalBlockedBalance(): Promise<TransactionBalanceItem[]> {
+    const response = await this.client.get('/v1/transaction/balance/refferal')
 
     return response.data
   }

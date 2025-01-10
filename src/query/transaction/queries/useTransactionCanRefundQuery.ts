@@ -5,10 +5,11 @@ import { useQueryBuilder } from '~/hooks'
 
 export const useTransactionCanRefundQuery = (
   id: string,
+  definedKey?: string,
   enabled = true,
   options?: Omit<UseQueryOptions<Transaction, unknown, Transaction, string>, 'queryKey' | 'queryFn'> | undefined,
 ) => {
-  const key = `transaction-can-refund-${id}`
+  const key = definedKey || `transaction-can-refund-${id}`
 
   const props = useQueryBuilder({
     key,

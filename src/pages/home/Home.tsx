@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 import { InfoEmoji } from '~/assets'
-import { BalanceContainer } from '~/components/balance'
+import { WalletContainer } from '~/components/balance'
 import { CategoryChip } from '~/components/category'
 import { UserHeader } from '~/components/user'
 import { WishItem } from '~/components/wish'
@@ -132,6 +132,7 @@ export const Home = () => {
         <InfoEmoji className="text-sm" />
       </button>
       <UserHeader className="self-center bg-gray-200 dark:bg-slate-400 w-full py-4" categoryId={selectedCategoryId} />
+      <WalletContainer className="mt-[-16px] ml-[-8px]" chipClassName="!pl-2 hover:!pl-6 transition-all" />
       <div className="px-4">
         {filterEnabledText && (
           <div className="flex flex-col mt-4 items-start">
@@ -140,8 +141,7 @@ export const Home = () => {
             </div>
           </div>
         )}
-        <BalanceContainer className="mt-4" />
-        <div className={cn('flex justify-between items-center pb-4 mt-2', { 'py-4': !filterEnabledText })}>
+        <div className={cn('flex justify-between items-center pb-4 mt-2', { 'pb-4 pt-1': !filterEnabledText })}>
           <h3 className="text-xl font-bold text-slate-900 dark:text-white">Желания</h3>
           <Button
             color="primary"

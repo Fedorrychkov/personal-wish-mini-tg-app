@@ -9,7 +9,7 @@ export const getBookButtonState = (wish?: Wish, user?: User) => {
     if (wish?.bookedUserId === user?.id) {
       text = wish?.userId === user?.id ? 'Снять бронь' : 'Не хочу дарить'
     } else {
-      text = 'Кто-то забронировал'
+      text = 'Забронировано'
       disabled = true
     }
 

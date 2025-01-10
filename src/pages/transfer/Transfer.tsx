@@ -259,7 +259,11 @@ export const TransferPage = () => {
             Все транзакции доступны в Истории транзакций
           </p>
 
-          <Link to={ROUTE.transaction} className="text-blue-500 dark:text-blue-400 text-[14px] font-normal text-center">
+          <Link
+            to={ROUTE.transaction}
+            state={{ prevPage: ROUTE.transferToUser?.replace(':userId', userId || '') }}
+            className="text-blue-500 dark:text-blue-400 text-[14px] font-normal text-center"
+          >
             Открыть историю транзакций
           </Link>
         </div>

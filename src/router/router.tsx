@@ -14,6 +14,7 @@ import { TransactionList } from '~/pages/transaction'
 import { TransferPage } from '~/pages/transfer'
 import { Unavailable } from '~/pages/unavailable'
 import { UserWishList } from '~/pages/user-wish-list'
+import { WalletPage } from '~/pages/wallet'
 import { Wish } from '~/pages/wish'
 import { NewWish } from '~/pages/wish-new'
 
@@ -155,6 +156,14 @@ export const router = createBrowserRouter(
         element={
           <PrivateRoute>
             <TransferPage />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path={ROUTE.wallet}
+        element={
+          <PrivateRoute>
+            <WalletPage />
           </PrivateRoute>
         }
       />

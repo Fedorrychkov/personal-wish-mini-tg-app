@@ -58,6 +58,10 @@ export enum TransactionPayloadType {
   TRANSFER = 'transfer',
   SHOW_WISH_BOOKED_USER = 'show_wish_booked_user',
   SHOW_SECRET_SANTA_USER = 'show_secret_santa_user',
+  INVITED_NEW_USER = 'invited_new_user',
+  INVITEE_BONUS = 'invitee_bonus',
+  WITH_REFFERAL_COMISSION = 'with_refferal_comission',
+  REFFERAL_BONUS = 'refferal_bonus',
 }
 
 export enum TransactionType {
@@ -78,13 +82,17 @@ export enum TransactionType {
    */
   SUPPORT = 'SUPPORT',
   /**
-   * Возврат денег
-   */
-  REFUND = 'REFUND',
-  /**
    * Оплата в приложении
    */
   PURCHASE = 'PURCHASE',
+  /**
+   * Вознаграждение рефереру при приглашении нового пользователя или приглашенному по реф системе
+   */
+  REFFERAL = 'REFFERAL',
+  /**
+   * Бонусы, например за вступление в бота или другие внутренние действия
+   */
+  BONUS = 'BONUS',
 }
 
 export type TransactionFilter = {

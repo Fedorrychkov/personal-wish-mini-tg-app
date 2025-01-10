@@ -17,4 +17,5 @@ export const ROUTE = {
   transaction: '/transaction',
   deposit: '/deposit',
   transferToUser: '/transfer/:userId',
+  wallet: '/wallet',
 }

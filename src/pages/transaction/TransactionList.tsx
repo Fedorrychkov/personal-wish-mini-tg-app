@@ -1,3 +1,7 @@
+import { Button } from '@mui/material'
+import { useMemo } from 'react'
+import { useLocation } from 'react-router-dom'
+
 import { BalanceContainer } from '~/components/balance'
 import { GroupedSkeleton, HistoryContainer, TransactionItem, usePrepareHistoryItems } from '~/components/history'
 import { UserHeader } from '~/components/user'
@@ -9,10 +13,25 @@ import { ROUTE } from '~/router'
 
 export const TransactionList = () => {
   const { user } = useAuth()
-  const { data: transactions, isLoading: isLoadingTransactions } = useTransactionListQuery(!!user?.id)
+  const location = useLocation()
+  const {
+    data: inifniteTransactions,
+    isLoading: isLoadingTransactions,
+    fetchNextPage,
+    hasNextPage,
+  } = useTransactionListQuery(!!user?.id, {
+    getNextPageParam: (lastPage, allPages) =>
+      allPages?.flatMap((page) => page.list)?.length < lastPage?.total
+        ? lastPage.list[lastPage.list.length - 1].createdAt
+        : undefined,
+  })
+
+  const transactions = useMemo(() => {
+    return inifniteTransactions?.pages.flatMap((page) => page.list)
+  }, [inifniteTransactions])
 
   useTgBack({
-    defaultBackPath: ROUTE.home,
+    defaultBackPath: location.state?.prevPage || ROUTE.home,
   })
 
   const historyItems = usePrepareHistoryItems(transactions, 'createdAt', 'id')
@@ -38,6 +57,11 @@ export const TransactionList = () => {
               historyGroupClassName="p-4"
               historyItemClassName="!gap-1"
             />
+            {hasNextPage && (
+              <Button onClick={() => fetchNextPage({ pageParam: transactions?.[transactions.length - 1].createdAt })}>
+                Еще
+              </Button>
+            )}
           </div>
         </div>
       </div>
