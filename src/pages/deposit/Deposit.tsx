@@ -115,7 +115,7 @@ export const DepositPage = () => {
           <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-2">Пополнение баланса</h3>
           <p className="text-slate-500 dark:text-slate-400 text-[14px] font-normal">
             На данный момент, пополнение баланса доступно только в Telegram Stars {transactionCurrencyLabels['XTR']}{' '}
-            Тикер - (XTR)
+            Тикер - (XTR), пополнение в TON {transactionCurrencyLabels['TON']} Тикер - (TON) доступно в чате с ботом
           </p>
         </div>
 

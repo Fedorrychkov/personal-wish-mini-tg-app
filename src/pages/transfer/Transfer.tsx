@@ -4,7 +4,7 @@ import { useCallback, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 
-import { TextFieldContainer } from '~/components/fields'
+import { AutocompleteFieldContainer, TextFieldContainer } from '~/components/fields'
 import { NumberFormat } from '~/components/NumberFormat'
 import { UserHeader } from '~/components/user'
 import { TRANSACTION_WITHDRAW_COMISSION, TRANSACTION_WITHDRAW_COMISSION_NUMBER } from '~/constants'
@@ -14,9 +14,13 @@ import { DefaultLayout } from '~/layouts/default'
 import { useAuth, useNotifyContext } from '~/providers'
 import { useTransactionUserBalanceQuery, useTransferTransactionMutation, useUserDataQuery } from '~/query'
 import { ROUTE } from '~/router'
+import { AnyCurrency } from '~/types'
 import { NUMBER_REGEXP_WITH_DOT } from '~/utils'
 
-const amountChips = [10, 100, 1000, 3000, 5000]
+const amountChips: Record<AnyCurrency, number[]> = {
+  XTR: [10, 100, 1000, 3000, 5000],
+  TON: [0.05, 0.1, 0.5, 1, 5],
+}
 
 export const TransferPage = () => {
   const { user } = useAuth()
@@ -33,6 +37,8 @@ export const TransferPage = () => {
 
   const { data: balance } = useTransactionUserBalanceQuery(!!user?.id)
   const transferTransactionMutation = useTransferTransactionMutation()
+
+  const balanceCurrencies = balance?.map((item) => item.currency)
 
   useTgBack({
     defaultBackPath: prevRoute,
@@ -106,8 +112,8 @@ export const TransferPage = () => {
         message: 'Валюта обязательна',
       },
       pattern: {
-        value: /XTR/gi,
-        message: 'Доступные валюты: XTR',
+        value: new RegExp(`^(${balanceCurrencies?.join('|')})$`),
+        message: `Доступные валюты: ${balanceCurrencies?.join(', ')}`,
       },
     }),
     errors,
@@ -132,7 +138,7 @@ export const TransferPage = () => {
           <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-2">Внутренний перевод</h3>
           <p className="text-slate-500 dark:text-slate-400 text-[14px] font-normal">
             Перевод доступен в валюте баланса пользователя, на данный момент доступен в Telegram Stars{' '}
-            {transactionCurrencyLabels['XTR']} Тикер - (XTR)
+            {transactionCurrencyLabels['XTR']} Тикер - (XTR) и TON {transactionCurrencyLabels['TON']} Тикер - (TON)
           </p>
         </div>
 
@@ -170,7 +176,7 @@ export const TransferPage = () => {
                   required
                 />
                 <div className="flex flex-wrap gap-4 my-2">
-                  {amountChips.map((item) => (
+                  {amountChips?.[currency]?.map((item) => (
                     <Chip
                       className="dark:!text-slate-200 dark:!bg-slate-600 !px-1 !py-[2px] !rounded-lg text-sm text-slate-900 dark:text-white"
                       key={item}
@@ -180,19 +186,20 @@ export const TransferPage = () => {
                           shouldDirty: true,
                         })
                       }
-                      label={`${item} ${transactionCurrencyLabels['XTR']}`}
+                      label={`${item} ${transactionCurrencyLabels[currency]}`}
                     />
                   ))}
                 </div>
               </div>
-              <TextFieldContainer
+              <AutocompleteFieldContainer
                 {...currencyField}
-                className="w-full mt-4"
-                placeholder="Валюта перевода"
+                options={balanceCurrencies?.map((item) => ({ inputValue: item || '', title: item || '' })) || []}
+                disabled={isLoading || !balanceCurrencies?.length}
+                realValue={currency}
+                fullWidth
+                isLoading={isLoading}
                 label="Валюта перевода"
-                preventDisabled
-                required
-                disabled
+                noOptionsText="Нет доступных валют баланса"
               />
               <div className="flex flex-col gap-1">
                 <p className="text-slate-500 dark:text-slate-400 text-[14px] font-normal text-left mx-4">

@@ -10,6 +10,7 @@ import { forwardRef, KeyboardEvent, useCallback } from 'react'
 import { Controller, useFormContext } from 'react-hook-form'
 
 import { RegisterField } from '~/hooks'
+import { AnyString } from '~/types'
 
 import { useKeyboardAppended } from '../hook'
 
@@ -20,7 +21,7 @@ type Props = {
   className?: string
   fullWidth?: boolean
   isLoading?: boolean
-  options: { inputValue: string; title: string; [key: string]: unknown }[]
+  options: { inputValue: AnyString; title: AnyString; [key: string]: unknown }[]
   disabled?: boolean
   id?: string
   noOptionsText?: string
