@@ -21,6 +21,7 @@ export const ONBOARDING_DATA_NAME = {
   userBalance: 'user-balance',
   userTopup: 'user-topup',
   userTransactions: 'user-transactions',
+  wallet: 'user-wallet',
 }
 
 export const ONBOARDING_SELECTORS = {
@@ -39,6 +40,7 @@ export const ONBOARDING_SELECTORS = {
   userBalance: `[data-tour="${ONBOARDING_DATA_NAME.userBalance}"]`,
   userTopup: `[data-tour="${ONBOARDING_DATA_NAME.userTopup}"]`,
   userTransactions: `[data-tour="${ONBOARDING_DATA_NAME.userTransactions}"]`,
+  wallet: `[data-tour="${ONBOARDING_DATA_NAME.wallet}"]`,
 }
 
 export const ONBOARDING_MAIN_STEPS = (): StepType[] => [
@@ -69,18 +71,10 @@ export const ONBOARDING_MAIN_STEPS = (): StepType[] => [
     ),
   },
   {
-    selector: ONBOARDING_SELECTORS.userBalance,
+    selector: ONBOARDING_SELECTORS.wallet,
     content: (
-      <OnboardingStep text="Это ваш внутренний баланс, при помощи внутреннего баланса вы можете совершать платежи в этом приложении" />
+      <OnboardingStep text="Это ваш кошелек. Внутри вы можете найти весь ваш баланс, посмотреть историю транзакций, пополнить или вывести средства" />
     ),
-  },
-  {
-    selector: ONBOARDING_SELECTORS.userTopup,
-    content: <OnboardingStep text="Пополнение собственнного баланса в приложении" />,
-  },
-  {
-    selector: ONBOARDING_SELECTORS.userTransactions,
-    content: <OnboardingStep text="Список транзакций, отображает все транзакции совершенные в приложении" />,
   },
   {
     selector: ONBOARDING_SELECTORS.wishMainNewCategory,

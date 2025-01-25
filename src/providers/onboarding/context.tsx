@@ -1,6 +1,7 @@
 import { StepType, TourProvider } from '@reactour/tour'
 import React, { useCallback, useMemo } from 'react'
 
+import { CloseEmoji } from '~/assets'
 import { useUserUpdateOnboardingMutation } from '~/query'
 
 import { useAuth } from '../auth'
@@ -36,6 +37,11 @@ export const OnboardingContainerProvider: React.FC<Props> = ({ children }) => {
   const components = useMemo(
     () => ({
       Navigation: OnboardingNavigation,
+      Close: (props: any) => (
+        <div className="absolute top-0 right-1 cursor-pointer p-2" onClick={() => props.onClick()}>
+          <CloseEmoji />
+        </div>
+      ),
     }),
     [],
   )
@@ -60,7 +66,7 @@ export const OnboardingContainerProvider: React.FC<Props> = ({ children }) => {
 
   return (
     <TourProvider
-      showCloseButton={false}
+      showCloseButton
       steps={[]}
       disableInteraction
       afterOpen={disableBody}
