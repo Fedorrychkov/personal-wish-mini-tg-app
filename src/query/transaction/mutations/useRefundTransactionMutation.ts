@@ -2,6 +2,8 @@ import { useMutation, useQueryClient } from 'react-query'
 
 import { ClientTransactionApi, Transaction } from '~/entities'
 
+type QueryDataType = Transaction | Transaction[] | { pages: { list: Transaction[]; total: number }[] } | undefined
+
 export const useRefundTransactionMutation = (id: string, key = 'transaction-list') => {
   const queryClient = useQueryClient()
 
@@ -14,20 +16,29 @@ export const useRefundTransactionMutation = (id: string, key = 'transaction-list
     {
       onSuccess: key
         ? (data: Transaction) => {
-            queryClient.setQueryData<Transaction | Transaction[] | undefined>(key || '', (forms = []) => {
-              if (!Array.isArray(forms)) {
+            queryClient.setQueryData<QueryDataType>(key || '', (forms) => {
+              if (!forms) {
                 return data
               }
 
-              const items = forms?.map((item) => {
-                if (item.id === data?.id) {
-                  return data
+              // Проверка на пагинированные данные
+              if (!Array.isArray(forms) && 'pages' in forms) {
+                return {
+                  ...forms,
+                  pages: forms.pages.map((page) => ({
+                    ...page,
+                    list: page.list.map((item) => (item.id === data.id ? data : item)),
+                  })),
                 }
+              }
 
-                return item
-              })
+              // Проверка на массив транзакций
+              if (Array.isArray(forms)) {
+                return forms.map((item) => (item.id === data.id ? data : item))
+              }
 
-              return items
+              // Если это одиночная транзакция
+              return data
             })
           }
         : undefined,

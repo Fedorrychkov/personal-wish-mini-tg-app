@@ -22,7 +22,7 @@ import { getErrorMessageByCode } from '~/errors'
 import { useNotifyContext } from '~/providers'
 import { useRefundTransactionMutation, useTransactionCanRefundQuery } from '~/query'
 import { ROUTE } from '~/router'
-import { cn, jsonParse, time } from '~/utils'
+import { cn, convertTextToShort, jsonParse, time, truncate } from '~/utils'
 
 import { TransactionUserItem } from './TransactionUserItem'
 
@@ -209,6 +209,82 @@ export const TransactionItem = (props: Props) => {
             </p>
           </div>
         )}
+      {transactionPayload &&
+      value?.type === TransactionType.USER_WITHDRAW &&
+      transactionPayload.type === TransactionPayloadType.WITHDRAWAL_TO_EXTERNAL_WALLET ? (
+        <>
+          {transactionPayload.message && (
+            <div>
+              <p className="text-slate-500 dark:text-slate-200 text-[10px]">{transactionPayload.message}</p>
+            </div>
+          )}
+          {transactionPayload.addressScanUrl && transactionPayload.targetWalletAddress && (
+            <div>
+              <a
+                target="_blank"
+                href={transactionPayload.addressScanUrl}
+                className="text-blue-500 dark:text-blue-200 text-[14px]"
+              >
+                Получатель: {convertTextToShort(transactionPayload.targetWalletAddress)}
+              </a>
+            </div>
+          )}
+          {transactionPayload.txScanUrl && value?.providerInvoiceId && (
+            <div>
+              <a
+                target="_blank"
+                href={transactionPayload.txScanUrl}
+                className="text-blue-500 dark:text-blue-200 text-[14px]"
+              >
+                Транзакция: {convertTextToShort(value?.providerInvoiceId)}
+              </a>
+            </div>
+          )}
+          {transactionPayload.serviceFee && transactionPayload.conversionCurrency && (
+            <div>
+              <p className="text-slate-500 dark:text-slate-200 text-[14px]">
+                Комиссия сервиса: {truncate(transactionPayload.serviceFee, 4)}{' '}
+                {transactionCurrencyLabels[transactionPayload.conversionCurrency || '']} (
+                {transactionPayload.conversionCurrency})
+              </p>
+            </div>
+          )}
+          {transactionPayload.finalAmountToGet?.amount && transactionPayload.finalAmountToGet?.currency && (
+            <div>
+              <p className="text-slate-500 dark:text-slate-200 text-[14px]">
+                Сумма к получению: {truncate(transactionPayload.finalAmountToGet?.amount, 4)}{' '}
+                {transactionCurrencyLabels[transactionPayload.finalAmountToGet?.currency || '']} (
+                {transactionPayload.finalAmountToGet?.currency})
+              </p>
+            </div>
+          )}
+        </>
+      ) : null}
+      {transactionPayload &&
+      [TransactionType.USER_WITHDRAW].includes(value?.type) &&
+      transactionPayload.type === TransactionPayloadType.CONVERT_BALANCE ? (
+        <>
+          {transactionPayload?.conversionRate &&
+            transactionPayload?.conversionRate?.amount &&
+            transactionPayload?.conversionRate?.rate && (
+              <div>
+                <p className="text-slate-500 dark:text-slate-200 text-[14px]">
+                  Конвертация баланса: {truncate(value?.amount, 4)}{' '}
+                  {transactionCurrencyLabels[transactionPayload.conversionRate.fromCurrency || '']} (
+                  {transactionPayload.conversionRate.fromCurrency}) {'=>'}{' '}
+                  {truncate(transactionPayload.conversionRate.amount, 4)}{' '}
+                  {transactionCurrencyLabels[transactionPayload.conversionRate.toCurrency || '']} (
+                  {transactionPayload.conversionRate.toCurrency})
+                </p>
+                <p className="text-slate-500 dark:text-slate-200 text-[14px]">
+                  Курс: {truncate(transactionPayload.conversionRate.rate, 4)}{' '}
+                  {transactionCurrencyLabels[transactionPayload.conversionRate.fromCurrency || '']} (
+                  {transactionPayload.conversionRate.fromCurrency})
+                </p>
+              </div>
+            )}
+        </>
+      ) : null}
     </div>
   )
 }
