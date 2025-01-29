@@ -9,6 +9,9 @@ export type Transaction = {
   status: TransactionStatus
   type: TransactionType
   provider: TransactionProvider
+  blockchainProvider?: TransactionBlockchainProvider
+  actionAddress?: string | null
+  chain?: string
   amount: string
   currency: AnyString
   payload?: string | null
@@ -66,6 +69,10 @@ export enum TransactionPayloadType {
   CONVERT_BALANCE = 'convert_balance',
 }
 
+export enum TransactionBlockchainProvider {
+  TON = 'TON',
+}
+
 export enum TransactionType {
   /**
    * Когда производится выплата пользователю, конвертация в TON или что-то еще
@@ -106,7 +113,7 @@ export type TransactionFilter = {
 
 export type TransactionBalanceItem = {
   amount?: string
-  currency?: AnyString
+  currency?: AnyCurrency
 }
 
 export type TransactionBalanceTopupResponse = {

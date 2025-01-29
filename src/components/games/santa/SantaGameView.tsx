@@ -34,6 +34,8 @@ type SantaGameProps = {
   game: GameResponse
 }
 
+const CURRENCY = 'XTR'
+
 export const SantaGameView = ({ game }: SantaGameProps) => {
   const { setNotify } = useNotifyContext()
 
@@ -80,7 +82,7 @@ export const SantaGameView = ({ game }: SantaGameProps) => {
     !!game.id && !!game.status && ![GameStatus.CREATED].includes(game.status) && !!myParticipant && isSantaUserOpen,
   )
 
-  const finalAmoount = [GameStatus.FINISHED, GameStatus.CANCELLED].includes(game?.status || GameStatus.CREATED)
+  const finalAmount = [GameStatus.FINISHED, GameStatus.CANCELLED].includes(game?.status || GameStatus.CREATED)
     ? TRANSACTION_SANTA_GAME_XTR_STOPPED_AMOUNT
     : TRANSACTION_SANTA_GAME_XTR_UNSTOPPED_AMOUNT
 
@@ -96,17 +98,17 @@ export const SantaGameView = ({ game }: SantaGameProps) => {
           return
         }
 
-        const balanceXTR = balance?.find((item) => item.currency === 'XTR')
+        const balanceXTR = balance?.find((item) => item.currency === CURRENCY)
 
-        if (balanceXTR?.amount && Number(balanceXTR?.amount) >= finalAmoount) {
+        if (balanceXTR?.amount && Number(balanceXTR?.amount) >= finalAmount) {
           handlePopup({
             santaGameId: game.id || '',
             payload: {
               type: TransactionPayloadType.SHOW_SECRET_SANTA_USER,
               message: 'Оплата услуги за просмотр кто является Вашим Сантой в игре',
             },
-            amount: finalAmoount.toString(),
-            currency: 'XTR',
+            amount: finalAmount.toString(),
+            currency: CURRENCY,
           })
 
           return
@@ -240,7 +242,7 @@ export const SantaGameView = ({ game }: SantaGameProps) => {
                 size="small"
                 variant="text"
               >
-                Посмотреть кто является Вашим Сантой {finalAmoount} {transactionCurrencyLabels['XTR']}
+                Посмотреть кто является Вашим Сантой {finalAmount} {transactionCurrencyLabels[CURRENCY]}
               </Button>
             )}
             {balanceNotEnough && (
@@ -252,7 +254,7 @@ export const SantaGameView = ({ game }: SantaGameProps) => {
                   to={ROUTE.deposit}
                   state={{
                     prevPage: ROUTE.gameById.replace(':id', game?.id || ''),
-                    amount: finalAmoount + 10 + finalAmoount * TRANSACTION_DEPOSIT_COMISSION_NUMBER,
+                    amount: finalAmount + 10 + finalAmount * TRANSACTION_DEPOSIT_COMISSION_NUMBER[CURRENCY],
                   }}
                   className="text-sm text-center text-blue-700 dark:text-blue-700"
                 >

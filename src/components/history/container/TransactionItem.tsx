@@ -84,7 +84,16 @@ export const TransactionItem = (props: Props) => {
           >
             {transactionTypeIcons[value?.type]} {transactionTypeLabels[value?.type]}
           </p>
-          <p className="text-slate-500 dark:text-slate-200 text-[14px]">{transactionProviderLabels[value?.provider]}</p>
+          <p className="text-slate-500 dark:text-slate-200 text-[14px]">
+            {transactionProviderLabels[value?.provider]}{' '}
+            {value?.blockchainProvider && (
+              <span className="text-slate-500 dark:text-slate-200 text-[14px]">
+                {transactionCurrencyLabels[value?.blockchainProvider?.toString()] ||
+                  value?.blockchainProvider?.toString()}{' '}
+                {value?.chain && value?.chain === '-3' ? ' (TESTNET)' : ''}
+              </span>
+            )}
+          </p>
           {transactionPayload && (
             <div className="text-slate-500 dark:text-slate-200 text-[14px]">
               {!transactionPayload?.isAnonymous &&

@@ -134,8 +134,11 @@ export const WalletPage = () => {
                         Комиссии внутри приложения
                       </p>
                       <p className="text-slate-500 dark:text-slate-400 text-[14px] font-normal text-left">
-                        1. Транзакции пополнения баланса облагаются комиссией в размере {TRANSACTION_DEPOSIT_COMISSION}%
-                        от суммы пополнения. Возврат средств производится в полном объеме с учетом комиссии
+                        1. Транзакции пополнения баланса в {transactionCurrencyLabels['XTR']} облагаются комиссией в
+                        размере {TRANSACTION_DEPOSIT_COMISSION['XTR']}%, пополнение в {transactionCurrencyLabels['TON']}
+                        облагается комиссией в размере {TRANSACTION_DEPOSIT_COMISSION['TON']}% от суммы пополнения.
+                        Возврат средств производится в полном объеме с учетом комиссии средств производится в полном
+                        объеме с учетом комиссии
                       </p>
                       <p className="text-slate-500 dark:text-slate-400 text-[14px] font-normal text-left">
                         2. Транзакции вывода средств облагаются комиссией в размере {TRANSACTION_WITHDRAW_COMISSION} от
@@ -224,7 +227,7 @@ export const WalletPage = () => {
                       </p>
                       <p className="text-slate-500 dark:text-slate-400 text-[14px] font-normal text-left">
                         1. Если кто-то запустит бота по вашей ссылке, вы получите{' '}
-                        {TRANSACTION_NEW_USER_REFFERER_XTR_AMOUNT} ${transactionCurrencyLabels['XTR']} за каждого
+                        {TRANSACTION_NEW_USER_REFFERER_XTR_AMOUNT} {transactionCurrencyLabels['XTR']} за каждого
                         пользователя
                       </p>
                       <p className="text-slate-500 dark:text-slate-400 text-[14px] font-normal text-left">
@@ -252,7 +255,11 @@ export const WalletPage = () => {
                         Вывод средств
                       </p>
                       <p className="text-slate-500 dark:text-slate-400 text-[14px] font-normal text-left">
-                        1. Так как реферальные отчисления начисляются на Ваш баланс, вы можете вывести их в любое время
+                        1. Выводы доступны в валюте ${transactionCurrencyLabels['TON']} (TON), вы всегда можете
+                        произвести вывод из бота /run_withdrawal
+                      </p>
+                      <p className="text-slate-500 dark:text-slate-400 text-[14px] font-normal text-left">
+                        2. Так как реферальные отчисления начисляются на Ваш баланс, вы можете вывести их в любое время
                         после истечения 21 дня с момента зачисления средств приглашенным пользователем
                       </p>
                       <p className="text-slate-500 dark:text-slate-400 text-[14px] font-bold text-left">
