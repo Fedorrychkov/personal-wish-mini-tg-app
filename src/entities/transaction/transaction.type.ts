@@ -9,6 +9,9 @@ export type Transaction = {
   status: TransactionStatus
   type: TransactionType
   provider: TransactionProvider
+  blockchainProvider?: TransactionBlockchainProvider
+  actionAddress?: string | null
+  chain?: string
   amount: string
   currency: AnyString
   payload?: string | null
@@ -62,6 +65,12 @@ export enum TransactionPayloadType {
   INVITEE_BONUS = 'invitee_bonus',
   WITH_REFFERAL_COMISSION = 'with_refferal_comission',
   REFFERAL_BONUS = 'refferal_bonus',
+  WITHDRAWAL_TO_EXTERNAL_WALLET = 'withdrawal_to_external_wallet',
+  CONVERT_BALANCE = 'convert_balance',
+}
+
+export enum TransactionBlockchainProvider {
+  TON = 'TON',
 }
 
 export enum TransactionType {
@@ -104,7 +113,7 @@ export type TransactionFilter = {
 
 export type TransactionBalanceItem = {
   amount?: string
-  currency?: AnyString
+  currency?: AnyCurrency
 }
 
 export type TransactionBalanceTopupResponse = {
@@ -129,6 +138,23 @@ export type TransactionPayload = {
   message: string
   userId?: string
   isAnonymous?: boolean
+  targetWalletAddress?: string
+  serviceFee?: string
+  finalAmountToGet?: {
+    amount?: string
+    currency?: AnyCurrency
+  }
+  scanUrl?: string
+  txScanUrl?: string
+  addressScanUrl?: string
+  conversionCurrency?: string
+  conversionAmount?: string
+  conversionRate?: {
+    fromCurrency?: string
+    toCurrency?: string
+    rate?: string
+    amount?: string
+  }
 }
 
 export type Purchase = {

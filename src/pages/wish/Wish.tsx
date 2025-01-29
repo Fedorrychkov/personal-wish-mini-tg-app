@@ -32,6 +32,8 @@ import {
 import { ROUTE } from '~/router'
 import { shareTgLink } from '~/utils'
 
+const CURRENCY = 'XTR'
+
 export const Wish = () => {
   const { setNotify } = useNotifyContext()
   const { id } = useParams()
@@ -71,7 +73,7 @@ export const Wish = () => {
     !!user?.id && isBookedUsersOpenFlow,
     {
       onSuccess: (balance) => {
-        const balanceXTR = balance?.find((item) => item.currency === 'XTR')
+        const balanceXTR = balance?.find((item) => item.currency === CURRENCY)
 
         if (balanceXTR?.amount && Number(balanceXTR?.amount) >= TRANSACTION_BOOKED_USERS_XTR_AMOUNT) {
           handlePopup({
@@ -81,7 +83,7 @@ export const Wish = () => {
               message: 'Оплата услуги за просмотр кто подарил/забронировал желание',
             },
             amount: TRANSACTION_BOOKED_USERS_XTR_AMOUNT.toString(),
-            currency: 'XTR',
+            currency: CURRENCY,
           })
 
           return
@@ -408,7 +410,7 @@ export const Wish = () => {
                           variant="text"
                         >
                           Посмотреть кто {wish.status === WishStatus.GIVEN ? 'подарил' : 'забронировал'} за{' '}
-                          {TRANSACTION_BOOKED_USERS_XTR_AMOUNT} {transactionCurrencyLabels['XTR']}
+                          {TRANSACTION_BOOKED_USERS_XTR_AMOUNT} {transactionCurrencyLabels[CURRENCY]}
                         </Button>
                       )}
                       {balanceNotEnough && (
@@ -424,7 +426,7 @@ export const Wish = () => {
                               amount:
                                 TRANSACTION_BOOKED_USERS_XTR_AMOUNT +
                                 10 +
-                                TRANSACTION_BOOKED_USERS_XTR_AMOUNT * TRANSACTION_DEPOSIT_COMISSION_NUMBER,
+                                TRANSACTION_BOOKED_USERS_XTR_AMOUNT * TRANSACTION_DEPOSIT_COMISSION_NUMBER[CURRENCY],
                             }}
                             className="text-sm text-center text-blue-700 dark:text-blue-700"
                           >

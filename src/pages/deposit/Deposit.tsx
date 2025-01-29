@@ -18,6 +18,8 @@ import { NUMBER_ABSOLUTE_REGEXP, tgUtils } from '~/utils'
 
 const amountChips = [10, 100, 1000, 3000, 5000]
 
+const CURRENCY = 'XTR'
+
 export const DepositPage = () => {
   const { user } = useAuth()
   const [isSupport, setIsSupport] = useState(false)
@@ -39,7 +41,7 @@ export const DepositPage = () => {
     reValidateMode: 'onChange',
     defaultValues: {
       amount: amountProps ? amountProps.toString() : '50',
-      currency: 'XTR',
+      currency: CURRENCY,
     },
   })
 
@@ -194,7 +196,7 @@ export const DepositPage = () => {
               <div className="flex flex-col gap-2 justify-center items-center">
                 <p className="text-slate-500 dark:text-slate-400 text-[14px] font-normal text-center">
                   Обратите внимание, при пополнении баланса, сервис удерживает комиссию в размере{' '}
-                  {TRANSACTION_DEPOSIT_COMISSION}% от суммы пополнения
+                  {TRANSACTION_DEPOSIT_COMISSION[currency || 'XTR']}% от суммы пополнения
                 </p>
                 <p className="text-slate-500 dark:text-slate-400 text-[14px] font-normal text-center">
                   При возврате средств, возвращется полная стоимость пополнения
@@ -212,7 +214,10 @@ export const DepositPage = () => {
                   <p className="text-slate-500 dark:text-slate-400 text-[14px] font-normal text-center">
                     На баланс будет зачислено{' '}
                     <NumberFormat
-                      value={Number(amount || 0) - Number(amount || 0) * TRANSACTION_DEPOSIT_COMISSION_NUMBER}
+                      value={
+                        Number(amount || 0) -
+                        Number(amount || 0) * TRANSACTION_DEPOSIT_COMISSION_NUMBER[currency || 'XTR']
+                      }
                     />{' '}
                     {currency ? transactionCurrencyLabels[currency] || currency : ''}
                   </p>
