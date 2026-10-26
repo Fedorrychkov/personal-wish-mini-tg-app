@@ -14,10 +14,20 @@ if ! docker compose version >/dev/null 2>&1; then
 fi
 compose=(docker compose --project-name personal-wish-list-tg-mini-app --env-file .release.env -f docker-compose.prod.yml)
 "${compose[@]}" config --quiet
-"${compose[@]}" pull
+for attempt in 1 2 3; do
+    if "${compose[@]}" pull; then
+        break
+    fi
+    if [ "$attempt" -eq 3 ]; then
+        echo 'Image download failed after 3 attempts; running applications were not changed.' >&2
+        exit 1
+    fi
+    echo "Image download failed; retrying (attempt $((attempt + 1))/3)." >&2
+    sleep "$((attempt * 10))"
+done
 docker volume create personal-wish-list-tg-mini-app-caddy-data >/dev/null
 docker volume create personal-wish-list-tg-mini-app-caddy-config >/dev/null
-docker run --rm --network none -e ACME_EMAIL="${ACME_EMAIL:-fedorrychkov@yandex.ru}" -v "$PWD/.docker/production:/etc/caddy:ro" caddy:2.11.7-alpine caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile
+docker run --rm --network none -e ACME_EMAIL="${ACME_EMAIL:-fedorrychkov@yandex.ru}" -v "$PWD/.docker/production:/etc/caddy:ro" ghcr.io/fedorrychkov/personal-wish-mini-tg-app:caddy-2.11.7-alpine caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile
 
 # Stop only this project's old containers on its first migration; retain them for rollback.
 stopped=()

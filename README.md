@@ -89,3 +89,7 @@ Compose bootstrap uses existing Ubuntu package indexes instead of calling `apt-g
 A pre-existing update can hold the lists lock for days while the install lock is free.
 `DPkg::Lock::Timeout=300` waits for an actual dpkg installation lock if necessary.
 The deployment never removes APT locks or kills another package-manager process.
+
+Actions mirrors the pinned official Caddy image to the same GHCR package as the app.
+The server downloads both images from GHCR without Docker Hub access or new credentials.
+Downloads retry up to three times before any running container is stopped.
