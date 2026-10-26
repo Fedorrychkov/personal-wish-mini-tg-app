@@ -30,3 +30,19 @@ dist-ssr
 
 certificate.crt
 private.key
+
+# Production runtime and deployment files
+.deploy/
+.release.env
+.env.runtime
+.deploy.lock
+.runtime-migrated
+runtime/
+uploads/
+deployment.tgz
+
+# Certificate material is managed outside the repository
+*.key
+*.pem
+*.crt
+*.csr

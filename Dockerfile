@@ -1,22 +1,13 @@
-# Stage 1: Build the application
-FROM node:18-alpine as build
+# syntax=docker/dockerfile:1
+FROM node:22-bookworm-slim AS build
 WORKDIR /app
-COPY . /app
-COPY . ./
-COPY package*.json ./
-RUN npm install --legacy-peer-deps
-RUN npm run build
+COPY package.json pnpm-lock.yaml ./
+RUN npm install --global pnpm@9.15.9 && HUSKY=0 pnpm install --frozen-lockfile
+COPY . .
+RUN --mount=type=secret,id=build_env,target=/app/.env npm run build
 
-# Stage 2: Build nginx
-FROM nginx:1.21-alpine
-# Копирование конфигурации Nginx
-COPY ./config/prod/nginx.conf /etc/nginx/nginx.conf
-# Копирование SSL сертификатов
-COPY ./certificate.crt /etc/nginx/certs/
-COPY ./private.key /etc/nginx/certs/
-
-COPY --from=build /app/dist /var/www/html/
-
+FROM nginx:stable-alpine
+COPY .docker/production/nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=build /app/dist /usr/share/nginx/html
+HEALTHCHECK --interval=10s --timeout=3s --start-period=10s CMD wget -q -O /dev/null http://127.0.0.1/ || exit 1
 EXPOSE 80
-
-CMD ["nginx", "-g", "daemon off;"]
